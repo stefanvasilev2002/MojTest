@@ -1,4 +1,8 @@
-package com.finki.mojtest.model;
+package com.finki.mojtest.model.users;
+
+import jakarta.persistence.*;
+
+import java.time.LocalDate;
 
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
@@ -13,6 +17,4 @@ public class User {
     private String email;
     private String fullName;
     private LocalDate registrationDate;
-
-    // Getters and Setters
 }
