@@ -2,10 +2,17 @@ package com.finki.mojtest.model;
 
 import com.finki.mojtest.model.users.Student;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+import java.sql.Time;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 public class StudentTest {
     @Id
@@ -14,7 +21,7 @@ public class StudentTest {
 
     private int score;
     private LocalDateTime dateTaken;
-    private int timeTaken;
+    private Time timeTaken;
 
     @ManyToOne
     @JoinColumn(name = "student_id")
@@ -27,6 +34,5 @@ public class StudentTest {
     @OneToMany(mappedBy = "studentTest")
     private List<StudentAnswer> answers;
 
-    // Getters and Setters
 }
 

@@ -1,13 +1,21 @@
 package com.finki.mojtest.model;
 
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 public class StudentAnswer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Nullable
     private String submittedValue;
 
     @ManyToOne
@@ -22,6 +30,5 @@ public class StudentAnswer {
     @JoinColumn(name = "answer_id")
     private Answer chosenAnswer;
 
-    // Getters and Setters
 }
 

@@ -1,9 +1,16 @@
 package com.finki.mojtest.model;
 
+import com.finki.mojtest.model.users.Teacher;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 public class Question {
     @Id
@@ -13,10 +20,13 @@ public class Question {
     private String type;
     private String description;
     private int points;
-    private int negativePoints;
+    private int negativePointsPerAnswer;
     private String formula;
     private String imageUrl;
     private String hint;
+
+    @ManyToMany(mappedBy = "questionBank")
+    private List<Test> tests;
 
     @ManyToMany
     @JoinTable(
@@ -29,5 +39,8 @@ public class Question {
     @OneToMany(mappedBy = "question")
     private List<Answer> answers;
 
-    // Getters and Setters
+    @ManyToOne
+    @JoinColumn(name = "teacher_id", nullable = false)
+    private Teacher creator;
+
 }

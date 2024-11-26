@@ -1,9 +1,15 @@
 package com.finki.mojtest.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 public class TestQuestion {
     @Id
@@ -21,6 +27,5 @@ public class TestQuestion {
     @OneToMany(mappedBy = "testQuestion")
     private List<StudentAnswer> studentAnswers;
 
-    // Getters and Setters
 }
 
