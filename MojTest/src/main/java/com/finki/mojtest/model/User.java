@@ -1,0 +1,18 @@
+package com.finki.mojtest.model;
+
+@Entity
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "role")
+public class User {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String username;
+    private String password;
+    private String email;
+    private String fullName;
+    private LocalDate registrationDate;
+
+    // Getters and Setters
+}
