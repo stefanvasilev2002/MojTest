@@ -1,0 +1,53 @@
+{
+  "welcome": "Welcome to Quiz App",
+  "login": "Log In",
+  "profile": "Profile",
+  "logout": "Log Out",
+  "quiz": "Quiz",
+  "appName": "MyTest",
+  "admin": {
+    "dashboard": "Dashboard",
+    "manageQuizzes": "Manage Quizzes"
+  },
+  "nav": {
+    "forTeachers": "For Teachers",
+    "forStudents": "For Students",
+    "home": "Home Page",
+    "teacherDashboard": "Teacher Dashboard",
+    "settings": "Settings",
+    "studentDashboard": "Student Dashboard",
+    "login": "Log In",
+    "register": "Register",
+    "logout": "Log out"
+  },
+  "debugPageTitle": "Debug Page",
+  "debugPageMessage": "This page helps you test the translations.",
+  "currentLanguageDescription": "English stuff",
+
+  "landingPageTitle": "Welcome to Our Platform",
+  "landingPageDescription": "Select your role to learn more about what we offer",
+  "studentCardTitle": "For Students",
+  "studentCardDescription": "Learn more about how we help students succeed",
+  "teacherCardTitle": "For Teachers",
+  "teacherCardDescription": "Discover the tools we provide to enhance teaching",
+
+  "studentPageTitle": "About Students",
+  "studentPageDescription": "Here's what we offer for students...",
+  "studentPageContent": "We provide a variety of resources to help students achieve their goals and excel academically.",
+
+  "teacherPageTitle": "About Teachers",
+  "teacherPageDescription": "Here's what we offer for teachers...",
+  "teacherPageContent": "We provide tools, resources, and professional development opportunities to support teachers in their work.",
+  "loginPage": {
+    "title": "Log In",
+    "username": "Username",
+    "password": "Password",
+    "enterUsername": "Enter your username",
+    "enterPassword": "Enter your password",
+    "selectRole": "Select Role",
+    "roleTeacher": "Teacher",
+    "roleStudent": "Student",
+    "loggingIn": "Logging in..."
+  }
+
+}

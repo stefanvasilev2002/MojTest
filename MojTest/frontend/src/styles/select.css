@@ -1,0 +1,13 @@
+/* Override react-select styles to fix height and alignment issues */
+.react-select__value-container {
+    display: flex;
+    align-items: center;
+    height: 100% !important;  /* Ensure height is 100% of the select container */
+    padding: 0 !important; /* Remove any padding applied */
+}
+
+/* If you want to target the specific class 'css-hlgwow', you can do it like this: */
+.css-hlgwow {
+    padding: 0 !important; /* Remove any extra padding applied by react-select */
+    height: auto !important; /* Ensure that the height adjusts to fit content properly */
+}

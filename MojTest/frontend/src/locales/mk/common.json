@@ -1,0 +1,55 @@
+{
+  "welcome": "Добредојдовте на Квиз Апликација",
+  "login": "Најави се",
+  "profile": "Профил",
+  "logout": "Одјави се",
+  "quiz": "Квиз",
+  "appName": "МојТест",
+  "admin": {
+    "dashboard": "Табла",
+    "manageQuizzes": "Управувај со Квизови"
+  },
+  "nav": {
+    "forTeachers": "За Наставници",
+    "forStudents": "За Студенти",
+    "home": "Почетна страна",
+    "teacherDashboard": "Таблото на наставникот",
+    "settings": "Поставки",
+    "studentDashboard": "Таблото на студентот",
+    "login": "Најава",
+    "register": "Регистрирај се",
+    "logout": "Одјави се"
+  },
+  "debugPageTitle": "Страница за дебагирање",
+  "debugPageMessage": "Оваа страница ви помага да тестираате преводи.",
+  "currentLanguageDescription": "Macedonian stuff",
+
+  "landingPageTitle": "Добредојдовте на нашата Платформа",
+  "landingPageDescription": "Изберете ја вашата улога за да дознаете повеќе за она што го нудиме",
+  "studentCardTitle": "За Студенти",
+  "studentCardDescription": "Дознајте повеќе за тоа како им помагаме на студентите да успеат",
+  "teacherCardTitle": "За Наставници",
+  "teacherCardDescription": "Откријте ги алатките кои ги нудиме за подобрување на наставата",
+
+
+  "studentPageTitle": "За Студенти",
+  "studentPageDescription": "Еве што нудиме за студентите...",
+  "studentPageContent": "Нудиме различни ресурси за да им помогнеме на студентите да ги постигнат своите цели и да успеат академски.",
+
+  "teacherPageTitle": "За Наставници",
+  "teacherPageDescription": "Еве што нудиме за наставниците...",
+  "teacherPageContent": "Нудиме алатки, ресурси и можности за професионален развој за поддршка на наставниците во нивната работа.",
+
+  "loginPage": {
+    "title": "Најава",
+    "username": "Корисничко име",
+    "password": "Лозинка",
+    "enterUsername": "Внесете го вашето корисничко име",
+    "enterPassword": "Внесете ја вашата лозинка",
+    "selectRole": "Изберете улога",
+    "roleTeacher": "Наставник",
+    "roleStudent": "Студент",
+    "loggingIn": "Најавувам..."
+  }
+
+}

@@ -1,0 +1,44 @@
+{
+  "welcome": "Mirë se vini në Aplikacionin e Kuizeve",
+  "login": "Hyr",
+  "profile": "Profili",
+  "logout": "Dil",
+  "quiz": "Kuizi",
+  "appName": "TestiIm",
+  "admin": {
+    "dashboard": "Paneli",
+    "manageQuizzes": "Menaxho Kuizet"
+  },
+  "nav": {
+    "forTeachers": "Për Mësuesit",
+    "forStudents": "Për Studentët",
+    "home": "Faqja kryesore",
+    "teacherDashboard": "Paneli i Mësuesit",
+    "settings": "Cilësimet",
+    "studentDashboard": "Paneli i Studentit",
+    "login": "Kyçu",
+    "register": "Regjistrohu",
+    "logout": "Dil"
+
+  },
+  "debugPageTitle": "Faqja e Debug",
+  "debugPageMessage": "Kjo faqe ju ndihmon të testoni përkthimet.",
+  "currentLanguageDescription": "Albanian stuff",
+
+  "landingPageTitle": "Mirësevini në Platformën Tonë",
+  "landingPageDescription": "Zgjidhni rolin tuaj për të mësuar më shumë rreth asaj që ofrojmë",
+  "studentCardTitle": "Për Studentët",
+  "studentCardDescription": "Mësoni më shumë për mënyrat si i ndihmojmë studentët të kenë sukses",
+  "teacherCardTitle": "Për Mësuesit",
+  "teacherCardDescription": "Zbuloni mjetet që ofrojmë për të përmirësuar mësimdhënien",
+
+  "studentPageTitle": "Për Studentët",
+  "studentPageDescription": "Ja çfarë ofrojmë për studentët...",
+  "studentPageContent": "Ne ofrojmë një gamë të gjerë burimesh për të ndihmuar studentët të arrijnë objektivat e tyre dhe të kenë sukses në mënyrë akademike.",
+
+  "teacherPageTitle": "Për Mësuesit",
+  "teacherPageDescription": "Ja çfarë ofrojmë për mësuesit...",
+  "teacherPageContent": "Ne ofrojmë mjete, burime dhe mundësi zhvillimi profesional për të mbështetur mësuesit në punën e tyre."
+
+
+}
