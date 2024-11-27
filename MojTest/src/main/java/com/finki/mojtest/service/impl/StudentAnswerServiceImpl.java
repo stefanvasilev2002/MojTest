@@ -34,9 +34,11 @@ public class StudentAnswerServiceImpl implements StudentAnswerService {
     @Override
     public StudentAnswer updateStudentAnswer(Long id, StudentAnswer updatedStudentAnswer) {
         StudentAnswer studentAnswer = getStudentAnswerById(id);
+
         studentAnswer.setChosenAnswer(updatedStudentAnswer.getChosenAnswer());
         studentAnswer.setTestQuestion(updatedStudentAnswer.getTestQuestion());
         studentAnswer.setStudentTest(updatedStudentAnswer.getStudentTest());
+
         return studentAnswerRepository.save(studentAnswer);
     }
 

@@ -10,6 +10,6 @@ public interface MetadataService {
     List<Metadata> getAllMetadata();
     Metadata updateMetadata(Long id, Metadata updatedMetadata);
     void deleteMetadata(Long id);
-    List<Metadata> getMetadataByName(String name);
+    List<Metadata> getMetadataByKey(String key);
 }
 

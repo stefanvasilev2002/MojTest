@@ -1,8 +1,10 @@
 package com.finki.mojtest.service.impl;
 
+import com.finki.mojtest.model.exceptions.DuplicateFieldException;
 import com.finki.mojtest.model.users.User;
 import com.finki.mojtest.repository.users.UserRepository;
 import com.finki.mojtest.service.UserService;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,13 +19,21 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User createUser(User user) {
+        if (userRepository.findByUsername(user.getUsername()).isPresent()) {
+            throw new DuplicateFieldException("Username already exists: " + user.getUsername());
+        }
+
+        if (!userRepository.findByEmail(user.getEmail()).isEmpty()) {
+            throw new DuplicateFieldException("Email already exists: " + user.getEmail());
+        }
+
         return userRepository.save(user);
     }
 
     @Override
     public User getUserById(Long id) {
         return userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new EntityNotFoundException("User not found with id " + id));
     }
 
     @Override
@@ -34,13 +44,36 @@ public class UserServiceImpl implements UserService {
     @Override
     public User updateUser(Long id, User updatedUser) {
         User user = getUserById(id);
-        user.setEmail(updatedUser.getEmail());
-        user.setUsername(updatedUser.getUsername());
+
+        if (updatedUser.getUsername() != null &&
+                !updatedUser.getUsername().equals(user.getUsername())
+                && userRepository.findByUsername(updatedUser.getUsername()).isPresent()) {
+            throw new DuplicateFieldException("Username already exists: " + updatedUser.getUsername());
+        }
+
+        if (updatedUser.getEmail() != null &&
+                !updatedUser.getEmail().equals(user.getEmail()) &&
+                !userRepository.findByEmail(updatedUser.getEmail()).isEmpty()) {
+            throw new DuplicateFieldException("Email already exists: " + updatedUser.getEmail());
+        }
+
+        if (updatedUser.getEmail() != null) {
+            user.setEmail(updatedUser.getEmail());
+        }
+        if (updatedUser.getUsername() != null) {
+            user.setUsername(updatedUser.getUsername());
+        }
+        if (updatedUser.getFullName() != null) {
+            user.setFullName(updatedUser.getFullName());
+        }
+
         return userRepository.save(user);
     }
 
     @Override
     public void deleteUser(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with id " + id));
         userRepository.deleteById(id);
     }
 
@@ -49,4 +82,3 @@ public class UserServiceImpl implements UserService {
         return userRepository.findByRole(role);
     }
 }
-

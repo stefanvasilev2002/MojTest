@@ -10,4 +10,8 @@ public interface StudentTestService {
     List<StudentTest> getAllStudentTests();
     StudentTest updateStudentTest(Long id, StudentTest updatedStudentTest);
     void deleteStudentTest(Long id);
+
+    List<StudentTest> getStudentTestsByStudentId(Long studentId);
+
+    List<StudentTest> getStudentTestsByTestId(Long testId);
 }

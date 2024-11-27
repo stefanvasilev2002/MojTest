@@ -6,8 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.sql.Time;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 @Data
@@ -20,15 +20,15 @@ public class StudentTest {
     private Long id;
 
     private int score;
-    private LocalDateTime dateTaken;
-    private Time timeTaken;
+    private LocalDate dateTaken;
+    private LocalTime timeTaken;
 
     @ManyToOne
     @JoinColumn(name = "student_id")
     private Student student;
 
     @ManyToOne
-    @JoinColumn(name = "test_id")
+    @JoinColumn(name = "test_id", nullable =true)
     private Test test;
 
     @OneToMany(mappedBy = "studentTest")

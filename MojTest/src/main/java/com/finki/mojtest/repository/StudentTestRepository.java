@@ -8,6 +8,6 @@ import java.util.List;
 
 @Repository
 public interface StudentTestRepository extends JpaRepository<StudentTest, Long> {
-    List<StudentTest> findByStudentId(Long studentId); // Find tests taken by a specific student
-    List<StudentTest> findByTestId(Long testId); // Find all submissions for a specific test
+    List<StudentTest> findAllByStudentId(Long studentId); // Find tests taken by a specific student
+    List<StudentTest> findAllByTestId(Long testId); // Find all submissions for a specific test
 }

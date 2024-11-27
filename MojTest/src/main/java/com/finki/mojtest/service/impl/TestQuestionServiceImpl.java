@@ -36,11 +36,15 @@ public class TestQuestionServiceImpl implements TestQuestionService {
         TestQuestion testQuestion = getTestQuestionById(id);
         testQuestion.setTest(updatedTestQuestion.getTest());
         testQuestion.setQuestion(updatedTestQuestion.getQuestion());
+
         return testQuestionRepository.save(testQuestion);
     }
 
     @Override
     public void deleteTestQuestion(Long id) {
+        TestQuestion testQuestion = testQuestionRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("TestQuestion not found"));
+
         testQuestionRepository.deleteById(id);
     }
 
@@ -53,4 +57,5 @@ public class TestQuestionServiceImpl implements TestQuestionService {
     public List<TestQuestion> getTestQuestionsByQuestionId(Long questionId) {
         return testQuestionRepository.findByQuestionId(questionId);
     }
+
 }

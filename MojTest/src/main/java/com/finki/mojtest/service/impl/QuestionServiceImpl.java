@@ -1,18 +1,24 @@
 package com.finki.mojtest.service.impl;
 
+import com.finki.mojtest.model.Answer;
 import com.finki.mojtest.model.Question;
+import com.finki.mojtest.model.Test;
+import com.finki.mojtest.repository.AnswerRepository;
 import com.finki.mojtest.repository.QuestionRepository;
 import com.finki.mojtest.service.QuestionService;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 public class QuestionServiceImpl implements QuestionService {
-    private final QuestionRepository questionRepository;
 
-    public QuestionServiceImpl(QuestionRepository questionRepository) {
+    private final QuestionRepository questionRepository;
+    private final AnswerRepository answerRepository;
+    public QuestionServiceImpl(QuestionRepository questionRepository, AnswerRepository answerRepository) {
         this.questionRepository = questionRepository;
+        this.answerRepository = answerRepository;
     }
 
     @Override
@@ -33,14 +39,27 @@ public class QuestionServiceImpl implements QuestionService {
 
     @Override
     public Question updateQuestion(Long id, Question updatedQuestion) {
-        Question question = getQuestionById(id);
-        question.setDescription(updatedQuestion.getDescription());
-        question.setType(updatedQuestion.getType());
-        return questionRepository.save(question);
+        Question existingQuestion = getQuestionById(id);
+        existingQuestion.setDescription(updatedQuestion.getDescription());
+        existingQuestion.setType(updatedQuestion.getType());
+        return questionRepository.save(existingQuestion);
     }
 
+    @Transactional
     @Override
     public void deleteQuestion(Long id) {
+        Question question = getQuestionById(id);
+
+        // Remove the question from the tests' question bank (Many-to-Many relationship)
+        for (Test test : question.getTests()) {
+            test.getQuestionBank().remove(question);
+        }
+
+        // Delete all answers associated with the question
+        List<Answer> answers = question.getAnswers();
+        answerRepository.deleteAll(answers);
+
+        // Finally, delete the question
         questionRepository.deleteById(id);
     }
 
