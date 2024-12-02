@@ -18,7 +18,16 @@
     "studentDashboard": "Paneli i Studentit",
     "login": "Kyçu",
     "register": "Regjistrohu",
-    "logout": "Dil"
+    "logout": "Dil",
+    "metadata": "Metadata",
+    "answer": "Përgjigje",
+    "test": "Teste",
+    "question": "Pyetje",
+    "studentAnswer": "Përgjigje të Studentëve",
+    "studentTest": "Teste të Studentëve",
+    "testQuestion": "Pyetje të Testeve",
+    "user": "Përdorues"
+
 
   },
   "debugPageTitle": "Faqja e Debug",
@@ -38,7 +47,62 @@
 
   "teacherPageTitle": "Për Mësuesit",
   "teacherPageDescription": "Ja çfarë ofrojmë për mësuesit...",
-  "teacherPageContent": "Ne ofrojmë mjete, burime dhe mundësi zhvillimi profesional për të mbështetur mësuesit në punën e tyre."
+  "teacherPageContent": "Ne ofrojmë mjete, burime dhe mundësi zhvillimi profesional për të mbështetur mësuesit në punën e tyre.",
 
-
+  "subjects": {
+    "elementary": {
+      "macedonianLanguage": "Gjuha Maqedonase",
+      "albanianLanguage": "Gjuha Shqipe",
+      "mathematics": "Matematika",
+      "naturalSciences": "Shkencat Natyrore",
+      "society": "Shoqëria",
+      "geography": "Gjeografia",
+      "history": "Historia",
+      "biology": "Biologjia",
+      "physics": "Fizika",
+      "chemistry": "Kimia",
+      "englishLanguage": "Gjuha Angleze",
+      "secondForeignLanguageGerman": "Gjuha e Dytë e Huaj (Gjermanisht)",
+      "secondForeignLanguageFrench": "Gjuha e Dytë e Huaj (Frëngjisht)",
+      "secondForeignLanguageItalian": "Gjuha e Dytë e Huaj (Italisht)",
+      "secondForeignLanguageRussian": "Gjuha e Dytë e Huaj (Rusisht)",
+      "ethics": "Etika",
+      "computerBasicsProgramming": "Bazat e Kompjuterit dhe Programimi",
+      "informatics": "Informatika",
+      "civicEducation": "Edukimi Qytetar",
+      "ruleOfLawMaterials": "Sundimi i Ligjit – Materiale Shtesë për Edukimin Qytetar",
+      "innovations": "Inovacione",
+      "artEducation": "Edukimi Artistik",
+      "musicEducation": "Edukimi Muzikor",
+      "technicalEducation": "Edukimi Teknik",
+      "physicalHealthEducation": "Edukimi Fizik dhe Shëndetësor",
+      "macedonianLanguageForCommunities": "Gjuha Maqedonase (për Komunitetet)"
+    },
+    "highSchool": {
+      "macedonianLanguageLiterature": "Gjuha dhe Letërsia Maqedonase",
+      "mathematics": "Matematika",
+      "firstForeignLanguage": "Gjuha e Parë e Huaj",
+      "secondForeignLanguage": "Gjuha e Dytë e Huaj",
+      "history": "Historia",
+      "geography": "Gjeografia",
+      "biology": "Biologjia",
+      "physics": "Fizika",
+      "chemistry": "Kimia",
+      "sociology": "Sociologjia",
+      "informatics": "Informatika",
+      "sportActivities": "Sport dhe Aktivitetet Fizike",
+      "ethics": "Etika",
+      "latinLanguage": "Gjuha Latine",
+      "philosophy": "Filozofia",
+      "lawIntroduction": "Hyrje në të Drejtën",
+      "businessEntrepreneurship": "Biznes dhe Ndërmarrësi",
+      "psychology": "Psikologjia",
+      "management": "Menaxhimi",
+      "economics": "Ekonomia",
+      "art": "Arti",
+      "music": "Muzika",
+      "dramaArt": "Arti Dramatik",
+      "comparativeLiterature": "Letërsia Krahasuese"
+    }
+  }
 }

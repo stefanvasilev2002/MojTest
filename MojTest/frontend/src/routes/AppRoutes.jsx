@@ -14,7 +14,21 @@ import LoginPage from "../pages/LoginPage.jsx";
 import RegisterPage from "../pages/RegisterPage.jsx";
 import TeacherLayout from "../layouts/TeacherLayout.jsx";
 import StudentLayout from "../layouts/StudentLayout.jsx";
-import PublicLayout from "../layouts/PublicLayout.jsx";  // Your DebugPage
+import PublicLayout from "../layouts/PublicLayout.jsx";
+import CrudLayout from "../layouts/crud/CrudLayout.jsx";
+import CrudHubPage from "../pages/crud/CrudHubPage.jsx";
+import MetadataList from "../components/crud/MetadataList.jsx";
+import AnswersList from "../components/crud/AnswersList.jsx";
+import TestList from "../components/crud/TestList.jsx";
+import QuestionList from "../components/crud/QuestionList.jsx";
+import StudentAnswersList from "../components/crud/StudentAnswersList.jsx";
+import StudentTestList from "../components/crud/StudentTestList.jsx";
+import TestQuestionList from "../components/crud/TestQuestionList.jsx";
+import UsersList from "../components/crud/UsersList.jsx";
+import StudentList from "../components/crud/StudentList.jsx";
+import TeacherList from "../components/crud/TeacherList.jsx";
+import AdminList from "../components/crud/AdminList.jsx";
+import MetadataForm from "../components/crud/MetadataForm.jsx";
 
 const AppRoutes = () => {
     return (
@@ -29,35 +43,47 @@ const AppRoutes = () => {
                     <Route path="/register" element={<PublicRoute><PublicLayout><RegisterPage /></PublicLayout></PublicRoute>} />
 
                     {/* Authenticated Routes */}
-                    <Route path="/teacher-dashboard" element={<PrivateRoute requiredRole="teacher"><TeacherDashboard /></PrivateRoute>} />
-                    <Route path="/student-dashboard" element={<PrivateRoute requiredRole="student"><StudentDashboard /></PrivateRoute>} />
+                    <Route path="/teacher-dashboard" element={
+                        <PrivateRoute requiredRole="teacher">
+                            <TeacherLayout>
+                                <TeacherDashboard />
+                            </TeacherLayout>
+                        </PrivateRoute>
+                    } />
+                    <Route path="/student-dashboard" element={
+                        <PrivateRoute requiredRole="student">
+                            <StudentLayout>
+                                <StudentDashboard />
+                            </StudentLayout>
+                        </PrivateRoute>
+                    } />
 
                     {/* Debug Page */}
                     <Route path="/debug" element={<DebugPage />} />
 
-                    {/* Teacher Dashboard */}
-                    <Route
-                        path="/teacher-dashboard"
-                        element={
-                            <PrivateRoute requiredRole="teacher">
-                                <TeacherLayout /> {/* Use TeacherLayout for teacher dashboard */}
-                            </PrivateRoute>
-                        }
-                    >
-                        <Route path="/teacher-dashboard" element={<TeacherDashboard />} />
-                    </Route>
+                    {/* CRUD Layout */}
+                    <Route path="/crud/metadata" element={<CrudLayout><MetadataList /></CrudLayout>} />
+                    <Route path="/crud/metadata/new" element={<CrudLayout><MetadataForm /></CrudLayout>} />
+                    <Route path="/crud/metadata/edit/:id" element={<CrudLayout><MetadataForm /></CrudLayout>} />
 
-                    {/* Student Dashboard */}
-                    <Route
-                        path="/student-dashboard"
-                        element={
-                            <PrivateRoute requiredRole="student">
-                                <StudentLayout /> {/* Use StudentLayout for student dashboard */}
-                            </PrivateRoute>
-                        }
-                    >
-                        <Route path="/student-dashboard" element={<StudentDashboard />} />
-                    </Route>
+
+                    <Route path="/crud/hub" element={<CrudLayout><CrudHubPage /></CrudLayout>} />
+                    <Route path="/crud/answer" element={<CrudLayout><AnswersList /></CrudLayout>} />
+                    <Route path="/crud/test" element={<CrudLayout><TestList /></CrudLayout>} />
+                    <Route path="/crud/question" element={<CrudLayout><QuestionList /></CrudLayout>} />
+                    <Route path="/crud/student-answer" element={<CrudLayout><StudentAnswersList /></CrudLayout>} />
+                    <Route path="/crud/student-test" element={<CrudLayout><StudentTestList /></CrudLayout>} />
+                    <Route path="/crud/test-question" element={<CrudLayout><TestQuestionList /></CrudLayout>} />
+                    <Route path="/crud/user" element={<CrudLayout><UsersList /></CrudLayout>} />
+                    <Route path="/crud/users/admin" element={<CrudLayout><AdminList /></CrudLayout>} />
+                    <Route path="/crud/users/teacher" element={<CrudLayout><TeacherList /></CrudLayout>} />
+                    <Route path="/crud/users/student" element={<CrudLayout><StudentList /></CrudLayout>} />
+
+
+
+                    {/* Test Route without Layout for Metadata List */}
+                    <Route path="/test-metadata" element={<MetadataList />} />  {/* New test route */}
+
                 </Routes>
             </Router>
         </AuthProvider>
