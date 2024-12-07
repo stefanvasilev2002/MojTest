@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 
+import java.util.List;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -20,6 +22,11 @@ public class QuestionDTO {
     private String formula;
     private String imageUrl;
     private String hint;
-    private List<Metadata> metadata;
-    private Teacher creator;
+
+    private Long creatorId;  // Store the ID of the teacher (creator)
+
+    private List<Long> testIds;  // List of Test IDs associated with this Question
+    private List<Long> metadataIds;  // List of Metadata IDs associated with this Question
+    private List<Long> answerIds;  // List of Answer IDs related to the Question
 }
+

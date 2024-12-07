@@ -1,15 +1,12 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import useUsers from "../../hooks/crud/useUsers.js"; // Import your custom hook
+import useTeacher from "../../hooks/crud/useTeacher.js"; // Import the custom hook for teachers
 import Alert from "../Alert.jsx"; // Import the Alert component
 import CrudActionTable from "../CrudActionTable.jsx"; // Import the reusable table
 
 const TeacherList = () => {
-    const { items: usersList, loading, error, remove } = useUsers(); // Fetch users data and remove method
+    const { items: teachersList, loading, error, remove } = useTeacher(); // Fetch teacher data and remove method
     const navigate = useNavigate();
-
-    // Filter users by Teacher role
-    const filteredTeachers = usersList.filter(user => user.role === "Teacher");
 
     // Handle delete action
     const handleDelete = async (id) => {
@@ -42,20 +39,20 @@ const TeacherList = () => {
             >
                 Add Teacher
             </button>
-            {filteredTeachers.length === 0 ? (
+            {teachersList.length === 0 ? (
                 <p>No teachers found.</p>
             ) : (
                 <CrudActionTable
                     headers={["ID", "Username", "Email", "Full Name", "Created Tests"]}
-                    rows={filteredTeachers.map((teacher) => [
+                    rows={teachersList.map((teacher) => [
                         teacher.id,
                         teacher.username,
                         teacher.email,
                         teacher.fullName,
                         teacher.createdTests.length,
                     ])}
-                    onEdit={(teacher) => navigate(`/crud/users/teacher/edit/${teacher.id}`)}
-                    onDelete={(teacher) => handleDelete(teacher.id)}
+                    onEdit={(id) => navigate(`/crud/users/teacher/edit/${id}`)}
+                    onDelete={(id) => handleDelete(id)}
                 />
             )}
         </div>

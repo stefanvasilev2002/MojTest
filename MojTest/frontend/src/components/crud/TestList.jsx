@@ -50,8 +50,8 @@ const TestList = () => {
                         test.description,
                         test.numQuestions,
                     ])}
-                    onEdit={(test) => navigate(`/crud/test/edit/${test.id}`)}
-                    onDelete={(test) => handleDelete(test.id)}
+                    onEdit={(id) => navigate(`/crud/test/edit/${id}`)}
+                    onDelete={(id) => handleDelete(id)}
                 />
             )}
         </div>

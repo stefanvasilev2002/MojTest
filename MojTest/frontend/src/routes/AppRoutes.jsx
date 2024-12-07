@@ -29,6 +29,11 @@ import StudentList from "../components/crud/StudentList.jsx";
 import TeacherList from "../components/crud/TeacherList.jsx";
 import AdminList from "../components/crud/AdminList.jsx";
 import MetadataForm from "../components/crud/MetadataForm.jsx";
+import StudentForm from "../components/crud/StudentForm.jsx";
+import TeacherForm from "../components/crud/TeacherForm.jsx";
+import AdminForm from "../components/crud/AdminForm.jsx";
+import QuestionForm from "../components/crud/QuestionForm.jsx";
+import TestForm from "../components/crud/TestForm.jsx";
 
 const AppRoutes = () => {
     return (
@@ -68,16 +73,38 @@ const AppRoutes = () => {
 
 
                     <Route path="/crud/hub" element={<CrudLayout><CrudHubPage /></CrudLayout>} />
+
                     <Route path="/crud/answer" element={<CrudLayout><AnswersList /></CrudLayout>} />
+                    {/*<Route path="/crud/answer/new" element={<CrudLayout><AnswersForm /></CrudLayout>} />*/}
+                    {/*<Route path="/crud/answer/edit/:id" element={<CrudLayout><AnswersForm /></CrudLayout>} />*/}
+
+
                     <Route path="/crud/test" element={<CrudLayout><TestList /></CrudLayout>} />
+                    <Route path="/crud/test/new" element={<CrudLayout><TestForm /></CrudLayout>} />
+                    <Route path="/crud/test/edit/:id" element={<CrudLayout><TestForm /></CrudLayout>} />
+
+
                     <Route path="/crud/question" element={<CrudLayout><QuestionList /></CrudLayout>} />
+                    <Route path="/crud/question/new" element={<CrudLayout><QuestionForm /></CrudLayout>} />
+                    <Route path="/crud/question/edit/:id" element={<CrudLayout><QuestionForm /></CrudLayout>} />
+
+
                     <Route path="/crud/student-answer" element={<CrudLayout><StudentAnswersList /></CrudLayout>} />
                     <Route path="/crud/student-test" element={<CrudLayout><StudentTestList /></CrudLayout>} />
                     <Route path="/crud/test-question" element={<CrudLayout><TestQuestionList /></CrudLayout>} />
                     <Route path="/crud/user" element={<CrudLayout><UsersList /></CrudLayout>} />
                     <Route path="/crud/users/admin" element={<CrudLayout><AdminList /></CrudLayout>} />
+                    <Route path="/crud/users/admin/new" element={<CrudLayout><AdminForm /></CrudLayout>} />
+                    <Route path="/crud/users/admin/edit/:id" element={<CrudLayout><AdminForm /></CrudLayout>} />
+
+
                     <Route path="/crud/users/teacher" element={<CrudLayout><TeacherList /></CrudLayout>} />
+                    <Route path="/crud/users/teacher/new" element={<CrudLayout><TeacherForm /></CrudLayout>} />
+                    <Route path="/crud/users/teacher/edit/:id" element={<CrudLayout><TeacherForm /></CrudLayout>} />
+
                     <Route path="/crud/users/student" element={<CrudLayout><StudentList /></CrudLayout>} />
+                    <Route path="/crud/users/student/new" element={<CrudLayout><StudentForm /></CrudLayout>} />
+                    <Route path="/crud/users/student/edit/:id" element={<CrudLayout><StudentForm /></CrudLayout>} />
 
 
 

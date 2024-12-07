@@ -1,17 +1,18 @@
 package com.finki.mojtest.service;
 
 import com.finki.mojtest.model.Test;
+import com.finki.mojtest.model.dtos.TestDTO;
 
 import java.util.List;
 
 public interface TestService {
-    Test createTest(Test test);
+    Test createTest(TestDTO testDTO);
 
     Test getTestById(Long id);
 
     List<Test> getAllTests();
 
-    Test updateTest(Long id, Test updatedTest);
+    Test updateTest(Long id, TestDTO testDTO);
 
     void deleteTest(Long id);
 
@@ -19,3 +20,4 @@ public interface TestService {
 
     List<Test> getTestsByTitle(String title);
 }
+

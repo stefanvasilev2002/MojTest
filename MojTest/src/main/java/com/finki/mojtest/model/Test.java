@@ -1,5 +1,6 @@
 package com.finki.mojtest.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.finki.mojtest.model.users.Teacher;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -27,16 +28,20 @@ public class Test {
             joinColumns = @JoinColumn(name = "test_id"),
             inverseJoinColumns = @JoinColumn(name = "question_id")
     )
+    @JsonIgnore
     private List<Question> questionBank;
 
     @ManyToOne
     @JoinColumn(name = "creator_id")
+    @JsonIgnore
     private Teacher creator;
 
     @OneToMany(mappedBy = "test")
+    @JsonIgnore
     private List<TestQuestion> questions;
 
     @OneToMany(mappedBy = "test")
+    @JsonIgnore
     private List<StudentTest> studentTests;
 
     @ManyToMany
@@ -45,5 +50,6 @@ public class Test {
             joinColumns = @JoinColumn(name = "test_id"),
             inverseJoinColumns = @JoinColumn(name = "metadata_id")
     )
+    @JsonIgnore
     private List<Metadata> metadata;
 }

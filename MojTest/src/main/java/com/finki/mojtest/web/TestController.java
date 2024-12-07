@@ -1,12 +1,15 @@
 package com.finki.mojtest.web;
 
 import com.finki.mojtest.model.Test;
+import com.finki.mojtest.model.dtos.TestDTO;
+import com.finki.mojtest.model.mappers.TestMapper;
 import com.finki.mojtest.service.TestService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/tests")
@@ -20,30 +23,36 @@ public class TestController {
 
     // Create a new test
     @PostMapping
-    public ResponseEntity<Test> createTest(@RequestBody Test test) {
-        Test createdTest = testService.createTest(test);
-        return new ResponseEntity<>(createdTest, HttpStatus.CREATED);
+    public ResponseEntity<TestDTO> createTest(@RequestBody TestDTO testDTO) {
+        Test createdTest = testService.createTest(testDTO);  // Delegate to the service
+        TestDTO createdTestDTO = TestMapper.toDTO(createdTest); // Convert to TestDTO
+        return new ResponseEntity<>(createdTestDTO, HttpStatus.CREATED);
     }
 
     // Get test by ID
     @GetMapping("/{id}")
-    public ResponseEntity<Test> getTestById(@PathVariable Long id) {
+    public ResponseEntity<TestDTO> getTestById(@PathVariable Long id) {
         Test test = testService.getTestById(id);
-        return new ResponseEntity<>(test, HttpStatus.OK);
+        TestDTO testDTO = TestMapper.toDTO(test);  // Convert to TestDTO
+        return new ResponseEntity<>(testDTO, HttpStatus.OK);
     }
 
     // Get all tests
     @GetMapping
-    public ResponseEntity<List<Test>> getAllTests() {
+    public ResponseEntity<List<TestDTO>> getAllTests() {
         List<Test> tests = testService.getAllTests();
-        return new ResponseEntity<>(tests, HttpStatus.OK);
+        List<TestDTO> testDTOs = tests.stream()
+                .map(TestMapper::toDTO)
+                .collect(Collectors.toList());
+        return new ResponseEntity<>(testDTOs, HttpStatus.OK);
     }
 
     // Update an existing test
     @PutMapping("/{id}")
-    public ResponseEntity<Test> updateTest(@PathVariable Long id, @RequestBody Test updatedTest) {
-        Test test = testService.updateTest(id, updatedTest);
-        return new ResponseEntity<>(test, HttpStatus.OK);
+    public ResponseEntity<TestDTO> updateTest(@PathVariable Long id, @RequestBody TestDTO testDTO) {
+        Test updatedTest = testService.updateTest(id, testDTO); // Delegate to the service
+        TestDTO updatedTestDTO = TestMapper.toDTO(updatedTest);  // Convert to TestDTO
+        return new ResponseEntity<>(updatedTestDTO, HttpStatus.OK);
     }
 
     // Delete a test
@@ -55,15 +64,22 @@ public class TestController {
 
     // Get tests by teacher ID
     @GetMapping("/teacher/{teacherId}")
-    public ResponseEntity<List<Test>> getTestsByTeacherId(@PathVariable Long teacherId) {
+    public ResponseEntity<List<TestDTO>> getTestsByTeacherId(@PathVariable Long teacherId) {
         List<Test> tests = testService.getTestsByTeacherId(teacherId);
-        return new ResponseEntity<>(tests, HttpStatus.OK);
+        List<TestDTO> testDTOs = tests.stream()
+                .map(TestMapper::toDTO)
+                .collect(Collectors.toList());
+        return new ResponseEntity<>(testDTOs, HttpStatus.OK);
     }
 
     // Search tests by title
     @GetMapping("/search")
-    public ResponseEntity<List<Test>> searchTestsByTitle(@RequestParam String title) {
+    public ResponseEntity<List<TestDTO>> searchTestsByTitle(@RequestParam String title) {
         List<Test> tests = testService.getTestsByTitle(title);
-        return new ResponseEntity<>(tests, HttpStatus.OK);
+        List<TestDTO> testDTOs = tests.stream()
+                .map(TestMapper::toDTO)
+                .collect(Collectors.toList());
+        return new ResponseEntity<>(testDTOs, HttpStatus.OK);
     }
 }
+

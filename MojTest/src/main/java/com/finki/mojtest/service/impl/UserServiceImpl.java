@@ -1,6 +1,9 @@
 package com.finki.mojtest.service.impl;
 
 import com.finki.mojtest.model.exceptions.DuplicateFieldException;
+import com.finki.mojtest.model.users.Admin;
+import com.finki.mojtest.model.users.Student;
+import com.finki.mojtest.model.users.Teacher;
 import com.finki.mojtest.model.users.User;
 import com.finki.mojtest.repository.users.UserRepository;
 import com.finki.mojtest.service.UserService;
@@ -26,7 +29,13 @@ public class UserServiceImpl implements UserService {
         if (!userRepository.findByEmail(user.getEmail()).isEmpty()) {
             throw new DuplicateFieldException("Email already exists: " + user.getEmail());
         }
-
+        if (user instanceof Teacher) {
+            user.setRole("Teacher");
+        } else if (user instanceof Student) {
+            user.setRole("Student");
+        } else if (user instanceof Admin) {
+            user.setRole("Admin");
+        }
         return userRepository.save(user);
     }
 

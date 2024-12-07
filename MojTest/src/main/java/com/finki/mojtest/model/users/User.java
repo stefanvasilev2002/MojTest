@@ -24,4 +24,12 @@ public class User {
     private String email;
     private String fullName;
     private LocalDate registrationDate;
+
+    @Transient
+    private String role;  // Non-persistent field, used for internal purposes
+
+    @PostLoad
+    private void setRoleFromDiscriminator() {
+        this.role = this.getClass().getAnnotation(DiscriminatorValue.class).value();
+    }
 }

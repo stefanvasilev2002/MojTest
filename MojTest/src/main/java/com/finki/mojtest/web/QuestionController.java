@@ -16,39 +16,40 @@ import java.util.stream.Collectors;
 public class QuestionController {
 
     private final QuestionService questionService;
-    private final QuestionMapper questionMapper;
 
-    public QuestionController(QuestionService questionService, QuestionMapper questionMapper) {
+
+    public QuestionController(QuestionService questionService) {
         this.questionService = questionService;
-        this.questionMapper = questionMapper;
     }
 
     @PostMapping
     public ResponseEntity<QuestionDTO> createQuestion(@RequestBody QuestionDTO questionDTO) {
-        Question question = questionMapper.questionDTOToQuestion(questionDTO);
-        Question createdQuestion = questionService.createQuestion(question);
-        return new ResponseEntity<>(questionMapper.questionToQuestionDTO(createdQuestion), HttpStatus.CREATED);
+        Question createdQuestion = questionService.createQuestionByDTO(questionDTO);  // Delegate to the service
+        return new ResponseEntity<>(QuestionMapper.toDTO(createdQuestion), HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<QuestionDTO> getQuestionById(@PathVariable Long id) {
         Question question = questionService.getQuestionById(id);
-        return new ResponseEntity<>(questionMapper.questionToQuestionDTO(question), HttpStatus.OK);
+        return new ResponseEntity<>(QuestionMapper.toDTO(question), HttpStatus.OK);
     }
 
     @GetMapping
     public ResponseEntity<List<QuestionDTO>> getAllQuestions() {
         List<Question> questions = questionService.getAllQuestions();
         List<QuestionDTO> questionDTOs = questions.stream()
-                .map(questionMapper::questionToQuestionDTO)
+                .map(QuestionMapper::toDTO)
                 .collect(Collectors.toList());
         return new ResponseEntity<>(questionDTOs, HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<QuestionDTO> updateQuestion(@PathVariable Long id, @RequestBody QuestionDTO questionDTO) {
-        Question updatedQuestion = questionService.updateQuestion(id, questionMapper.questionDTOToQuestion(questionDTO));
-        return new ResponseEntity<>(questionMapper.questionToQuestionDTO(updatedQuestion), HttpStatus.OK);
+        // Call the service method to update the question
+        Question updatedQuestion = questionService.updateQuestion(id, questionDTO);
+
+        // Return the updated question as a DTO
+        return new ResponseEntity<>(QuestionMapper.toDTO(updatedQuestion), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
@@ -61,7 +62,7 @@ public class QuestionController {
     public ResponseEntity<List<QuestionDTO>> getQuestionsByTestId(@PathVariable Long testId) {
         List<Question> questions = questionService.getQuestionsByTestId(testId);
         List<QuestionDTO> questionDTOs = questions.stream()
-                .map(questionMapper::questionToQuestionDTO)
+                .map(QuestionMapper::toDTO)
                 .collect(Collectors.toList());
         return new ResponseEntity<>(questionDTOs, HttpStatus.OK);
     }

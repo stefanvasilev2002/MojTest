@@ -1,15 +1,12 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import useUsers from "../../hooks/crud/useUsers.js"; // Import your custom hook
+import useAdmin from "../../hooks/crud/useAdmin.js"; // Import the custom hook for admins
 import Alert from "../Alert.jsx"; // Import the Alert component
 import CrudActionTable from "../CrudActionTable.jsx"; // Import the reusable table
 
 const AdminList = () => {
-    const { items: usersList, loading, error, remove } = useUsers(); // Fetch users data and remove method
+    const { items: adminsList, loading, error, remove } = useAdmin(); // Fetch admins data and remove method
     const navigate = useNavigate();
-
-    // Filter users by Admin role
-    const filteredAdmins = usersList.filter(user => user.role === "Admin");
 
     // Handle delete action
     const handleDelete = async (id) => {
@@ -42,19 +39,19 @@ const AdminList = () => {
             >
                 Add Admin
             </button>
-            {filteredAdmins.length === 0 ? (
+            {adminsList.length === 0 ? (
                 <p>No admins found.</p>
             ) : (
                 <CrudActionTable
                     headers={["ID", "Username", "Email", "Full Name"]}
-                    rows={filteredAdmins.map((admin) => [
+                    rows={adminsList.map((admin) => [
                         admin.id,
                         admin.username,
                         admin.email,
                         admin.fullName,
                     ])}
-                    onEdit={(admin) => navigate(`/crud/users/admin/edit/${admin.id}`)}
-                    onDelete={(admin) => handleDelete(admin.id)}
+                    onEdit={(id) => navigate(`/crud/users/admin/edit/${id}`)}
+                    onDelete={(id) => handleDelete(id)}
                 />
             )}
         </div>
