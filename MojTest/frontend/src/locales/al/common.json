@@ -9,6 +9,18 @@
     "dashboard": "Paneli",
     "manageQuizzes": "Menaxho Kuizet"
   },
+  "loginPage": {
+    "title": "Hyni",
+    "username": "Emri i përdoruesit",
+    "password": "Fjalëkalimi",
+    "enterUsername": "Futni emrin tuaj të përdoruesit",
+    "enterPassword": "Futni fjalëkalimin tuaj",
+    "selectRole": "Zgjidhni rolin",
+    "roleTeacher": "Mësues",
+    "roleStudent": "Student",
+    "loggingIn": "Po hyni...",
+    "roleAdmin": "Administrator"
+  },
   "nav": {
     "forTeachers": "Për Mësuesit",
     "forStudents": "Për Studentët",
@@ -104,5 +116,20 @@
       "dramaArt": "Arti Dramatik",
       "comparativeLiterature": "Letërsia Krahasuese"
     }
+  },
+  "question": {
+    "type": "Lloji",
+    "description": "Përshkrimi",
+    "points": "Pikët",
+    "negativePoints": "Pikët negative",
+    "formula": "Formula",
+    "imageUrl": "URL i imazhit",
+    "hint": "Këshillë",
+    "tests": "Testet",
+    "metadata": "Metapodatat",
+    "answers": "Përgjigjet",
+    "creator": "Krijuesi",
+    "create": "Krijo Pyetje",
+    "edit": "Ndrysho Pyetje"
   }
 }

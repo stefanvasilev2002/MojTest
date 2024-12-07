@@ -3,7 +3,10 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import InputField from "../InputField.jsx";
 import SelectField from "../SelectField.jsx";
+import { useTranslation } from "react-i18next";
 const CrudForm = ({ entity, formConfigs, initialData = {}, onSubmit, relatedData }) => {
+    const { t } = useTranslation('common'); // Use the 'common' namespace for translations
+
     // Resolve the formConfig, including inherited fields
     const getFormConfig = (entityName) => {
         const config = formConfigs[entityName];
@@ -43,6 +46,9 @@ const CrudForm = ({ entity, formConfigs, initialData = {}, onSubmit, relatedData
     return (
         <form onSubmit={formik.handleSubmit} className="space-y-4">
             {formConfig.fields.map((field) => {
+                const translatedLabel = t(field.label) +": "; // Translate the label here
+
+
                 switch (field.type) {
                     case "text":
                     case "textarea":
@@ -56,7 +62,7 @@ const CrudForm = ({ entity, formConfigs, initialData = {}, onSubmit, relatedData
                                 key={field.name}
                                 id={field.name}
                                 name={field.name}
-                                label={field.label}
+                                label={translatedLabel}
                                 type={field.type}
                                 value={formik.values[field.name]}
                                 onChange={formik.handleChange}
@@ -78,7 +84,7 @@ const CrudForm = ({ entity, formConfigs, initialData = {}, onSubmit, relatedData
                                     className="form-checkbox"
                                 />
                                 <label htmlFor={field.name} className="text-sm">
-                                    {field.label}
+                                    {translatedLabel}
                                 </label>
                             </div>
                         );
@@ -97,7 +103,7 @@ const CrudForm = ({ entity, formConfigs, initialData = {}, onSubmit, relatedData
                                 key={field.name}
                                 id={field.name}
                                 name={field.name}
-                                label={field.label}
+                                label={translatedLabel}
                                 options={selectOptions}
                                 value={formik.values[field.name]} // Pass the current value
                                 onChange={(selectedOption) => {

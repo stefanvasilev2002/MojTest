@@ -55,7 +55,8 @@
     "selectRole": "Select Role",
     "roleTeacher": "Teacher",
     "roleStudent": "Student",
-    "loggingIn": "Logging in..."
+    "loggingIn": "Logging in...",
+    "roleAdmin": "Admin"
   },
   "subjects": {
     "elementary": {
@@ -112,6 +113,23 @@
       "dramaArt": "Drama Art",
       "comparativeLiterature": "Comparative Literature"
     }
+
+
+  },
+  "question": {
+    "type": "Type",
+    "description": "Description",
+    "points": "Points",
+    "negativePoints": "Negative Points",
+    "formula": "Formula",
+    "imageUrl": "Image URL",
+    "hint": "Hint",
+    "tests": "Tests",
+    "metadata": "Metadata",
+    "answers": "Answers",
+    "creator": "Creator",
+    "create": "Create Question",
+    "edit": "Edit Question"
   }
 
 }

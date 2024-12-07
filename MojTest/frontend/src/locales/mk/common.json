@@ -57,7 +57,8 @@
     "selectRole": "Изберете улога",
     "roleTeacher": "Наставник",
     "roleStudent": "Студент",
-    "loggingIn": "Најавувам..."
+    "loggingIn": "Најавувам...",
+    "roleAdmin": "Админ"
   },
   "subjects": {
     "elementary": {
@@ -114,6 +115,21 @@
       "dramaArt": "Драмска уметност",
       "comparativeLiterature": "Компаративна книжевност"
     }
+  },
+  "question": {
+    "type": "Тип",
+    "description": "Опис",
+    "points": "Поени",
+    "negativePoints": "Негативни поени",
+    "formula": "Формула",
+    "imageUrl": "URL на слика",
+    "hint": "Совет",
+    "tests": "Тестови",
+    "metadata": "Метаподатоци",
+    "answers": "Одговори",
+    "creator": "Креатор",
+    "create": "Создај Прашање",
+    "edit": "Измени Прашање"
   }
 
 }

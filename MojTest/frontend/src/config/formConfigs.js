@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 const formConfigs = {
     Answer: {
         fields: [
@@ -31,39 +32,40 @@ const formConfigs = {
     },
     Question: {
         fields: [
-            { name: "type", label: "Type", type: "text" },
-            { name: "description", label: "Description", type: "textarea" },
-            { name: "points", label: "Points", type: "number" },
-            { name: "negativePointsPerAnswer", label: "Negative Points", type: "number" },
-            { name: "formula", label: "Formula", type: "text" },
-            { name: "imageUrl", label: "Image URL", type: "text" },
-            { name: "hint", label: "Hint", type: "textarea" },
+            { name: "type", label: "question.type", type: "text" },
+            { name: "description", label: "question.description", type: "textarea" },
+            { name: "points", label: "question.points", type: "number" },
+            { name: "negativePointsPerAnswer", label: "question.negativePoints", type: "number" },
+            { name: "formula", label: "question.formula", type: "text" },
+            { name: "imageUrl", label: "question.imageUrl", type: "text" },
+            { name: "hint", label: "question.hint", type: "textarea" },
             {
                 name: "testIds", // Match with the DTO field
-                label: "Tests",
+                label: "question.tests", // Translation key
                 type: "multi-select",
                 relation: "Test",
             },
             {
                 name: "metadataIds", // Match with the DTO field
-                label: "Metadata",
+                label: "question.metadata", // Translation key
                 type: "multi-select",
                 relation: "Metadata",
             },
             {
                 name: "answerIds", // Match with the DTO field
-                label: "Answers",
+                label: "question.answers", // Translation key
                 type: "multi-select",
                 relation: "Answer",
             },
             {
                 name: "creatorId", // Match with the DTO field
-                label: "Creator",
+                label: "question.creator", // Translation key
                 type: "select",
                 relation: "Teacher",
             },
         ],
     },
+
     StudentAnswer: {
         fields: [
             { name: "submittedValue", label: "Submitted Value", type: "text" },

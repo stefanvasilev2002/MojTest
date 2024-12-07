@@ -8,8 +8,11 @@ import useAnswers from "../../hooks/crud/useAnswers"; // Custom hook for answer 
 import formConfigs from "../../config/formConfigs"; // Import form configurations
 import CrudForm from "./CrudForm.jsx"; // Reusable CrudForm component
 import Alert from "../Alert.jsx"; // Alert component for error messages
+import { useTranslation } from "react-i18next";
 
 const QuestionForm = () => {
+    const { t } = useTranslation('common'); // Use the 'common' namespace for translations
+
     const navigate = useNavigate();
     const { id } = useParams(); // Get question ID for edit mode
     const { create, update, fetchById, loading, error } = useQuestion();
@@ -109,8 +112,8 @@ const QuestionForm = () => {
 
     return (
         <div>
-            <h1>{id ? "Edit Question" : "Create Question"}</h1>
-            {error && <Alert message="An error occurred while loading data." type="error" />}
+            <h1>{id ? t('question.edit') : t('question.create')}</h1>
+            {error && <Alert message="An error occurred while loading data." type="error"/>}
 
             <CrudForm
                 entity="Question"

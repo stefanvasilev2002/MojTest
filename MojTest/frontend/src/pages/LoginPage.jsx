@@ -14,7 +14,13 @@ const LoginPage = () => {
     const handleSubmit = async () => {
         const { success } = await handleLogin(username, password, role);
         if (success) {
-            navigate(role === "teacher" ? "/teacher-dashboard" : "/student-dashboard");
+            if (role === "teacher") {
+                navigate("/teacher-dashboard");
+            } else if (role === "student") {
+                navigate("/student-dashboard");
+            } else if (role === "admin") {
+                navigate("/crud/hub"); // Redirect to admin hub
+            }
         }
     };
 
@@ -52,15 +58,21 @@ const LoginPage = () => {
                     <div className="flex gap-4">
                         <button
                             onClick={() => setRole("teacher")}
-                            className={`w-1/2 p-3 border rounded-lg ${role === "teacher" ? "bg-blue-500 text-white" : "bg-gray-200"}`}
+                            className={`w-1/3 p-3 border rounded-lg ${role === "teacher" ? "bg-blue-500 text-white" : "bg-gray-200"}`}
                         >
                             {t('loginPage.roleTeacher')}
                         </button>
                         <button
                             onClick={() => setRole("student")}
-                            className={`w-1/2 p-3 border rounded-lg ${role === "student" ? "bg-blue-500 text-white" : "bg-gray-200"}`}
+                            className={`w-1/3 p-3 border rounded-lg ${role === "student" ? "bg-blue-500 text-white" : "bg-gray-200"}`}
                         >
                             {t('loginPage.roleStudent')}
+                        </button>
+                        <button
+                            onClick={() => setRole("admin")}
+                            className={`w-1/3 p-3 border rounded-lg ${role === "admin" ? "bg-blue-500 text-white" : "bg-gray-200"}`}
+                        >
+                            {t('loginPage.roleAdmin')} {/* Translated Admin button */}
                         </button>
                     </div>
                 </div>
@@ -72,7 +84,7 @@ const LoginPage = () => {
                     disabled={loading}
                     className="w-full p-3 bg-blue-500 text-white rounded-lg"
                 >
-                    {loading ? t('loginPage.loggingIn') : t('loginPage.title')}
+                    {loading ? t('loginPage.loggingIn') : t('loginPage.login')}
                 </button>
             </div>
         </div>
