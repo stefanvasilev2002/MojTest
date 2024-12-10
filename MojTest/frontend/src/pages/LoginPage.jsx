@@ -14,13 +14,13 @@ const LoginPage = () => {
     const handleSubmit = async () => {
         const { success } = await handleLogin(username, password, role);
         if (success) {
-            if (role === "teacher") {
-                navigate("/teacher-dashboard");
-            } else if (role === "student") {
+            // if (role === "Teacher") {
+            //     navigate("/teacher-dashboard");
+            // } else if (role === "Student") {
                 navigate("/student-dashboard");
-            } else if (role === "admin") {
-                navigate("/crud/hub"); // Redirect to admin hub
-            }
+            // } else if (role === "admin") {
+            //     navigate("/crud/hub"); // Redirect to admin hub
+            // }
         }
     };
 

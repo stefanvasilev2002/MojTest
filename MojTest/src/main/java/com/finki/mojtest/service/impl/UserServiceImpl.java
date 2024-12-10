@@ -1,5 +1,6 @@
 package com.finki.mojtest.service.impl;
 
+import com.finki.mojtest.model.dtos.UserDTO;
 import com.finki.mojtest.model.exceptions.DuplicateFieldException;
 import com.finki.mojtest.model.users.Admin;
 import com.finki.mojtest.model.users.Student;
@@ -8,6 +9,7 @@ import com.finki.mojtest.model.users.User;
 import com.finki.mojtest.repository.users.UserRepository;
 import com.finki.mojtest.service.UserService;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,9 +17,27 @@ import java.util.List;
 @Service
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserServiceImpl(UserRepository userRepository) {
+
+    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
+
+    @Override
+    public User createUserAuth(UserDTO user) {
+        if (userRepository.findByUsername(user.getUsername()).isPresent()) {
+            throw new DuplicateFieldException("Username already exists: " + user.getUsername());
+        }
+
+        if (!userRepository.findByEmail(user.getEmail()).isEmpty()) {
+            throw new DuplicateFieldException("Email already exists: " + user.getEmail());
+        }
+        User newUser = new User(user.getUsername(),passwordEncoder.encode(user.getPassword()),
+                user.getEmail(),user.getFullName(),user.getRegistrationDate(),user.getRole());
+        newUser.setRole(user.getRole());
+        return userRepository.save(newUser);
     }
 
     @Override
@@ -29,13 +49,17 @@ public class UserServiceImpl implements UserService {
         if (!userRepository.findByEmail(user.getEmail()).isEmpty()) {
             throw new DuplicateFieldException("Email already exists: " + user.getEmail());
         }
-        if (user instanceof Teacher) {
+
+        if(user instanceof Teacher){
             user.setRole("Teacher");
-        } else if (user instanceof Student) {
+        }
+        if(user instanceof Student){
             user.setRole("Student");
-        } else if (user instanceof Admin) {
+        }
+        if (user instanceof Admin){
             user.setRole("Admin");
         }
+
         return userRepository.save(user);
     }
 
@@ -48,6 +72,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<User> getAllUsers() {
         return userRepository.findAll();
+    }
+
+    @Override
+    public User findByUsername(String username) {
+        return userRepository.findByUsername(username).get();
     }
 
     @Override

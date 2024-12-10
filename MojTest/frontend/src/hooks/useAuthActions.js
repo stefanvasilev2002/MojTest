@@ -1,6 +1,8 @@
 // src/hooks/useAuthActions.js
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
+import axios from "axios";
+import {jwtDecode} from 'jwt-decode'; // {jwtDecode} is the correct way to import this
 
 const useAuthActions = () => {
     const { login, logout } = useAuth();
@@ -13,10 +15,15 @@ const useAuthActions = () => {
         setError(null);
 
         try {
-            // Simulate login - normally you'd send a request to the backend here
-            const userData = { username, password };  // Mock data for now
-            login(userData, role);  // Save user and role to context and localStorage
-            setLoading(false);
+            const response = await axios.post("http://localhost:8081/api/auth/login", {
+                username,
+                password,
+            });
+
+            // Assuming the JWT token is in the response data
+            const token = response.data.jwtToken;
+            const decodedToken = jwtDecode (token);
+            login(decodedToken, decodedToken.roles)
             return { success: true };
         } catch (err) {
             setLoading(false);
@@ -31,11 +38,18 @@ const useAuthActions = () => {
         setError(null);
 
         try {
-            // Simulate registration - normally you'd send a request to the backend here
-            const userData = { username, password };  // Mock data for now
-            login(userData, role);  // Save user and role to context and localStorage
-            setLoading(false);
-            return { success: true };
+            const response = await axios.post("http://localhost:8081/api/auth/register", {
+                username,
+                password,
+                email: `${username}@example.com`, // Example email (update logic as needed)
+                fullName: username, // Use username as full name if not provided
+                registrationDate: new Date().toISOString().split("T")[0],
+                role,
+            });
+            const  token = response.data.jwtToken;
+            const decodedToken = jwtDecode (token);
+            login(decodedToken, decodedToken.roles)
+            return { success: true, data: response.data };
         } catch (err) {
             setLoading(false);
             setError("Failed to register.");

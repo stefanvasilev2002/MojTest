@@ -4,8 +4,14 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.time.LocalDate;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -14,7 +20,7 @@ import java.time.LocalDate;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "role")
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = "username"), name = "app_user")
-public class User {
+public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -23,6 +29,16 @@ public class User {
     private String password;
     private String email;
     private String fullName;
+
+    public User(String username, String password, String email, String fullName, LocalDate registrationDate, String role) {
+        this.username = username;
+        this.password = password;
+        this.email = email;
+        this.fullName = fullName;
+        this.registrationDate = registrationDate;
+        this.role = role;
+    }
+
     private LocalDate registrationDate;
 
     @Transient
@@ -31,5 +47,30 @@ public class User {
     @PostLoad
     private void setRoleFromDiscriminator() {
         this.role = this.getClass().getAnnotation(DiscriminatorValue.class).value();
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return Collections.singleton(new SimpleGrantedAuthority("ROLE_" + role));
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
     }
 }
