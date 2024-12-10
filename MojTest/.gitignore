@@ -12,7 +12,10 @@ target/
 .settings
 .springBeans
 .sts4-cache
-
+application.properties
+application-h2.properties
+application-mysql.properties
+application-postgres.properties
 ### IntelliJ IDEA ###
 .idea
 *.iws

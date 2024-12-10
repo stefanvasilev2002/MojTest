@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Data
@@ -21,5 +22,8 @@ public class Student extends User {
     @OneToMany(mappedBy = "student")
     private List<StudentTest> takenTests;
 
+    public Student(String username, String password, String email, String fullName, LocalDate registrationDate, String role) {
+        super(username, password, email, fullName, registrationDate, role);
+    }
 }
 

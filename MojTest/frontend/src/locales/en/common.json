@@ -47,7 +47,7 @@
   "teacherPageDescription": "Here's what we offer for teachers...",
   "teacherPageContent": "We provide tools, resources, and professional development opportunities to support teachers in their work.",
   "loginPage": {
-    "title": "Log In",
+    "title": "Login",
     "username": "Username",
     "password": "Password",
     "enterUsername": "Enter your username",
@@ -55,8 +55,15 @@
     "selectRole": "Select Role",
     "roleTeacher": "Teacher",
     "roleStudent": "Student",
+    "roleAdmin": "Admin",
+    "login": "Login",
     "loggingIn": "Logging in...",
-    "roleAdmin": "Admin"
+    "errors": {
+      "default": "Invalid username or password",
+      "INVALID_CREDENTIALS": "Invalid username or password",
+      "SERVER_ERROR": "Server error occurred",
+      "NETWORK_ERROR": "Network error occurred"
+    }
   },
   "subjects": {
     "elementary": {
@@ -130,6 +137,44 @@
     "creator": "Creator",
     "create": "Create Question",
     "edit": "Edit Question"
+  },
+  "registerPage": {
+    "title": "Register",
+    "username": "Username",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "email": "Email",
+    "fullName": "Full Name",
+    "selectRole": "Select Role",
+    "roleTeacher": "Teacher",
+    "roleStudent": "Student",
+    "register": "Register",
+    "registering": "Registering...",
+    "placeholders": {
+      "username": "Enter your username",
+      "password": "Enter your password",
+      "confirmPassword": "Confirm your password",
+      "email": "Enter your email",
+      "fullName": "Enter your full name"
+    },
+    "errors": {
+      "emailExists": "Email is already registered",
+      "usernameExists": "Username is already taken",
+      "registrationFailed": "Registration failed",
+      "networkError": "Could not connect to server",
+      "unknownError": "An unknown error occurred"
+    },
+    "validation": {
+      "usernameRequired": "Username is required",
+      "usernameTooShort": "Username must be at least 3 characters",
+      "passwordRequired": "Password is required",
+      "passwordTooShort": "Password must be at least 6 characters",
+      "confirmPasswordRequired": "Please confirm your password",
+      "passwordsDontMatch": "Passwords do not match",
+      "emailRequired": "Email is required",
+      "emailInvalid": "Please enter a valid email address",
+      "fullNameRequired": "Full name is required",
+      "roleRequired": "Please select a role"
+    }
   }
-
 }

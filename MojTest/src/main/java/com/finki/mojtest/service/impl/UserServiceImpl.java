@@ -6,6 +6,7 @@ import com.finki.mojtest.model.users.Admin;
 import com.finki.mojtest.model.users.Student;
 import com.finki.mojtest.model.users.Teacher;
 import com.finki.mojtest.model.users.User;
+import com.finki.mojtest.repository.users.StudentRepository;
 import com.finki.mojtest.repository.users.UserRepository;
 import com.finki.mojtest.service.UserService;
 import jakarta.persistence.EntityNotFoundException;
@@ -18,15 +19,17 @@ import java.util.List;
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final StudentRepository studentRepository;
 
 
-    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, StudentRepository studentRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.studentRepository = studentRepository;
     }
 
     @Override
-    public User createUserAuth(UserDTO user) {
+    public Student createUserAuth(UserDTO user) {
         if (userRepository.findByUsername(user.getUsername()).isPresent()) {
             throw new DuplicateFieldException("Username already exists: " + user.getUsername());
         }
@@ -34,10 +37,9 @@ public class UserServiceImpl implements UserService {
         if (!userRepository.findByEmail(user.getEmail()).isEmpty()) {
             throw new DuplicateFieldException("Email already exists: " + user.getEmail());
         }
-        User newUser = new User(user.getUsername(),passwordEncoder.encode(user.getPassword()),
+        Student newUser = new Student(user.getUsername(),passwordEncoder.encode(user.getPassword()),
                 user.getEmail(),user.getFullName(),user.getRegistrationDate(),user.getRole());
-        newUser.setRole(user.getRole());
-        return userRepository.save(newUser);
+        return studentRepository.save(newUser);
     }
 
     @Override

@@ -39,28 +39,22 @@
     "studentTest": "Teste të Studentëve",
     "testQuestion": "Pyetje të Testeve",
     "user": "Përdorues"
-
-
   },
   "debugPageTitle": "Faqja e Debug",
   "debugPageMessage": "Kjo faqe ju ndihmon të testoni përkthimet.",
   "currentLanguageDescription": "Albanian stuff",
-
   "landingPageTitle": "Mirësevini në Platformën Tonë",
   "landingPageDescription": "Zgjidhni rolin tuaj për të mësuar më shumë rreth asaj që ofrojmë",
   "studentCardTitle": "Për Studentët",
   "studentCardDescription": "Mësoni më shumë për mënyrat si i ndihmojmë studentët të kenë sukses",
   "teacherCardTitle": "Për Mësuesit",
   "teacherCardDescription": "Zbuloni mjetet që ofrojmë për të përmirësuar mësimdhënien",
-
   "studentPageTitle": "Për Studentët",
   "studentPageDescription": "Ja çfarë ofrojmë për studentët...",
   "studentPageContent": "Ne ofrojmë një gamë të gjerë burimesh për të ndihmuar studentët të arrijnë objektivat e tyre dhe të kenë sukses në mënyrë akademike.",
-
   "teacherPageTitle": "Për Mësuesit",
   "teacherPageDescription": "Ja çfarë ofrojmë për mësuesit...",
   "teacherPageContent": "Ne ofrojmë mjete, burime dhe mundësi zhvillimi profesional për të mbështetur mësuesit në punën e tyre.",
-
   "subjects": {
     "elementary": {
       "macedonianLanguage": "Gjuha Maqedonase",
@@ -131,5 +125,37 @@
     "creator": "Krijuesi",
     "create": "Krijo Pyetje",
     "edit": "Ndrysho Pyetje"
+  },
+  "registerPage": {
+  "title": "Regjistrohu",
+  "username": "Emri i përdoruesit",
+  "password": "Fjalëkalimi",
+  "confirmPassword": "Konfirmo fjalëkalimin",
+  "email": "Email",
+  "fullName": "Emri i plotë",
+  "selectRole": "Zgjidhni rolin",
+  "roleTeacher": "Mësues",
+  "roleStudent": "Student",
+  "register": "Regjistrohu",
+  "registering": "Duke u regjistruar...",
+  "placeholders": {
+    "username": "Shkruani emrin e përdoruesit",
+    "password": "Shkruani fjalëkalimin",
+    "confirmPassword": "Konfirmoni fjalëkalimin",
+    "email": "Shkruani emailin",
+    "fullName": "Shkruani emrin e plotë"
+  },
+  "validation": {
+    "usernameRequired": "Emri i përdoruesit është i detyrueshëm",
+    "usernameTooShort": "Emri i përdoruesit duhet të ketë të paktën 3 karaktere",
+    "passwordRequired": "Fjalëkalimi është i detyrueshëm",
+    "passwordTooShort": "Fjalëkalimi duhet të ketë të paktën 6 karaktere",
+    "confirmPasswordRequired": "Ju lutem konfirmoni fjalëkalimin",
+    "passwordsDontMatch": "Fjalëkalimet nuk përputhen",
+    "emailRequired": "Emaili është i detyrueshëm",
+    "emailInvalid": "Ju lutem shkruani një email të vlefshëm",
+    "fullNameRequired": "Emri i plotë është i detyrueshëm",
+    "roleRequired": "Ju lutem zgjidhni një rol"
   }
+}
 }

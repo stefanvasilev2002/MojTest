@@ -1,5 +1,6 @@
 package com.finki.mojtest.model.users;
 
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -18,7 +19,7 @@ import java.util.List;
 @NoArgsConstructor
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name = "role")
+@DiscriminatorColumn(name = "dtype", discriminatorType = DiscriminatorType.STRING)
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = "username"), name = "app_user")
 public class User implements UserDetails {
     @Id
@@ -40,9 +41,9 @@ public class User implements UserDetails {
     }
 
     private LocalDate registrationDate;
-
     @Transient
-    private String role;  // Non-persistent field, used for internal purposes
+    @Nullable
+    private String role;
 
     @PostLoad
     private void setRoleFromDiscriminator() {

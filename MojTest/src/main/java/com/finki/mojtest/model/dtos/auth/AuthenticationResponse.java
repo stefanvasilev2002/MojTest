@@ -1,14 +1,11 @@
 package com.finki.mojtest.model.dtos.auth;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+
+@Data
+@AllArgsConstructor
 public class AuthenticationResponse {
-
-    private final String jwtToken;
-
-    public AuthenticationResponse(String jwtToken) {
-        this.jwtToken = jwtToken;
-    }
-
-    public String getJwtToken() {
-        return jwtToken;
-    }
+    private String token;
+    private String role;
 }

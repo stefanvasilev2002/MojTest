@@ -130,6 +130,37 @@
     "creator": "Креатор",
     "create": "Создај Прашање",
     "edit": "Измени Прашање"
+  },
+  "registerPage": {
+    "title": "Регистрација",
+    "username": "Корисничко име",
+    "password": "Лозинка",
+    "confirmPassword": "Потврди лозинка",
+    "email": "Е-пошта",
+    "fullName": "Целосно име",
+    "selectRole": "Изберете улога",
+    "roleTeacher": "Наставник",
+    "roleStudent": "Ученик",
+    "register": "Регистрирај се",
+    "registering": "Регистрација во тек...",
+    "placeholders": {
+      "username": "Внесете корисничко име",
+      "password": "Внесете лозинка",
+      "confirmPassword": "Потврдете ја лозинката",
+      "email": "Внесете е-пошта",
+      "fullName": "Внесете целосно име"
+    },
+    "validation": {
+      "usernameRequired": "Корисничкото име е задолжително",
+      "usernameTooShort": "Корисничкото име мора да има најмалку 3 карактери",
+      "passwordRequired": "Лозинката е задолжителна",
+      "passwordTooShort": "Лозинката мора да има најмалку 6 карактери",
+      "confirmPasswordRequired": "Ве молиме потврдете ја лозинката",
+      "passwordsDontMatch": "Лозинките не се совпаѓаат",
+      "emailRequired": "Е-поштата е задолжителна",
+      "emailInvalid": "Ве молиме внесете валидна е-пошта",
+      "fullNameRequired": "Целосното име е задолжително",
+      "roleRequired": "Ве молиме изберете улога"
+    }
   }
-
 }

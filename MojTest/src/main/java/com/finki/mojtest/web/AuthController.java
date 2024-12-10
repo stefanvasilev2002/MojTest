@@ -3,6 +3,7 @@ package com.finki.mojtest.web;
 import com.finki.mojtest.model.dtos.UserDTO;
 import com.finki.mojtest.model.dtos.auth.AuthenticationRequest;
 import com.finki.mojtest.model.dtos.auth.AuthenticationResponse;
+import com.finki.mojtest.model.exceptions.DuplicateFieldException;
 import com.finki.mojtest.model.users.User;
 import com.finki.mojtest.service.UserService;
 import com.finki.mojtest.util.JwtUtil;
@@ -18,6 +19,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 
+import java.util.Map;
+
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/auth")
@@ -27,44 +30,66 @@ public class AuthController {
     private final JwtUtil jwtUtil;
     private final UserService userService;
 
-
-
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody UserDTO user) {
         try {
-            userService.createUserAuth(user);
+            // Validate input
+            if (user.getUsername() == null || user.getPassword() == null || user.getRole() == null) {
+                return ResponseEntity
+                        .status(HttpStatus.BAD_REQUEST)
+                        .body(Map.of("message", "Missing required fields"));
+            }
 
-            // Authenticate the user
+            User newUser = userService.createUserAuth(user);
+
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword())
             );
 
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-
             String jwt = getJwt(userDetails);
 
-            // Return the JWT token as part of the registration response
-            return ResponseEntity.ok(new AuthenticationResponse(jwt));
+            return ResponseEntity.ok(new AuthenticationResponse(jwt, user.getRole().toLowerCase()));
+
+        } catch (DuplicateFieldException e) {
+            // Return specific error message for duplicate fields
+            return ResponseEntity
+                    .status(HttpStatus.CONFLICT)
+                    .body(Map.of("message", e.getMessage()));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Registration failed");
+            String errorMessage = "Registration failed";
+            if (e.getMessage() != null && !e.getMessage().isEmpty()) {
+                errorMessage += ": " + e.getMessage();
+            }
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("message", errorMessage));
         }
     }
 
-
     @PostMapping("/login")
-    public ResponseEntity<?> createAuthenticationToken(@RequestBody AuthenticationRequest authenticationRequest) throws Exception {
+    public ResponseEntity<?> login(@RequestBody AuthenticationRequest request) {
         try {
             Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(authenticationRequest.getUsername(), authenticationRequest.getPassword())
+                    new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
             );
 
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-
             String jwt = getJwt(userDetails);
 
-            return ResponseEntity.ok(new AuthenticationResponse(jwt));
+            User user = userService.findByUsername(request.getUsername());
+            String role = user.getRole().toLowerCase();
+
+            return ResponseEntity.ok(new AuthenticationResponse(jwt, role));
+
         } catch (BadCredentialsException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid email or password");
+            return ResponseEntity
+                    .status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("message", "Invalid username or password"));
+        } catch (Exception e) {
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("message", "Login failed: " + e.getMessage()));
         }
     }
 
