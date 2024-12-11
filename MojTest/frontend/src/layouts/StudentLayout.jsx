@@ -8,6 +8,8 @@ import { Outlet } from 'react-router-dom';
 const StudentLayout = () => {
     const { user } = useAuth();  // Get the user state from AuthContext
 
+    console.log("Student layout loaded")
+
     return (
         <div>
             {/* Conditionally render NavBar based on user authentication */}

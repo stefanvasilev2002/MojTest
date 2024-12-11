@@ -58,7 +58,8 @@
     "roleTeacher": "Наставник",
     "roleStudent": "Студент",
     "loggingIn": "Најавувам...",
-    "roleAdmin": "Админ"
+    "roleAdmin": "Админ",
+    "login": "Најава"
   },
   "subjects": {
     "elementary": {
@@ -162,5 +163,29 @@
       "fullNameRequired": "Целосното име е задолжително",
       "roleRequired": "Ве молиме изберете улога"
     }
+  },
+  "crudHub": {
+    "title": "CRUD Центар",
+    "metadata": "Metadata",
+    "answer": "Одговори",
+    "test": "Тестови",
+    "question": "Питања",
+    "studentAnswer": "Студентски Одговори",
+    "studentTest": "Студентски Тестови",
+    "testQuestion": "Питања од Тестови",
+    "user": "Корисници"
+  },
+  "adminList": {
+    "title": "Администратори",
+    "loading": "Тековно вчитување на администраторите...",
+    "errorMessage": "Имаше проблем при вчитување на администраторите.",
+    "deleteConfirmation": "Дали сте сигурни дека сакате да го избришете овој администратор?",
+    "addAdmin": "Додади Администратор",
+    "noAdminsFound": "Не се најдени администратори.",
+    "id": "ID",
+    "username": "Корисничко име",
+    "email": "Email",
+    "fullName": "Целосно име"
   }
+
 }

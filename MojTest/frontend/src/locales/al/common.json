@@ -19,7 +19,8 @@
     "roleTeacher": "Mësues",
     "roleStudent": "Student",
     "loggingIn": "Po hyni...",
-    "roleAdmin": "Administrator"
+    "roleAdmin": "Administrator",
+    "login": "Identifikimi"
   },
   "nav": {
     "forTeachers": "Për Mësuesit",
@@ -157,5 +158,28 @@
     "fullNameRequired": "Emri i plotë është i detyrueshëm",
     "roleRequired": "Ju lutem zgjidhni një rol"
   }
-}
+  },
+  "crudHub": {
+    "title": "CRUD Qendra",
+    "metadata": "Metadata",
+    "answer": "Përgjigje",
+    "test": "Teste",
+    "question": "Pyetje",
+    "studentAnswer": "Përgjigjet e Studentëve",
+    "studentTest": "Testet e Studentëve",
+    "testQuestion": "Pyetjet nga Testet",
+    "user": "Përdoruesit"
+  },
+  "adminList": {
+    "title": "Administratorë",
+    "loading": "Duke ngarkuar administratorët...",
+    "errorMessage": "Pati një problem gjatë ngarkimit të administratorëve.",
+    "deleteConfirmation": "A jeni të sigurt që dëshironi ta fshini këtë administrator?",
+    "addAdmin": "Shto Administrator",
+    "noAdminsFound": "Nuk u gjetën administratorë.",
+    "id": "ID",
+    "username": "Emri i përdoruesit",
+    "email": "Email",
+    "fullName": "Emri i plotë"
+  }
 }

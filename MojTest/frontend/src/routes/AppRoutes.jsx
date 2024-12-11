@@ -9,7 +9,7 @@ import AboutTeacherPage from '../pages/AboutTeacherPage';  // Your AboutTeacherP
 import AboutStudentPage from '../pages/AboutStudentPage';  // Your AboutStudentPage
 import TeacherDashboard from '../pages/TeacherDashboard';  // Your TeacherDashboard
 import StudentDashboard from '../pages/StudentDashboard';  // Your StudentDashboard
-import DebugPage from '../pages/DebugPage';
+// import DebugPage from '../pages/DebugPage';
 import LoginPage from "../pages/LoginPage.jsx";
 import RegisterPage from "../pages/RegisterPage.jsx";
 import TeacherLayout from "../layouts/TeacherLayout.jsx";
@@ -21,9 +21,9 @@ import MetadataList from "../components/crud/MetadataList.jsx";
 import AnswersList from "../components/crud/AnswersList.jsx";
 import TestList from "../components/crud/TestList.jsx";
 import QuestionList from "../components/crud/QuestionList.jsx";
-import StudentAnswersList from "../components/crud/StudentAnswersList.jsx";
-import StudentTestList from "../components/crud/StudentTestList.jsx";
-import TestQuestionList from "../components/crud/TestQuestionList.jsx";
+// import StudentAnswersList from "../components/crud/StudentAnswersList.jsx";
+// import StudentTestList from "../components/crud/StudentTestList.jsx";
+// import TestQuestionList from "../components/crud/TestQuestionList.jsx";
 import UsersList from "../components/crud/UsersList.jsx";
 import StudentList from "../components/crud/StudentList.jsx";
 import TeacherList from "../components/crud/TeacherList.jsx";
@@ -49,21 +49,22 @@ const AppRoutes = () => {
 
                     {/* Teacher Routes */}
                     <Route path="/teacher-dashboard" element={
-                        <PrivateRoute requiredRole="teacher">
-                            <TeacherLayout>
-                                <TeacherDashboard />
-                            </TeacherLayout>
+                        <PrivateRoute requiredRole={["teacher", "admin"]}>
+                            <TeacherLayout />  {/* Renders the layout */}
                         </PrivateRoute>
-                    } />
+                    }>
+                        <Route path="/teacher-dashboard" element={<TeacherDashboard />} />  {/* Teacher dashboard as a child route */}
+                    </Route>
+
 
                     {/* Student Routes */}
                     <Route path="/student-dashboard" element={
-                        <PrivateRoute requiredRole="student">
-                            <StudentLayout>
-                                <StudentDashboard />
-                            </StudentLayout>
+                        <PrivateRoute requiredRole={["student", "admin"]}>
+                            <StudentLayout />  {/* Renders the layout */}
                         </PrivateRoute>
-                    } />
+                    }>
+                        <Route path="/student-dashboard" element={<StudentDashboard />} />  {/* Student dashboard as a child route */}
+                    </Route>
 
                     {/* Admin Routes */}
                     <Route path="/crud/hub" element={

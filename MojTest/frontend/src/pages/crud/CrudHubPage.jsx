@@ -1,5 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";  // Import useTranslation hook
 
 // icons import:
 import { HiOutlineDocumentText } from "react-icons/hi"; // Metadata
@@ -11,22 +12,23 @@ import { IoMdLink } from "react-icons/io"; // TestQuestion
 import { FiUser } from "react-icons/fi"; // User
 
 const entities = [
-    { name: "Metadata", route: "/crud/metadata", icon: HiOutlineDocumentText },
-    { name: "Answer", route: "/crud/answer", icon: MdQuestionAnswer },
-    { name: "Test", route: "/crud/test", icon: BiTestTube },
-    { name: "Question", route: "/crud/question", icon: RiQuestionnaireLine },
-    { name: "StudentAnswer", route: "/crud/student-answer", icon: FaUserGraduate },
-    { name: "StudentTest", route: "/crud/student-test", icon: FaUserGraduate },
-    { name: "TestQuestion", route: "/crud/test-question", icon: IoMdLink },
-    { name: "User", route: "/crud/user", icon: FiUser },
+    { name: "metadata", route: "/crud/metadata", icon: HiOutlineDocumentText },
+    { name: "answer", route: "/crud/answer", icon: MdQuestionAnswer },
+    { name: "test", route: "/crud/test", icon: BiTestTube },
+    { name: "question", route: "/crud/question", icon: RiQuestionnaireLine },
+    { name: "studentAnswer", route: "/crud/student-answer", icon: FaUserGraduate },
+    { name: "studentTest", route: "/crud/student-test", icon: FaUserGraduate },
+    { name: "testQuestion", route: "/crud/test-question", icon: IoMdLink },
+    { name: "user", route: "/crud/user", icon: FiUser },
 ];
 
 const CrudHubPage = () => {
     const navigate = useNavigate();
+    const { t } = useTranslation('common');  // Hook for translation
 
     return (
         <div className="min-h-screen bg-gray-100 p-8">
-            <h1 className="text-3xl font-bold text-center mb-8">CRUD Hub</h1>
+            <h1 className="text-3xl font-bold text-center mb-8">{t('crudHub.title')}</h1> {/* Use translation for title */}
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                 {entities.map((entity) => (
                     <div
@@ -35,12 +37,13 @@ const CrudHubPage = () => {
                         className="cursor-pointer bg-white shadow-md rounded-lg p-6 flex flex-col items-center justify-center hover:shadow-lg transition-transform transform hover:scale-105"
                     >
                         <entity.icon className="text-4xl text-gray-600 mb-4" />
-                        <div className="text-xl font-semibold">{entity.name}</div>
+                        <div className="text-xl font-semibold">{t(`crudHub.${entity.name}`)}</div> {/* Translate entity names */}
                     </div>
                 ))}
             </div>
         </div>
     );
 };
+
 
 export default CrudHubPage;
