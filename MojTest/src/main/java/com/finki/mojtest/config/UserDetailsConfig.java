@@ -18,7 +18,7 @@ public class UserDetailsConfig {
                 .map(user -> new org.springframework.security.core.userdetails.User(
                         user.getUsername(),
                         user.getPassword(),
-                        List.of(new SimpleGrantedAuthority(user.getRole())) // Ensure correct authorities
+                        List.of(new SimpleGrantedAuthority(user.getDtype())) // Ensure correct authorities
                 ))
                 .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
     }

@@ -31,28 +31,29 @@ public class User implements UserDetails {
     private String email;
     private String fullName;
 
-    public User(String username, String password, String email, String fullName, LocalDate registrationDate, String role) {
+    public User(String username, String password, String email, String fullName, LocalDate registrationDate) {
         this.username = username;
         this.password = password;
         this.email = email;
         this.fullName = fullName;
         this.registrationDate = registrationDate;
-        this.role = role;
     }
 
     private LocalDate registrationDate;
-    @Transient
-    @Nullable
-    private String role;
 
+    @Transient
+    private String dtype;
+
+    @PrePersist
     @PostLoad
-    private void setRoleFromDiscriminator() {
-        this.role = this.getClass().getAnnotation(DiscriminatorValue.class).value();
+    private void loadDiscriminatorValue() {
+        this.dtype = ((DiscriminatorValue) this.getClass()
+                .getAnnotation(DiscriminatorValue.class)).value();
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.singleton(new SimpleGrantedAuthority("ROLE_" + role));
+        return Collections.singleton(new SimpleGrantedAuthority("ROLE_" + dtype));
     }
 
     @Override

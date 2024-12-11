@@ -14,6 +14,8 @@ const useAuthActions = () => {
 
             if (response.success) {
                 setError(null);
+                console.log(response.data)
+                console.log(response.data.roles)
                 contextLogin(response.data.token, response.data.role);
                 return {
                     success: true,

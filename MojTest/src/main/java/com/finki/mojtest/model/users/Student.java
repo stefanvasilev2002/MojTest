@@ -22,8 +22,8 @@ public class Student extends User {
     @OneToMany(mappedBy = "student")
     private List<StudentTest> takenTests;
 
-    public Student(String username, String password, String email, String fullName, LocalDate registrationDate, String role) {
-        super(username, password, email, fullName, registrationDate, role);
+    public Student(String username, String password, String email, String fullName, LocalDate registrationDate) {
+        super(username, password, email, fullName, registrationDate);
     }
 }
 

@@ -20,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @RestController
@@ -41,7 +42,7 @@ public class AuthController {
             }
 
             User newUser = userService.createUserAuth(user);
-
+            newUser = userService.getUserById(newUser.getId());
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword())
             );
@@ -49,7 +50,7 @@ public class AuthController {
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
             String jwt = getJwt(userDetails);
 
-            return ResponseEntity.ok(new AuthenticationResponse(jwt, user.getRole().toLowerCase()));
+            return ResponseEntity.ok(new AuthenticationResponse(jwt, newUser.getDtype().toLowerCase()));
 
         } catch (DuplicateFieldException e) {
             // Return specific error message for duplicate fields
@@ -78,9 +79,9 @@ public class AuthController {
             String jwt = getJwt(userDetails);
 
             User user = userService.findByUsername(request.getUsername());
-            String role = user.getRole().toLowerCase();
+            String role = user.getDtype();
 
-            return ResponseEntity.ok(new AuthenticationResponse(jwt, role));
+            return ResponseEntity.ok(new AuthenticationResponse(jwt, role.toLowerCase()));
 
         } catch (BadCredentialsException e) {
             return ResponseEntity

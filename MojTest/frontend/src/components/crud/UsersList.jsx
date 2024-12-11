@@ -5,8 +5,14 @@ import Alert from "../Alert.jsx"; // Import the Alert component
 import CrudActionTable from "../CrudActionTable.jsx"; // Import the reusable table
 
 const UsersList = () => {
-    const { items: usersList, loading, error } = useUsers();  // Fetch users data
+    const { items: usersList, loading, error, remove } = useUsers();  // Fetch users data
     const navigate = useNavigate();
+
+    const handleDelete = async (id) => {
+        if (window.confirm("Are you sure you want to delete this user?")) {
+            await remove(id); // Call the remove method from your hook (you might need to adjust it)
+        }
+    };
 
     // Graceful loading UI
     if (loading) {
@@ -72,9 +78,9 @@ const UsersList = () => {
                         user.fullName,
                         user.role,
                     ])}
-                    onEdit={(user) => navigate(`/crud/users/edit/${user.id}`)}
+                    onEdit={(id) => navigate(`/crud/users/edit/${id}`)}
                     // For delete action you might want to integrate the remove logic like in the other lists
-                    onDelete={(user) => handleDelete(user.id)}
+                    onDelete={(id) => handleDelete(id)}
                 />
             )}
         </div>
@@ -82,10 +88,6 @@ const UsersList = () => {
 };
 
 // Optional: Assuming handleDelete function is similar to the others
-const handleDelete = async (id) => {
-    if (window.confirm("Are you sure you want to delete this user?")) {
-        await remove(id); // Call the remove method from your hook (you might need to adjust it)
-    }
-};
+
 
 export default UsersList;

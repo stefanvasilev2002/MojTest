@@ -5,7 +5,8 @@ import { useAuth } from '../context/AuthContext';
 const PrivateRoute = ({ children, requiredRole }) => {
     const { user, role } = useAuth();
     const location = useLocation();
-
+    console.log(user);
+    console.log(role)
     // If user is not authenticated, redirect to login
     if (!user) {
         return <Navigate to="/login" replace state={{ from: location }} />;
@@ -25,10 +26,10 @@ const PrivateRoute = ({ children, requiredRole }) => {
         // Get appropriate redirect path
         let redirectPath;
         switch(role?.toLowerCase()) {
-            case 'admin':
+            case 'Admin':
                 redirectPath = '/crud/hub';
                 break;
-            case 'teacher':
+            case 'Teacher':
                 redirectPath = '/teacher-dashboard';
                 break;
             case 'student':

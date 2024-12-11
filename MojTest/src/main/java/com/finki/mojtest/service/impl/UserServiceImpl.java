@@ -38,7 +38,7 @@ public class UserServiceImpl implements UserService {
             throw new DuplicateFieldException("Email already exists: " + user.getEmail());
         }
         Student newUser = new Student(user.getUsername(),passwordEncoder.encode(user.getPassword()),
-                user.getEmail(),user.getFullName(),user.getRegistrationDate(),user.getRole());
+                user.getEmail(),user.getFullName(),user.getRegistrationDate());
         return studentRepository.save(newUser);
     }
 
@@ -53,13 +53,13 @@ public class UserServiceImpl implements UserService {
         }
 
         if(user instanceof Teacher){
-            user.setRole("Teacher");
+            user.setDtype("Teacher");
         }
         if(user instanceof Student){
-            user.setRole("Student");
+            user.setDtype("Student");
         }
         if (user instanceof Admin){
-            user.setRole("Admin");
+            user.setDtype("Admin");
         }
 
         return userRepository.save(user);
