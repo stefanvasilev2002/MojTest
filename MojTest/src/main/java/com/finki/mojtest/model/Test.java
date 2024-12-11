@@ -21,7 +21,7 @@ public class Test {
     private String title;
     private String description;
     private int numQuestions;
-
+    private int timeLimit = 60;
     @ManyToMany
     @JoinTable(
             name = "test_question_bank",

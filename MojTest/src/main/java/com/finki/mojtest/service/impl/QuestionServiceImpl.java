@@ -1,25 +1,18 @@
 package com.finki.mojtest.service.impl;
 
 import com.finki.mojtest.model.Answer;
-import com.finki.mojtest.model.Metadata;
 import com.finki.mojtest.model.Question;
-import com.finki.mojtest.model.Test;
 import com.finki.mojtest.model.dtos.QuestionDTO;
 import com.finki.mojtest.model.mappers.QuestionMapper;
-import com.finki.mojtest.model.users.Teacher;
 import com.finki.mojtest.repository.AnswerRepository;
-import com.finki.mojtest.repository.MetadataRepository;
 import com.finki.mojtest.repository.QuestionRepository;
-import com.finki.mojtest.repository.TestRepository;
-import com.finki.mojtest.repository.users.TeacherRepository;
 import com.finki.mojtest.service.QuestionService;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -27,9 +20,6 @@ public class QuestionServiceImpl implements QuestionService {
 
     private final QuestionRepository questionRepository;
     private final AnswerRepository answerRepository;
-    private final TeacherRepository teacherRepository;
-    private final MetadataRepository metadataRepository;
-    private final TestRepository testRepository;
 
     @Override
     public Question createQuestion(Question question) {
@@ -38,32 +28,29 @@ public class QuestionServiceImpl implements QuestionService {
 
     @Override
     public Question createQuestionByDTO(QuestionDTO questionDTO) {
-        // First, map the QuestionDTO to a Question entity (this doesn't include relationships)
-        Question question = QuestionMapper.fromDTO(questionDTO, null,null, null, null); // No relationships mapped yet
+        Question question = QuestionMapper.fromDTO(questionDTO);
 
-        // Resolve the creator (Teacher) from the creatorId
-        Teacher creator = teacherRepository.findById(questionDTO.getCreatorId())
-                .orElseThrow(() -> new EntityNotFoundException("Teacher not found"));
+        // Save the Question first to get an ID
+        question = questionRepository.save(question);
 
-        // Resolve the metadata entities using metadataIds (handle null or empty list)
-        List<Metadata> metadataList = (questionDTO.getMetadataIds() != null && !questionDTO.getMetadataIds().isEmpty()) ?
-                metadataRepository.findAllById(questionDTO.getMetadataIds()) :
-                Collections.emptyList();  // If null or empty, use an empty list
+        // Create and save the answers if they exist
+        if (questionDTO.getAnswers() != null && !questionDTO.getAnswers().isEmpty()) {
+            Question finalQuestion = question;
+            List<Answer> answers = questionDTO.getAnswers().stream()
+                    .map(answerDTO -> {
+                        Answer answer = new Answer();
+                        answer.setAnswerText(answerDTO.getAnswerText());
+                        answer.setQuestion(finalQuestion);
+                        return answer;
+                    })
+                    .collect(Collectors.toList());
 
-        // Resolve the test entities using testIds (handle null or empty list)
-        List<Test> testList = (questionDTO.getTestIds() != null && !questionDTO.getTestIds().isEmpty()) ?
-                testRepository.findAllById(questionDTO.getTestIds()) :
-                Collections.emptyList();  // If null or empty, use an empty list
+            answers = answerRepository.saveAll(answers);
+            question.setAnswers(answers);
+        }
 
-        // Set the resolved relationships on the Question entity
-        question.setCreator(creator); // Set the Teacher (creator) to the Question
-        question.setMetadata(metadataList); // Set the Metadata to the Question
-        question.setTests(testList); // Set the Tests to the Question
-
-        // Save the Question to the repository
-        return questionRepository.save(question);
+        return question;
     }
-
 
     @Override
     public Question getQuestionById(Long id) {
@@ -77,46 +64,44 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
+    @Transactional
     public Question updateQuestion(Long id, QuestionDTO questionDTO) {
-        // Fetch the existing question
         Question existingQuestion = getQuestionById(id);
 
-        // Resolve related entities
-        Teacher creator = teacherRepository.findById(questionDTO.getCreatorId())
-                .orElseThrow(() -> new EntityNotFoundException("Teacher not found"));
+        // Update basic fields
+        existingQuestion.setDescription(questionDTO.getDescription());
 
-        List<Test> tests = (questionDTO.getTestIds() != null && !questionDTO.getTestIds().isEmpty()) ?
-                testRepository.findAllById(questionDTO.getTestIds()) :
-                Collections.emptyList();
+        // Update answers if they exist
+        if (questionDTO.getAnswers() != null) {
+            // Remove old answers
+            answerRepository.deleteAll(existingQuestion.getAnswers());
 
-        List<Metadata> metadata = (questionDTO.getMetadataIds() != null && !questionDTO.getMetadataIds().isEmpty()) ?
-                metadataRepository.findAllById(questionDTO.getMetadataIds()) :
-                Collections.emptyList();
+            // Create new answers
+            List<Answer> newAnswers = questionDTO.getAnswers().stream()
+                    .map(answerDTO -> {
+                        Answer answer = new Answer();
+                        answer.setAnswerText(answerDTO.getAnswerText());
+                        answer.setQuestion(existingQuestion);
+                        return answer;
+                    })
+                    .collect(Collectors.toList());
 
-        // Use the mapper to update the existing entity
-        QuestionMapper.updateFromDTO(existingQuestion, questionDTO, creator, tests, metadata);
+            existingQuestion.setAnswers(answerRepository.saveAll(newAnswers));
+        }
 
-        // Save and return the updated entity
         return questionRepository.save(existingQuestion);
     }
 
-
-    @Transactional
     @Override
+    @Transactional
     public void deleteQuestion(Long id) {
         Question question = getQuestionById(id);
 
-        // Remove the question from the tests' question bank (Many-to-Many relationship)
-        for (Test test : question.getTests()) {
-            test.getQuestionBank().remove(question);
-        }
+        // Delete associated answers
+        answerRepository.deleteAll(question.getAnswers());
 
-        // Delete all answers associated with the question
-        List<Answer> answers = question.getAnswers();
-        answerRepository.deleteAll(answers);
-
-        // Finally, delete the question
-        questionRepository.deleteById(id);
+        // Delete the question
+        questionRepository.delete(question);
     }
 
     @Override

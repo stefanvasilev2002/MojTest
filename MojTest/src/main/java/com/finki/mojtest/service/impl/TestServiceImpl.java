@@ -3,15 +3,23 @@ package com.finki.mojtest.service.impl;
 import com.finki.mojtest.model.*;
 import com.finki.mojtest.model.dtos.TestDTO;
 import com.finki.mojtest.model.mappers.TestMapper;
+import com.finki.mojtest.model.users.Student;
 import com.finki.mojtest.model.users.Teacher;
+import com.finki.mojtest.model.users.User;
 import com.finki.mojtest.repository.*;
+import com.finki.mojtest.repository.users.StudentRepository;
 import com.finki.mojtest.repository.users.TeacherRepository;
+import com.finki.mojtest.repository.users.UserRepository;
 import com.finki.mojtest.service.TestService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -24,6 +32,9 @@ public class TestServiceImpl implements TestService {
     private final MetadataRepository metadataRepository;
     private final StudentTestRepository studentTestRepository;
     private final TestQuestionRepository testQuestionRepository;
+    private final StudentRepository studentRepository;
+    private final StudentAnswerRepository studentAnswerRepository;
+    private final UserRepository userRepository;
 
     @Override
     public Test createTest(TestDTO testDTO) {
@@ -112,6 +123,67 @@ public class TestServiceImpl implements TestService {
     @Override
     public List<Test> getTestsByTitle(String title) {
         return testRepository.findByTitleContaining(title);
+    }
+
+    @Override
+    @Transactional
+    public StudentTest startTest(Long testId, Long userId) {
+        // 1. Get the test
+        Test test = getTestById(testId);
+
+        // 2. Get the user and verify it's a Student
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+
+        if (!"Student".equalsIgnoreCase(user.getDtype()) && !"Admin".equalsIgnoreCase(user.getDtype())) {
+            throw new IllegalStateException("Only students can take tests. User role: " + user.getDtype());
+        }
+
+        Student student = (Student) user;  // Cast to Student after verifying the type
+
+        // 3. Get all questions from the test's question bank
+        List<Question> allQuestions = new ArrayList<>(test.getQuestionBank());
+
+        // 4. Randomly select numQuestions questions
+        Collections.shuffle(allQuestions);
+        List<Question> selectedQuestions = allQuestions.subList(
+                0,
+                Math.min(test.getNumQuestions(), allQuestions.size())
+        );
+
+        // 5. Create a new StudentTest
+        StudentTest studentTest = new StudentTest();
+        studentTest.setTest(test);
+        studentTest.setStudent(student);
+        studentTest.setScore(0);
+        studentTest.setDateTaken(LocalDate.now());
+        studentTest.setTimeTaken(LocalTime.now());
+
+        // Save the StudentTest to get an ID
+        studentTest = studentTestRepository.save(studentTest);
+
+        // 6. Create TestQuestions and StudentAnswers for each selected question
+        List<StudentAnswer> studentAnswers = new ArrayList<>();
+
+        for (Question question : selectedQuestions) {
+            // Create TestQuestion
+            TestQuestion testQuestion = new TestQuestion();
+            testQuestion.setTest(test);
+            testQuestion.setQuestion(question);
+            testQuestion = testQuestionRepository.save(testQuestion);
+
+            // Create empty StudentAnswer
+            StudentAnswer studentAnswer = new StudentAnswer();
+            studentAnswer.setStudentTest(studentTest);
+            studentAnswer.setTestQuestion(testQuestion);
+            studentAnswer = studentAnswerRepository.save(studentAnswer);
+
+            studentAnswers.add(studentAnswer);
+        }
+
+        // 7. Set the answers and save the final StudentTest
+        studentTest.setAnswers(studentAnswers);
+        return studentTestRepository.save(studentTest);
     }
 }
 

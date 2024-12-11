@@ -2,11 +2,13 @@ package com.finki.mojtest.web;
 
 import com.finki.mojtest.model.StudentAnswer;
 import com.finki.mojtest.service.StudentAnswerService;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/student-answers")
@@ -18,6 +20,27 @@ public class StudentAnswerController {
         this.studentAnswerService = studentAnswerService;
     }
 
+    @PutMapping("/{id}/choose-answer")
+    public ResponseEntity<StudentAnswer> chooseAnswer(
+            @PathVariable Long id,
+            @RequestBody Map<String, Long> request
+    ) {
+        try {
+            Long chosenAnswerId = request.get("chosenAnswerId");
+            if (chosenAnswerId == null) {
+                return ResponseEntity.badRequest().build();
+            }
+
+            StudentAnswer updatedAnswer = studentAnswerService.chooseAnswer(id, chosenAnswerId);
+            return ResponseEntity.ok(updatedAnswer);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
     // Create a new StudentAnswer
     @PostMapping
     public ResponseEntity<StudentAnswer> createStudentAnswer(@RequestBody StudentAnswer studentAnswer) {
