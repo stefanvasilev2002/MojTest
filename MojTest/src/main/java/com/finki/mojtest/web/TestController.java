@@ -52,7 +52,7 @@ public class TestController {
             questionDTO.setDescription(question.getDescription());
             questionDTO.setPoints(question.getPoints());
             questionDTO.setStudentAnswerId(studentAnswer.getId());
-
+            questionDTO.setQuestionType(question.getType().toString());
             // Get all possible answers for this question
             List<AnswerViewDTO> answers = question.getAnswers().stream()
                     .map(answer -> {

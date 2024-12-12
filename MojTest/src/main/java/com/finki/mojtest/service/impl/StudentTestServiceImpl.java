@@ -1,6 +1,9 @@
 package com.finki.mojtest.service.impl;
 
-import com.finki.mojtest.model.*;
+import com.finki.mojtest.model.Answer;
+import com.finki.mojtest.model.Question;
+import com.finki.mojtest.model.StudentAnswer;
+import com.finki.mojtest.model.StudentTest;
 import com.finki.mojtest.model.dtos.*;
 import com.finki.mojtest.repository.AnswerRepository;
 import com.finki.mojtest.repository.QuestionRepository;
@@ -8,7 +11,6 @@ import com.finki.mojtest.repository.StudentAnswerRepository;
 import com.finki.mojtest.repository.StudentTestRepository;
 import com.finki.mojtest.service.StudentTestService;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -160,46 +162,53 @@ public class StudentTestServiceImpl implements StudentTestService {
         List<AnswerFeedbackDTO> answerFeedbackList = new ArrayList<>();
 
         // Map of the answers submitted by the student, keyed by the question ID
-        Map<Long, AnswerSubmissionDTO> answerMap = answers.stream()
-                .collect(Collectors.toMap(AnswerSubmissionDTO::getQuestionId, answer -> answer));
+        Map<Long, List<AnswerSubmissionDTO>> answerMap = answers.stream()
+                .collect(Collectors.groupingBy(AnswerSubmissionDTO::getQuestionId));
 
         // Calculate the score by iterating through the test's answers
         int totalScore = 0;
         int maxScore = 0;
 
-        for (AnswerSubmissionDTO dto : answers) {
-            Long questionId = dto.getQuestionId();
-            AnswerSubmissionDTO submittedAnswer = answerMap.get(questionId);
+        for (Map.Entry<Long, List<AnswerSubmissionDTO>> entry : answerMap.entrySet()) {
+            Long questionId = entry.getKey();
+            List<AnswerSubmissionDTO> submittedAnswers = entry.getValue();
+            Question question = questionRepository.findById(questionId).get(); // Retrieve the question
 
-            // Check if the student provided an answer for this question
-            Question question = questionRepository.findById(questionId).get();
+            // Track correctness of multiple answers for the same question
+            List<String> correctAnswerTexts = new ArrayList<>();
+            List<String> submittedAnswerTexts = new ArrayList<>();
+            boolean isCorrect = true;
 
-            if (submittedAnswer != null) {
-                boolean isCorrect = question.getAnswers().stream()
-                        .anyMatch(x-> Objects.equals(x.getId(), dto.getAnswerId()) && x.isCorrect());
+            for (AnswerSubmissionDTO dto : submittedAnswers) {
+                // Evaluate each submitted answer
+                Answer answer = answerRepository.findById(dto.getAnswerId()).get();
+                boolean answerIsCorrect = question.getAnswers().stream()
+                        .anyMatch(x -> Objects.equals(x.getId(), dto.getAnswerId()) && x.isCorrect());
 
-                // Calculate score for this question (positive or negative score)
+                if (answerIsCorrect) {
+                    correctAnswerTexts.add(answer.getAnswerText());
+                }
+                submittedAnswerTexts.add(answer.getAnswerText());
+
+                // Update the score
                 int questionScore = question.getPoints();
-                if (isCorrect) {
+                if (answerIsCorrect) {
                     totalScore += questionScore;
                 } else {
                     totalScore -= question.getNegativePointsPerAnswer();
+                    isCorrect = false; // If any answer is wrong, the whole submission is incorrect
                 }
-
-                // Add feedback for this answer
-                AnswerFeedbackDTO answerFeedbackDTO = new AnswerFeedbackDTO();
-                answerFeedbackDTO.setQuestionId(questionId);
-                answerFeedbackDTO.setCorrectAnswer(isCorrect);
-                answerFeedbackDTO.setSubmittedAnswerId(submittedAnswer.getAnswerId());
-                answerFeedbackDTO.setQuestionText(question.getDescription());
-                answerFeedbackDTO.setCorrectAnswerText(question.getAnswers().stream().
-                        filter(Answer::isCorrect).toList().getFirst().getAnswerText());
-                Answer answer = answerRepository.findById(dto.getAnswerId()).get();
-                answerFeedbackDTO.setSubmittedAnswerText((answer.getAnswerText()));
-
-                answerFeedbackList.add(answerFeedbackDTO);
             }
 
+            // Prepare the feedback DTO for this question
+            AnswerFeedbackDTO answerFeedbackDTO = new AnswerFeedbackDTO();
+            answerFeedbackDTO.setQuestionId(questionId);
+            answerFeedbackDTO.setCorrectAnswer(isCorrect);  // The overall correctness of the question
+            answerFeedbackDTO.setQuestionText(question.getDescription());
+            answerFeedbackDTO.setCorrectAnswerText(Collections.singletonList(String.join(", ", correctAnswerTexts)));
+            answerFeedbackDTO.setSubmittedAnswerText(Collections.singletonList(String.join(", ", submittedAnswerTexts)));
+
+            answerFeedbackList.add(answerFeedbackDTO);
             maxScore += question.getPoints(); // Track maximum score
         }
 

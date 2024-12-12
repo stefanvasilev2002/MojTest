@@ -10,6 +10,7 @@ public class TestQuestionViewDTO {
     private Long testQuestionId;
     private String description;
     private Integer points;
+    private String questionType;
     private List<AnswerViewDTO> possibleAnswers;
     private Long studentAnswerId; // ID of the StudentAnswer record for this question
 }

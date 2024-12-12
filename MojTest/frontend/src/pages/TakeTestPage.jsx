@@ -1,11 +1,14 @@
-import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate, useLocation } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import React, {useEffect, useState} from 'react';
+import {useLocation, useNavigate, useParams} from 'react-router-dom';
+import {useAuth} from '../context/AuthContext';
+import RadioAnswer from "../components/answers/RadioAnswer.jsx";
+import MultipleChoiceAnswer from "../components/answers/MultipleChoiceAnswer.jsx";
+import NumericAnswer from "../components/answers/NumericAnswer.jsx";
 
 const TakeTestPage = () => {
-    const { studentTestId } = useParams();
-    const { state: initialState } = useLocation();
-    const { user } = useAuth();
+    const {studentTestId} = useParams();
+    const {state: initialState} = useLocation();
+    const {user} = useAuth();
     const navigate = useNavigate();
     console.log("TakeTestPage mounted1"); // Add this log
 
@@ -62,15 +65,32 @@ const TakeTestPage = () => {
     };
 
     const handleAnswerChange = (questionId, answerId) => {
-        setAnswers({ ...answers, [questionId]: answerId });
+        setAnswers({...answers, [questionId]: answerId});
     };
+    const handleCheckBoxChange = (questionId, answerId) => {
+        const currentAnswers = Array.isArray(answers[questionId]) ? answers[questionId] : [];
+        const isSelected = currentAnswers.includes(answerId);
+
+        setAnswers({
+            ...answers,
+            [questionId]: isSelected
+                ? currentAnswers.filter(id => id !== answerId) // Remove answer
+                : [...currentAnswers, answerId],              // Add answer
+        });
+    };
+
 
     const handleSubmitTest = async () => {
         try {
-            const answersToSend = Object.entries(answers).map(([questionId, answerId]) => ({
-                questionId: parseInt(questionId),
-                answerId,
-            }));
+            const answersToSend = Object.entries(answers).flatMap(([questionId, answerIds]) => {
+                // Ensure answerIds is always an array
+                const ids = Array.isArray(answerIds) ? answerIds : [answerIds];
+
+                return ids.map(answerId => ({
+                    questionId: parseInt(questionId),  // Ensure questionId is a number
+                    answerId: parseInt(answerId),      // Ensure answerId is a number
+                }));
+            });
             console.log(answersToSend)
             const response = await fetch(`http://localhost:8080/api/student-tests/${studentTestId}/submit`, {
                 method: 'POST',
@@ -88,7 +108,7 @@ const TakeTestPage = () => {
             const feedback = await response.json();
             console.log('Test feedback:', feedback);
 
-            navigate('/test-results', { state: feedback });
+            navigate('/test-results', {state: feedback});
         } catch (err) {
             console.error('Error submitting test:', err);
             alert('Failed to submit test: ' + err.message);
@@ -129,22 +149,28 @@ const TakeTestPage = () => {
                             </h2>
                             <p className="text-gray-500 mb-4">Points: {question.points}</p>
                             <div className="space-y-2">
-                                {question.possibleAnswers.map(answer => (
-                                    <label
-                                        key={answer.id}
-                                        className="block text-gray-700 hover:bg-gray-100 cursor-pointer p-2 rounded transition"
-                                    >
-                                        <input
-                                            type="radio"
-                                            name={`question-${question.questionId}`}
-                                            value={answer.id}
-                                            className="mr-2"
-                                            checked={answers[question.questionId] === answer.id}
-                                            onChange={() => handleAnswerChange(question.questionId, answer.id)}
-                                        />
-                                        {answer.answerText}
-                                    </label>
-                                ))}
+                                {question.questionType === 'TRUE_FALSE' && (
+                                    <RadioAnswer
+                                        question={question}
+                                        questionId={question.questionId}
+                                        correctAnswer={answers[question.questionId]}
+                                        onAnswerChange={handleAnswerChange}/>
+                                )}
+                                {question.questionType === 'MULTIPLE_CHOICE' && (
+                                    <MultipleChoiceAnswer
+                                        question={question}
+                                        questionId={question.questionId}
+                                        selectedAnswers={answers[question.questionId]|| []}
+                                        onAnswerChange={handleCheckBoxChange}
+                                    />
+                                )}
+                                {question.questionType === 'NUMERIC' && (
+                                    <NumericAnswer
+                                        question={question}
+                                        questionId={question.questionId}
+                                        correctAnswer={answers[question.questionId]}
+                                        onAnswerChange={handleAnswerChange}/>
+                                )}
                             </div>
                         </div>
                     ))}

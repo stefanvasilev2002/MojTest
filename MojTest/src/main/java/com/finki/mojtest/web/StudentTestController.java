@@ -24,6 +24,7 @@ public class StudentTestController {
 
     @PostMapping("/{id}/submit")
     public ResponseEntity<TestFeedbackDTO> submitTest(@PathVariable Long id, @RequestBody List<AnswerSubmissionDTO> answers) {
+        System.out.println("Submitting test for " + answers.size());
         try {
             TestFeedbackDTO feedback = studentTestService.evaluateTest(id, answers);
             return ResponseEntity.ok(feedback);
