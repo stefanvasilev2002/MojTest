@@ -10,11 +10,6 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AnswerDTO {
-
     private Long id;
     private String answerText;
-    private boolean isCorrect;
-    private Long questionId; // Mapping to Question's ID
-    private List<Long> studentAnswerIds; // Mapping to list of StudentAnswer IDs
 }
-

@@ -1,6 +1,5 @@
 package com.finki.mojtest.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.finki.mojtest.model.enumerations.QuestionType;
 import com.finki.mojtest.model.users.Teacher;
@@ -47,7 +46,6 @@ public class Question {
 
     @OneToMany(mappedBy = "question")
     @JsonIgnore  // Prevents recursion when serializing Answer
-
     private List<Answer> answers;
 
     @ManyToOne

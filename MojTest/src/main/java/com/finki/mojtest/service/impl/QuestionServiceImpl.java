@@ -16,6 +16,8 @@ import org.springframework.stereotype.Service;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -45,16 +47,24 @@ public class QuestionServiceImpl implements QuestionService {
         Teacher creator = teacherRepository.findById(questionDTO.getCreatorId())
                 .orElseThrow(() -> new EntityNotFoundException("Teacher not found"));
 
-        // Resolve the metadata entities using metadataIds (handle null or empty list)
-        List<Metadata> metadataList = (questionDTO.getMetadataIds() != null && !questionDTO.getMetadataIds().isEmpty()) ?
-                metadataRepository.findAllById(questionDTO.getMetadataIds()) :
-                Collections.emptyList();  // If null or empty, use an empty list
+        // Save the Question first to get an ID
+        question = questionRepository.save(question);
 
-        // Resolve the test entities using testIds (handle null or empty list)
-        List<Test> testList = (questionDTO.getTestIds() != null && !questionDTO.getTestIds().isEmpty()) ?
-                testRepository.findAllById(questionDTO.getTestIds()) :
-                Collections.emptyList();  // If null or empty, use an empty list
+        // Create and save the answers if they exist
+        if (questionDTO.getAnswers() != null && !questionDTO.getAnswers().isEmpty()) {
+            Question finalQuestion = question;
+            List<Answer> answers = questionDTO.getAnswers().stream()
+                    .map(answerDTO -> {
+                        Answer answer = new Answer();
+                        answer.setAnswerText(answerDTO.getAnswerText());
+                        answer.setQuestion(finalQuestion);
+                        return answer;
+                    })
+                    .collect(Collectors.toList());
+            answers = answerRepository.saveAll(answers);
+            question.setAnswers(answers);
 
+        }
         // Set the resolved relationships on the Question entity
         question.setCreator(creator); // Set the Teacher (creator) to the Question
         question.setMetadata(metadataList); // Set the Metadata to the Question
@@ -66,7 +76,6 @@ public class QuestionServiceImpl implements QuestionService {
             image.setRelatedEntityId(question.getId());
             fileRepository.save(image);
         }
-
 
         return question;
     }
@@ -84,8 +93,8 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
+    @Transactional
     public Question updateQuestion(Long id, QuestionDTO questionDTO) {
-        // Fetch the existing question
         Question existingQuestion = getQuestionById(id);
 
         // Resolve related entities
@@ -101,8 +110,25 @@ public class QuestionServiceImpl implements QuestionService {
                 Collections.emptyList();
 
         // Use the mapper to update the existing entity
-        QuestionMapper.updateFromDTO(existingQuestion, questionDTO, creator, tests, metadata, new Date());
+        QuestionMapper.updateFromDTO(existingQuestion, questionDTO, creator, tests, metadata);
+        existingQuestion.setDescription(questionDTO.getDescription());
 
+        if (questionDTO.getAnswers() != null) {
+            // Remove old answers
+            answerRepository.deleteAll(existingQuestion.getAnswers());
+
+            // Create new answers
+            List<Answer> newAnswers = questionDTO.getAnswers().stream()
+                    .map(answerDTO -> {
+                        Answer answer = new Answer();
+                        answer.setAnswerText(answerDTO.getAnswerText());
+                        answer.setQuestion(existingQuestion);
+                        return answer;
+                    })
+                    .collect(Collectors.toList());
+
+            existingQuestion.setAnswers(answerRepository.saveAll(newAnswers));
+        }
         // Save and return the updated entity
         return questionRepository.save(existingQuestion);
     }
@@ -113,17 +139,11 @@ public class QuestionServiceImpl implements QuestionService {
     public void deleteQuestion(Long id) {
         Question question = getQuestionById(id);
 
-        // Remove the question from the tests' question bank (Many-to-Many relationship)
-        for (Test test : question.getTests()) {
-            test.getQuestionBank().remove(question);
-        }
+        // Delete associated answers
+        answerRepository.deleteAll(question.getAnswers());
 
-        // Delete all answers associated with the question
-        List<Answer> answers = question.getAnswers();
-        answerRepository.deleteAll(answers);
-
-        // Finally, delete the question
-        questionRepository.deleteById(id);
+        // Delete the question
+        questionRepository.delete(question);
     }
 
     @Override

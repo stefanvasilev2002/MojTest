@@ -1,5 +1,6 @@
 package com.finki.mojtest.service;
 
+import com.finki.mojtest.model.StudentTest;
 import com.finki.mojtest.model.Test;
 import com.finki.mojtest.model.dtos.TestDTO;
 
@@ -19,5 +20,7 @@ public interface TestService {
     List<Test> getTestsByTeacherId(Long teacherId);
 
     List<Test> getTestsByTitle(String title);
+
+    StudentTest startTest(Long testId, Long studentId);
 }
 

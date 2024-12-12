@@ -8,17 +8,19 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-public class StudentTestDTO {
+import lombok.Data;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
 
+@Data
+public class StudentTestDTO {
     private Long id;
     private int score;
     private LocalDate dateTaken;
     private LocalTime timeTaken;
-    private Long studentId;  // Mapping to Student's ID
-    private Long testId;     // Mapping to Test's ID
-    private List<Long> studentAnswerIds;  // List of StudentAnswer IDs associated with this StudentTest
+    private Long studentId;
+    private Long testId;
+    private List<StudentAnswerDTO> answers;
 }
 

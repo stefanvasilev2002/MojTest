@@ -1,12 +1,13 @@
 package com.finki.mojtest.model.mappers;
 
-import com.finki.mojtest.model.Question;
-import com.finki.mojtest.model.Test;
 import com.finki.mojtest.model.Metadata;
+import com.finki.mojtest.model.Question;
 import com.finki.mojtest.model.Answer;
+import com.finki.mojtest.model.Test;
 import com.finki.mojtest.model.dtos.QuestionDTO;
 import com.finki.mojtest.model.enumerations.QuestionType;
 import com.finki.mojtest.model.users.Teacher;
+import com.finki.mojtest.model.dtos.AnswerDTO;
 
 import java.util.Collections;
 import java.util.Date;
@@ -29,7 +30,19 @@ public class QuestionMapper {
         dto.setHint(question.getHint());
         dto.setCreatorId(question.getCreator() != null ? question.getCreator().getId() : null);
 
-        // Map related entities (using helper methods with null checks)
+        // Map answers to AnswerDTO
+        List<AnswerDTO> answerDTOs = question.getAnswers() != null ?
+                question.getAnswers().stream()
+                        .map(answer -> {
+                            AnswerDTO answerDTO = new AnswerDTO();
+                            answerDTO.setId(answer.getId());
+                            answerDTO.setAnswerText(answer.getAnswerText());
+                            return answerDTO;
+                        })
+                        .collect(Collectors.toList()) :
+                Collections.emptyList();
+
+        dto.setAnswers(answerDTOs);
         dto.setTestIds(question.getTests() != null ?
                 question.getTests().stream().map(Test::getId).collect(Collectors.toList()) :
                 Collections.emptyList());
@@ -42,6 +55,7 @@ public class QuestionMapper {
                 question.getAnswers().stream().map(Answer::getId).collect(Collectors.toList()) :
                 Collections.emptyList());
 
+        dto.setAnswers(answerDTOs);
         return dto;
     }
 
@@ -64,9 +78,11 @@ public class QuestionMapper {
         question.setMetadata(metadata != null ? metadata : Collections.emptyList());
         question.setAnswers(answers != null ? answers : Collections.emptyList());
 
+        question.setDescription(dto.getDescription());
+
         return question;
     }
-    public static void updateFromDTO(Question existingQuestion, QuestionDTO dto, Teacher creator, List<Test> tests, List<Metadata> metadata, Date uploadedAt) {
+    public static Question updateFromDTO(Question existingQuestion, QuestionDTO dto, Teacher creator, List<Test> tests, List<Metadata> metadata, Date uploadedAt) {
         if (existingQuestion == null || dto == null) return;
 
         // Update simple fields
@@ -88,5 +104,7 @@ public class QuestionMapper {
         existingQuestion.setCreator(creator);  // Update creator
         existingQuestion.setTests(tests != null ? tests : Collections.emptyList());
         existingQuestion.setMetadata(metadata != null ? metadata : Collections.emptyList());
+        existingQuestion.setDescription(dto.getDescription());
+        return existingQuestion;
     }
 }

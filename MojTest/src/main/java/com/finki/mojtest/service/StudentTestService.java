@@ -1,6 +1,9 @@
 package com.finki.mojtest.service;
 
 import com.finki.mojtest.model.StudentTest;
+import com.finki.mojtest.model.dtos.AnswerSubmissionDTO;
+import com.finki.mojtest.model.dtos.TestFeedbackDTO;
+import com.finki.mojtest.model.dtos.TestTakingDTO;
 
 import java.util.List;
 
@@ -14,4 +17,8 @@ public interface StudentTestService {
     List<StudentTest> getStudentTestsByStudentId(Long studentId);
 
     List<StudentTest> getStudentTestsByTestId(Long testId);
+    TestTakingDTO getStudentTestWithQuestionsAndAnswers(Long studentTestId);
+    StudentTest submitTest(Long studentTestId);
+
+    TestFeedbackDTO evaluateTest(Long id, List<AnswerSubmissionDTO> answers);
 }

@@ -1,12 +1,28 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import * as jwt_decode from 'jwt-decode';
 
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(() => {
         const storedToken = localStorage.getItem('token');
-        return storedToken ? storedToken : null;
+        if (storedToken) {
+            try {
+                const decodedToken = jwt_decode.jwtDecode(storedToken);
+                return {
+                    id: decodedToken.userId, // Changed from sub to userId
+                    username: decodedToken.sub,
+                    token: storedToken
+                };
+            } catch (error) {
+                localStorage.removeItem('token');
+                localStorage.removeItem('role');
+                return null;
+            }
+        }
+        return null;
     });
+
     const [role, setRole] = useState(() => {
         return localStorage.getItem('role') || null;
     });
@@ -17,10 +33,20 @@ export const AuthProvider = ({ children }) => {
     }, []);
 
     const login = (token, userRole) => {
-        localStorage.setItem('token', token);
-        localStorage.setItem('role', userRole);
-        setUser(token);
-        setRole(userRole);
+        try {
+            const decodedToken = jwt_decode.jwtDecode(token);
+            localStorage.setItem('token', token);
+            localStorage.setItem('role', userRole);
+            setUser({
+                id: decodedToken.userId, // Changed from sub to userId
+                username: decodedToken.sub,
+                token: token
+            });
+            setRole(userRole);
+        } catch (error) {
+            console.error('Error decoding token:', error);
+            logout();
+        }
     };
 
     const logout = () => {
@@ -31,7 +57,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     if (!isInitialized) {
-        return null; // or a loading spinner
+        return null;
     }
 
     return (

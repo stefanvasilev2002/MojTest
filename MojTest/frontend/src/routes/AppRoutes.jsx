@@ -35,6 +35,8 @@ import AdminForm from "../components/crud/AdminForm.jsx";
 import QuestionForm from "../components/crud/QuestionForm.jsx";
 import TestForm from "../components/crud/TestForm.jsx";
 import QuestionDetails from "../components/crud/QuestionDetails.jsx";
+import TakeTestPage from "../pages/TakeTestPage.jsx";
+import TestResultsPage from "../pages/TestResultsPage.jsx";
 
 const AppRoutes = () => {
     return (
@@ -70,6 +72,21 @@ const AppRoutes = () => {
                     }>
                         <Route path="/student-dashboard" element={<StudentDashboard />} />  {/* Student dashboard as a child route */}
                     </Route>
+
+                    <Route path="/take-test/:studentTestId" element={
+                            <PrivateRoute requiredRole={["student", "admin"]}>
+                                <StudentLayout/>
+                            </PrivateRoute>
+                        }>
+                        <Route path="/take-test/:studentTestId" element={<TakeTestPage/>}/></Route>
+
+                    <Route path="/test-results" element={
+                        <PrivateRoute requiredRole={["student", "admin"]}>
+                            <StudentLayout/>
+                        </PrivateRoute>
+                    }>
+                        <Route path="/test-results" element={<TestResultsPage/>}/></Route>
+
 
                     {/* Admin Routes */}
                     <Route path="/crud/hub" element={

@@ -12,4 +12,6 @@ public interface StudentAnswerService {
     void deleteStudentAnswer(Long id);
     List<StudentAnswer> getStudentAnswersByStudentId(Long studentId);
     List<StudentAnswer> getStudentAnswersByQuestionId(Long questionId);
+
+    StudentAnswer chooseAnswer(Long studentAnswerId, Long chosenAnswerId);
 }

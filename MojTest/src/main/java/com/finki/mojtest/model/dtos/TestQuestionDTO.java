@@ -10,10 +10,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class TestQuestionDTO {
-
     private Long id;
-    private Long testId;      // Mapping to Test's ID
-    private Long questionId;  // Mapping to Question's ID
-    private List<Long> studentAnswerIds;  // List of StudentAnswer IDs associated with this TestQuestion
+    private QuestionDTO question;
 }
 

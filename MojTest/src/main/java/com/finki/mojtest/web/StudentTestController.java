@@ -1,7 +1,11 @@
 package com.finki.mojtest.web;
 
 import com.finki.mojtest.model.StudentTest;
+import com.finki.mojtest.model.dtos.AnswerSubmissionDTO;
+import com.finki.mojtest.model.dtos.TestFeedbackDTO;
+import com.finki.mojtest.model.dtos.TestTakingDTO;
 import com.finki.mojtest.service.StudentTestService;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,13 +22,47 @@ public class StudentTestController {
         this.studentTestService = studentTestService;
     }
 
+    @PostMapping("/{id}/submit")
+    public ResponseEntity<TestFeedbackDTO> submitTest(@PathVariable Long id, @RequestBody List<AnswerSubmissionDTO> answers) {
+        try {
+            TestFeedbackDTO feedback = studentTestService.evaluateTest(id, answers);
+            return ResponseEntity.ok(feedback);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
     // Create a new StudentTest
     @PostMapping
     public ResponseEntity<StudentTest> createStudentTest(@RequestBody StudentTest studentTest) {
         StudentTest createdStudentTest = studentTestService.createStudentTest(studentTest);
         return new ResponseEntity<>(createdStudentTest, HttpStatus.CREATED);
     }
+    /*@PostMapping("/{id}/submit")
+    public ResponseEntity<StudentTest> submitTest(@PathVariable Long id) {
+        try {
+            StudentTest submittedTest = studentTestService.submitTest(id);
+            return ResponseEntity.ok(submittedTest);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }*/
 
+    @GetMapping("/{id}/take")
+    public ResponseEntity<TestTakingDTO> getTestForTaking(@PathVariable Long id) {
+        try {
+            TestTakingDTO test = studentTestService.getStudentTestWithQuestionsAndAnswers(id);
+            return ResponseEntity.ok(test);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
     // Get all StudentTests
     @GetMapping
     public ResponseEntity<List<StudentTest>> getAllStudentTests() {
