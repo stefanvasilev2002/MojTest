@@ -46,8 +46,13 @@ public class QuestionServiceImpl implements QuestionService {
         question.setImage(image);
         Teacher creator = teacherRepository.findById(questionDTO.getCreatorId())
                 .orElseThrow(() -> new EntityNotFoundException("Teacher not found"));
+        List<Metadata> metadataList = metadataRepository.findAllById(questionDTO.getMetadataIds());
+        List<Test> testList = testRepository.findAllById(questionDTO.getTestIds());
 
-        // Save the Question first to get an ID
+
+        question.setCreator(creator); // Set the Teacher (creator) to the Question
+        question.setMetadata(metadataList); // Set the Metadata to the Question
+        question.setTests(testList); // Set the Tests to the Question
         question = questionRepository.save(question);
 
         // Create and save the answers if they exist
@@ -66,10 +71,7 @@ public class QuestionServiceImpl implements QuestionService {
 
         }
         // Set the resolved relationships on the Question entity
-        question.setCreator(creator); // Set the Teacher (creator) to the Question
-        question.setMetadata(metadataList); // Set the Metadata to the Question
-        question.setTests(testList); // Set the Tests to the Question
-        question = questionRepository.save(question);
+
 
         // manually setting the related entity id to the file
         if(image != null){
@@ -110,7 +112,7 @@ public class QuestionServiceImpl implements QuestionService {
                 Collections.emptyList();
 
         // Use the mapper to update the existing entity
-        QuestionMapper.updateFromDTO(existingQuestion, questionDTO, creator, tests, metadata);
+        QuestionMapper.updateFromDTO(existingQuestion, questionDTO, creator, tests, metadata, new Date());
         existingQuestion.setDescription(questionDTO.getDescription());
 
         if (questionDTO.getAnswers() != null) {

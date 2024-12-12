@@ -83,7 +83,7 @@ public class QuestionMapper {
         return question;
     }
     public static Question updateFromDTO(Question existingQuestion, QuestionDTO dto, Teacher creator, List<Test> tests, List<Metadata> metadata, Date uploadedAt) {
-        if (existingQuestion == null || dto == null) return;
+        if (existingQuestion == null || dto == null) return null;
 
         // Update simple fields
         existingQuestion.setType(dto.getType() != null ? QuestionType.valueOf(dto.getType().toUpperCase()) : null); // Convert string to enum

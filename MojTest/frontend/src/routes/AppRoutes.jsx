@@ -41,6 +41,7 @@ import CreateQuestionPage from "../pages/teacher/CreateQuestionsPage.jsx";
 import EditQuestionPage from "../pages/teacher/EditQuestionPage.jsx";
 import EditTestPage from "../pages/teacher/EditTestPage.jsx";
 import QuestionsPage from "../pages/teacher/QuestionsPage.jsx";
+import QuestionDetails from "../components/crud/QuestionDetails.jsx";
 const AppRoutes = () => {
     return (
         <AuthProvider>
