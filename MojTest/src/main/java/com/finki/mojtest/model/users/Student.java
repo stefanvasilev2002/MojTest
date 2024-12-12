@@ -25,5 +25,10 @@ public class Student extends User {
     public Student(String username, String password, String email, String fullName, LocalDate registrationDate) {
         super(username, password, email, fullName, registrationDate);
     }
+
+    public Student(String username, String encode, String email, String fullName, LocalDate registrationDate, String grade) {
+        super(username, encode, email, fullName, registrationDate);
+        this.grade = grade;
+    }
 }
 

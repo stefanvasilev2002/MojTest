@@ -17,6 +17,6 @@ public class UserDTO {
     private String email;
     private String fullName;
     private LocalDate registrationDate;
-    private String role;  // Non-persistent field for internal purposes
+    String grade;
 }
 

@@ -38,7 +38,7 @@ public class UserServiceImpl implements UserService {
             throw new DuplicateFieldException("Email already exists: " + user.getEmail());
         }
         Student newUser = new Student(user.getUsername(),passwordEncoder.encode(user.getPassword()),
-                user.getEmail(),user.getFullName(),user.getRegistrationDate());
+                user.getEmail(),user.getFullName(),user.getRegistrationDate(), user.getGrade());
         return studentRepository.save(newUser);
     }
 

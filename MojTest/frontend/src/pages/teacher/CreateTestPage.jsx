@@ -2,7 +2,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import TestForm from "../../components/crud/TestForm.jsx";
+import TestForm from "../../components/teacher/TestForm.jsx";
 import useTest from '../../hooks/crud/useTest';  // Use your existing hook
 
 const CreateTestPage = () => {

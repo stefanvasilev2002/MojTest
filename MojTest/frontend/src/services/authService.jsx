@@ -54,7 +54,7 @@ const authService = {
                     email: userData.email,
                     fullName: userData.fullName,
                     registrationDate: userData.registrationDate,
-                    role: userData.role
+                    grade: userData.grade,
                 });
 
                 if (response.data.token) {

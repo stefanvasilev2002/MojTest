@@ -35,7 +35,7 @@ public class AuthController {
     public ResponseEntity<?> register(@RequestBody UserDTO user) {
         try {
             // Validate input
-            if (user.getUsername() == null || user.getPassword() == null || user.getRole() == null) {
+            if (user.getUsername() == null || user.getPassword() == null) {
                 return ResponseEntity
                         .status(HttpStatus.BAD_REQUEST)
                         .body(Map.of("message", "Missing required fields"));

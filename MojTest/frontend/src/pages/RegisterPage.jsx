@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import useAuthActions from "../hooks/useAuthActions";
+import {predefinedKeyValues} from "../config/predefinedKeyValues.js";
 
 const RegisterPage = () => {
     const { t } = useTranslation('common');
@@ -11,7 +12,7 @@ const RegisterPage = () => {
         confirmPassword: "",
         email: "",
         fullName: "",
-        role: null
+        grade: ""
     });
     const [validationErrors, setValidationErrors] = useState({});
     const navigate = useNavigate();
@@ -48,8 +49,8 @@ const RegisterPage = () => {
             errors.fullName = t('registerPage.validation.fullNameRequired');
         }
 
-        if (!formData.role) {
-            errors.role = t('registerPage.validation.roleRequired');
+        if (!formData.grade) {
+            errors.grade = t('registerPage.validation.gradeRequired');
         }
 
         return errors;
@@ -83,14 +84,14 @@ const RegisterPage = () => {
             password: formData.password,
             email: formData.email,
             fullName: formData.fullName,
-            role: formData.role,
+            grade: formData.grade,
             registrationDate: new Date().toISOString().split("T")[0]
         };
 
         const { success, data } = await handleRegister(registerData);
 
         if (success) {
-            navigate(formData.role === "teacher" ? "/teacher-dashboard" : "/student-dashboard");
+            navigate("/student-dashboard");
         }
     };
 
@@ -202,45 +203,28 @@ const RegisterPage = () => {
                         )}
                     </div>
 
-                    {/* Role Selection */}
+                    {/* Grade Selection */}
                     <div>
                         <label className="block mb-2 text-gray-600">
-                            {t('registerPage.selectRole')}
+                            {t('Choose grade')}
                         </label>
-                        <div className="flex gap-4">
-                            <button
-                                type="button"
-                                onClick={() => {
-                                    handleChange({
-                                        target: { name: 'role', value: 'teacher' }
-                                    });
-                                }}
-                                className={`flex-1 p-3 border rounded-lg transition-colors ${
-                                    formData.role === "teacher"
-                                        ? "bg-blue-500 text-white"
-                                        : "bg-gray-200"
-                                }`}
-                            >
-                                {t('registerPage.roleTeacher')}
-                            </button>
-                            <button
-                                type="button"
-                                onClick={() => {
-                                    handleChange({
-                                        target: { name: 'role', value: 'student' }
-                                    });
-                                }}
-                                className={`flex-1 p-3 border rounded-lg transition-colors ${
-                                    formData.role === "student"
-                                        ? "bg-blue-500 text-white"
-                                        : "bg-gray-200"
-                                }`}
-                            >
-                                {t('registerPage.roleStudent')}
-                            </button>
-                        </div>
-                        {validationErrors.role && (
-                            <p className="text-red-500 text-sm mt-1">{validationErrors.role}</p>
+                        <select
+                            name="grade"
+                            value={formData.grade}
+                            onChange={handleChange}
+                            className={`w-full p-3 border rounded-lg ${
+                                validationErrors.grade ? 'border-red-500' : ''
+                            }`}
+                        >
+                            <option value="">Choose your grade if you are a student</option>
+                            {predefinedKeyValues.Grade.map((grade) => (
+                                <option key={grade} value={grade}>
+                                    {grade}
+                                </option>
+                            ))}
+                        </select>
+                        {validationErrors.grade && (
+                            <p className="text-red-500 text-sm mt-1">{validationErrors.grade}</p>
                         )}
                     </div>
 
