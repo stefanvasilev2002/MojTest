@@ -2,6 +2,7 @@ package com.finki.mojtest.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.finki.mojtest.model.enumerations.QuestionType;
 import com.finki.mojtest.model.users.Teacher;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -19,12 +20,16 @@ public class Question {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String type;
+    @Enumerated(EnumType.STRING)
+    private QuestionType type;
     private String description;
     private int points;
     private int negativePointsPerAnswer;
     private String formula;
-    private String imageUrl;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "image_file_id", referencedColumnName = "id") // Foreign key column
+    private File image; // Replaces imageUrl
     private String hint;
 
     @ManyToMany(mappedBy = "questionBank")

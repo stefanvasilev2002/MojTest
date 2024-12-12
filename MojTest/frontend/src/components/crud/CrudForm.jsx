@@ -1,10 +1,11 @@
 import React, { useEffect } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import ImageUploader from "../ImageUploader.jsx";
 import InputField from "../InputField.jsx";
 import SelectField from "../SelectField.jsx";
 import { useTranslation } from "react-i18next";
-const CrudForm = ({ entity, formConfigs, initialData = {}, onSubmit, relatedData }) => {
+const CrudForm = ({ entity, formConfigs, initialData = {}, onSubmit, relatedData, onKeyChange }) => {
     const { t } = useTranslation('common'); // Use the 'common' namespace for translations
 
     // Resolve the formConfig, including inherited fields
@@ -114,6 +115,9 @@ const CrudForm = ({ entity, formConfigs, initialData = {}, onSubmit, relatedData
                                         // For single-select, selectedOption is a single object or null
                                         formik.setFieldValue(field.name, selectedOption || null);
                                     }
+                                    if (onKeyChange) {
+                                        onKeyChange(selectedOption);
+                                    }
                                 }}
                                 onBlur={formik.handleBlur}
                                 isMulti={isMulti} // Pass the multi-select flag
@@ -121,6 +125,26 @@ const CrudForm = ({ entity, formConfigs, initialData = {}, onSubmit, relatedData
                             />
                         );
                     }
+
+                    case "image":
+                        return (
+                            <ImageUploader
+                                key={field.name}
+                                label={translatedLabel}
+                                onUploadComplete={(uploadedFile) => {
+                                    // Use formik.values to reference the form state
+                                    formik.setFieldValue(field.name, {
+                                        id: uploadedFile.fileId,
+                                        fileName: uploadedFile.fileName,
+                                        fileDownloadUri: uploadedFile.fileDownloadUri,
+                                        fileType: uploadedFile.fileType,
+                                        size: uploadedFile.size,
+                                        relatedEntityId: formik.values.id || null, // Corrected: using formik.values
+                                    });
+                                }}
+                            />
+
+                        );
 
                     default:
                         return null; // Fallback for unsupported field types

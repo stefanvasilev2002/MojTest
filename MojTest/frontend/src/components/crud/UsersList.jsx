@@ -78,9 +78,9 @@ const UsersList = () => {
                         user.fullName,
                         user.role,
                     ])}
-                    onEdit={(id) => navigate(`/crud/users/edit/${id}`)}
+                    onEdit={(user) => navigate(`/crud/users/edit/${user.id}`)}
                     // For delete action you might want to integrate the remove logic like in the other lists
-                    onDelete={(id) => handleDelete(id)}
+                    onDelete={(user) => handleDelete(user.id)}
                 />
             )}
         </div>

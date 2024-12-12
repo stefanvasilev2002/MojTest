@@ -20,7 +20,7 @@ public class QuestionDTO {
     private int points;
     private int negativePointsPerAnswer;
     private String formula;
-    private String imageUrl;
+    private FileDTO image;
     private String hint;
 
     private Long creatorId;  // Store the ID of the teacher (creator)

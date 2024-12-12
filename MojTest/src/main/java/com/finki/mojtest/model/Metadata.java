@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -19,10 +20,20 @@ public class Metadata {
     private String key;
     private String value;
 
-    @ManyToMany(mappedBy = "metadata")
-    private List<Question> questions;
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(
+            name = "question_metadata",
+            joinColumns = @JoinColumn(name = "metadata_id"),
+            inverseJoinColumns = @JoinColumn(name = "question_id")
+    )
+    private List<Question> questions = new ArrayList<>();
 
-    @ManyToMany(mappedBy = "metadata")
-    private List<Test> tests;
-
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(
+            name = "test_metadata",
+            joinColumns = @JoinColumn(name = "metadata_id"),
+            inverseJoinColumns = @JoinColumn(name = "test_id")
+    )
+    private List<Test> tests = new ArrayList<>();
 }
+

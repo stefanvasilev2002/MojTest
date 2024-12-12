@@ -14,8 +14,8 @@ const formConfigs = {
     },
     Metadata: {
         fields: [
-            { name: "key", label: "Key", type: "text" },
-            { name: "value", label: "Value", type: "text" },
+            { name: "key", label: "Key", type: "select", relation: "Key" }, // key field
+            { name: "value", label: "Value", type: "select", relation: "Value" }, // value field
             {
                 name: "questions",
                 label: "Questions",
@@ -30,14 +30,21 @@ const formConfigs = {
             },
         ],
     },
+
     Question: {
         fields: [
-            { name: "type", label: "question.type", type: "text" },
+            // Change the 'type' field to use 'select' type and reference the related data for options
+            {
+                name: "type",
+                label: "question.type",
+                type: "select", // Change to 'select' for dropdown
+                relation: "Type", // Reference to 'Type' in relatedData
+            },
             { name: "description", label: "question.description", type: "textarea" },
             { name: "points", label: "question.points", type: "number" },
             { name: "negativePointsPerAnswer", label: "question.negativePoints", type: "number" },
             { name: "formula", label: "question.formula", type: "text" },
-            { name: "imageUrl", label: "question.imageUrl", type: "text" },
+            { name: "image", label: "question.imageUrl", type: "image" },
             { name: "hint", label: "question.hint", type: "textarea" },
             {
                 name: "testIds", // Match with the DTO field

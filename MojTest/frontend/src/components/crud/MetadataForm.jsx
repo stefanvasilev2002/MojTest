@@ -6,6 +6,7 @@ import useTest from "../../hooks/crud/useTest";
 import formConfigs from "../../config/formConfigs"; // Import the form configurations
 import CrudForm from "./CrudForm.jsx";
 import Alert from "../Alert.jsx";
+import { predefinedKeyValues } from "../../config/predefinedKeyValues";
 
 const MetadataForm = () => {
     const navigate = useNavigate();
@@ -14,28 +15,30 @@ const MetadataForm = () => {
     const { items: questionList } = useQuestion();
     const { items: testList } = useTest();
 
-    // State for the fetched metadata item
     const [metadata, setMetadata] = useState(null);
     const [isInitialValuesSet, setIsInitialValuesSet] = useState(false); // Ensure values are set once
+    const [keySelected, setKeySelected] = useState(""); // Track the selected key
+    const [valueOptions, setValueOptions] = useState([]); // Options for the value field
 
     // Fetch metadata for editing if ID is provided
     useEffect(() => {
-        // Prevent fetching if initial values are already set
         if (!isInitialValuesSet) {
             if (id) {
                 fetchById(id).then((data) => {
                     if (data) {
                         setMetadata({
                             ...data,
-                            questions: data.questions.map((q) => ({
-                                value: q.id,
-                                label: `${q.id} | ${q.type} | ${q.description}`,
-                            })),
-                            tests: data.tests.map((t) => ({
-                                value: t.id,
-                                label: `${t.id} | ${t.title}`,
-                            })),
+                            questions: data.questionIds?.map((id) => ({
+                                value: id,
+                                label: `Question ${id}`, // Update label format as needed
+                            })) || [],
+                            tests: data.testIds?.map((id) => ({
+                                value: id,
+                                label: `Test ${id}`, // Update label format as needed
+                            })) || [],
                         });
+                        setKeySelected(data.key); // Set the selected key
+                        setValueOptions(predefinedKeyValues[data.key] || []); // Set the value options based on the key
                     }
                     setIsInitialValuesSet(true); // Mark as ready for rendering
                 });
@@ -44,26 +47,28 @@ const MetadataForm = () => {
                 setIsInitialValuesSet(true); // Ready to render empty form
             }
         }
-    }, [id, fetchById, isInitialValuesSet]); // Include `isInitialValuesSet` in dependencies
+    }, [id, fetchById, isInitialValuesSet]);
 
-    // Related data for select and multi-select fields
-    const relatedData = {
-        Question: questionList.map((q) => ({
-            id: q.id,
-            label: `${q.id} | ${q.type} | ${q.description}`,
-        })),
-        Test: testList.map((t) => ({
-            id: t.id,
-            label: `${t.id} | ${t.title}`,
-        })),
+    // Handle key change
+    const handleKeyChange = (selectedKey) => {
+        console.log("Selected Key:", selectedKey);
+        const key = selectedKey.value;  // Access the 'value' property
+        const updatedOptions = predefinedKeyValues[key] || []; // Use the key to get options
+        console.log("Updated Value Options:", updatedOptions);
+        setValueOptions(updatedOptions); // Update value options based on selected key
     };
+
+
 
     // Handle form submission
     const handleSubmit = async (values) => {
+        // Only send the string values for key and value
         const payload = {
-            ...values,
-            questions: values.questions.map((q) => q.value), // Extract IDs
-            tests: values.tests.map((t) => t.value), // Extract IDs
+            id: values.id,
+            key: values.key.value, // Access the string value of the key
+            value: values.value.value, // Access the string value of the value
+            questionIds: values.questions.map((q) => q.value), // Extract IDs
+            testIds: values.tests.map((t) => t.value), // Extract IDs
         };
 
         try {
@@ -78,6 +83,7 @@ const MetadataForm = () => {
         }
     };
 
+
     if (loading || !isInitialValuesSet) {
         return <p>Loading...</p>;
     }
@@ -90,9 +96,27 @@ const MetadataForm = () => {
             <CrudForm
                 entity="Metadata"
                 formConfigs={formConfigs}
-                initialData={metadata || {}} // Pass either fetched metadata or empty object
+                initialData={metadata || {}}
                 onSubmit={handleSubmit}
-                relatedData={relatedData}
+                relatedData={{
+                    Question: questionList.map((q) => ({
+                        value: q.id,
+                        label: `${q.id} | ${q.type} | ${q.description}`,
+                    })),
+                    Test: testList.map((t) => ({
+                        value: t.id,
+                        label: `${t.id} | ${t.title}`,
+                    })),
+                    Key: Object.keys(predefinedKeyValues).map((key) => ({
+                        value: key,
+                        label: key,
+                    })),
+                    Value: valueOptions.map((value) => ({
+                        value,
+                        label: value,
+                    })),
+                }}
+                onKeyChange={handleKeyChange}
             />
         </div>
     );

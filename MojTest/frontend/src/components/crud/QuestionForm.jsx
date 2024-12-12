@@ -9,6 +9,7 @@ import formConfigs from "../../config/formConfigs"; // Import form configuration
 import CrudForm from "./CrudForm.jsx"; // Reusable CrudForm component
 import Alert from "../Alert.jsx"; // Alert component for error messages
 import { useTranslation } from "react-i18next";
+import {questionTypeLabels} from "../../config/questionTypeLabels.js";
 
 const QuestionForm = () => {
     const { t } = useTranslation('common'); // Use the 'common' namespace for translations
@@ -78,6 +79,10 @@ const QuestionForm = () => {
             value: a.id,
             label: `${a.id} | ${a.text}`,
         })) : [],
+        Type: Object.keys(questionTypeLabels).map(key => ({
+            value: key,
+            label: t(questionTypeLabels[key]),
+        })),
     };
 
 
@@ -91,8 +96,22 @@ const QuestionForm = () => {
             testIds: values.testIds.map((test) => test.value), // Extract test IDs
             metadataIds: values.metadataIds.map((meta) => meta.value), // Extract metadata IDs
             answerIds: values.answerIds.map((answer) => answer.value), // Extract answer IDs
-        };
+            type: values.type ? values.type.value : null,  // Ensure type is a string (extract value)
 
+        };
+        if (values.image) {
+            const fileDTO = {
+                id: values.image.id,
+                file: null,
+                filePath: values.image.fileDownloadUri,
+                uploadedAt: new Date(),
+                fileName: values.image.fileName,
+                fileType: values.image.fileType,
+                relatedEntityId: values.id || null,
+            };
+
+            payload.image = fileDTO;  // Include the mapped file data in the payload
+        }
         try {
             if (id) {
                 await update(id, payload); // Update existing question

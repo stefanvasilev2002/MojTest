@@ -186,6 +186,16 @@
     "username": "Корисничко име",
     "email": "Email",
     "fullName": "Целосно име"
+  },
+  "questionTypes": {
+    "MULTIPLE_CHOICE": "Повеќе избори",
+    "TRUE_FALSE": "Точно / Неточно",
+    "SHORT_ANSWER": "Краток одговор",
+    "LONG_ANSWER": "Долг одговор",
+    "FILL_IN_THE_BLANK": "Пополнете го празното",
+    "MATCHING": "Спарување",
+    "ESSAY": "Есеј",
+    "NUMERIC": "Нумерички"
   }
 
 }

@@ -9,7 +9,7 @@ import AboutTeacherPage from '../pages/AboutTeacherPage';  // Your AboutTeacherP
 import AboutStudentPage from '../pages/AboutStudentPage';  // Your AboutStudentPage
 import TeacherDashboard from '../pages/TeacherDashboard';  // Your TeacherDashboard
 import StudentDashboard from '../pages/StudentDashboard';  // Your StudentDashboard
-// import DebugPage from '../pages/DebugPage';
+import DebugPage from '../pages/DebugPage';
 import LoginPage from "../pages/LoginPage.jsx";
 import RegisterPage from "../pages/RegisterPage.jsx";
 import TeacherLayout from "../layouts/TeacherLayout.jsx";
@@ -34,6 +34,7 @@ import TeacherForm from "../components/crud/TeacherForm.jsx";
 import AdminForm from "../components/crud/AdminForm.jsx";
 import QuestionForm from "../components/crud/QuestionForm.jsx";
 import TestForm from "../components/crud/TestForm.jsx";
+import QuestionDetails from "../components/crud/QuestionDetails.jsx";
 
 const AppRoutes = () => {
     return (
@@ -46,6 +47,10 @@ const AppRoutes = () => {
                     <Route path="/about-student" element={<PublicRoute><PublicLayout><AboutStudentPage /></PublicLayout></PublicRoute>} />
                     <Route path="/login" element={<PublicRoute><PublicLayout><LoginPage /></PublicLayout></PublicRoute>} />
                     <Route path="/register" element={<PublicRoute><PublicLayout><RegisterPage /></PublicLayout></PublicRoute>} />
+
+                    <Route path="/question/:questionId" element={<QuestionDetails />} /> {/* New route */}
+
+
 
                     {/* Teacher Routes */}
                     <Route path="/teacher-dashboard" element={
@@ -191,7 +196,7 @@ const AppRoutes = () => {
                             <CrudLayout><StudentForm /></CrudLayout>
                         </PrivateRoute>
                     } />
-
+                    <Route path="/debug" element={<DebugPage/>}></Route>
                     {/* Catch-all route - redirect to appropriate dashboard */}
                     <Route path="*" element={<Navigate to="/login" replace />} />
                 </Routes>

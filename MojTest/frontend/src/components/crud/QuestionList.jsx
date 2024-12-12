@@ -7,8 +7,12 @@ import useTest from "../../hooks/crud/useTest";
 import Alert from "../Alert.jsx";
 import CrudActionTable from "../CrudActionTable.jsx";
 import useAnswers from "../../hooks/crud/useAnswers";
+import {questionTypeLabels} from "../../config/questionTypeLabels.js";
+import { useTranslation } from "react-i18next";
 
 const QuestionList = () => {
+    const { t } = useTranslation('common'); // Use the 'common' namespace for translations
+
     const { items: questionList, loading: questionLoading, error: questionError, remove } = useQuestion();
     const { fetchById: fetchMetadataById } = useMetadata();
     const { fetchById: fetchTeacherById } = useTeacher();
@@ -58,14 +62,16 @@ const QuestionList = () => {
             });
         }
     }, [questionList, fetchTeacherById, fetchMetadataById, fetchAnswerById, fetchTestById]);
-
+    const translateType = (type) => {
+        return t(questionTypeLabels[type]) || "Unknown Type"; // Use t() to translate the label
+    };
     // Handle delete action
     const handleDelete = async (id) => {
         if (window.confirm("Are you sure you want to delete this question?")) {
             await remove(id);
         }
     };
-
+    console.log("Question List:", questionList);
     if (questionLoading) {
         return (
             <div>
@@ -99,12 +105,13 @@ const QuestionList = () => {
                         "Points",
                         "Negative Points",
                         "Formula",
-                        "Image URL",
                         "Hint",
+                        "Type",
                         "Teacher",
                         "Answers",
                         "Tests",
                         "Metadata",
+                        "Image",
                     ]}
                     rows={questionList.map((question) => [
                         question.id,
@@ -112,8 +119,8 @@ const QuestionList = () => {
                         question.points,
                         question.negativePointsPerAnswer,
                         question.formula,
-                        question.imageUrl,
                         question.hint,
+                        translateType(question.type),
                         // Render teacher
                         teachers[question.creatorId]?.fullName || "Unknown Teacher",
                         // Render answers
@@ -122,6 +129,13 @@ const QuestionList = () => {
                         question.testIds.map((id) => tests[id]?.title).join(", ") || "No Tests",
                         // Render metadata
                         question.metadataIds.map((id) => metadata[id]?.key).join(", ") || "No Metadata",
+                        // Render image
+                        question.image && question.image.id ? (
+                            `${import.meta.env.VITE_API_BASE_URL}/files/download/${question.image.id}`
+                        ) : (
+                            "No Image"
+                        )
+
                     ])}
                     onEdit={(id) => navigate(`/crud/question/edit/${id}`)}
                     onDelete={(id) => handleDelete(id)}

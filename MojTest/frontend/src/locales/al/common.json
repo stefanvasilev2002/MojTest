@@ -181,5 +181,15 @@
     "username": "Emri i përdoruesit",
     "email": "Email",
     "fullName": "Emri i plotë"
+  },
+  "questionTypes": {
+    "MULTIPLE_CHOICE": "Përzgjedhje të shumëfishta",
+    "TRUE_FALSE": "E vërtetë / E gabuar",
+    "SHORT_ANSWER": "Përgjigje e shkurtër",
+    "LONG_ANSWER": "Përgjigje e gjatë",
+    "FILL_IN_THE_BLANK": "Plotëso boshllëkun",
+    "MATCHING": "Përputhje",
+    "ESSAY": "Ese",
+    "NUMERIC": "Numërik"
   }
 }

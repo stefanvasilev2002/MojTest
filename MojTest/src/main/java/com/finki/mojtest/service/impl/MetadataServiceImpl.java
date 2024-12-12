@@ -1,18 +1,24 @@
 package com.finki.mojtest.service.impl;
 import com.finki.mojtest.model.Metadata;
+import com.finki.mojtest.model.Question;
+import com.finki.mojtest.model.Test;
+import com.finki.mojtest.model.dtos.MetadataDTO;
+import com.finki.mojtest.model.mappers.MetadataMapper;
 import com.finki.mojtest.repository.MetadataRepository;
+import com.finki.mojtest.repository.QuestionRepository;
+import com.finki.mojtest.repository.TestRepository;
 import com.finki.mojtest.service.MetadataService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class MetadataServiceImpl implements MetadataService {
     private final MetadataRepository metadataRepository;
-
-    public MetadataServiceImpl(MetadataRepository metadataRepository) {
-        this.metadataRepository = metadataRepository;
-    }
+    private final QuestionRepository questionRepository;
+    private final TestRepository testRepository;
 
     @Override
     public Metadata createMetadata(Metadata metadata) {
@@ -61,5 +67,17 @@ public class MetadataServiceImpl implements MetadataService {
     @Override
     public List<Metadata> getMetadataByKey(String key) {
         return metadataRepository.findByKey(key);
+    }
+
+    @Override
+    public Metadata createMetadataByDTO(MetadataDTO dto) {
+        if (dto.getKey() == null || dto.getKey().isEmpty()) {
+            throw new IllegalArgumentException("Metadata key cannot be empty.");
+        }
+        List<Question> questions = questionRepository.findAllById(dto.getQuestionIds());
+        List<Test> tests = testRepository.findAllById(dto.getTestIds());
+
+        Metadata metadata = MetadataMapper.fromDTO(dto,questions,tests);
+        return metadataRepository.save(metadata);
     }
 }

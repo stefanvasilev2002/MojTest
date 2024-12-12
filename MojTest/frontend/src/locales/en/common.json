@@ -199,5 +199,15 @@
     "username": "Username",
     "email": "Email",
     "fullName": "Full Name"
+  },
+  "questionTypes": {
+    "MULTIPLE_CHOICE": "Multiple Choice",
+    "TRUE_FALSE": "True/False",
+    "SHORT_ANSWER": "Short Answer",
+    "LONG_ANSWER": "Long Answer",
+    "FILL_IN_THE_BLANK": "Fill in the Blank",
+    "MATCHING": "Matching",
+    "ESSAY": "Essay",
+    "NUMERIC": "Numeric"
   }
 }

@@ -1,16 +1,11 @@
 package com.finki.mojtest.service.impl;
 
-import com.finki.mojtest.model.Answer;
-import com.finki.mojtest.model.Metadata;
-import com.finki.mojtest.model.Question;
-import com.finki.mojtest.model.Test;
+import com.finki.mojtest.model.*;
 import com.finki.mojtest.model.dtos.QuestionDTO;
+import com.finki.mojtest.model.mappers.FileMapper;
 import com.finki.mojtest.model.mappers.QuestionMapper;
 import com.finki.mojtest.model.users.Teacher;
-import com.finki.mojtest.repository.AnswerRepository;
-import com.finki.mojtest.repository.MetadataRepository;
-import com.finki.mojtest.repository.QuestionRepository;
-import com.finki.mojtest.repository.TestRepository;
+import com.finki.mojtest.repository.*;
 import com.finki.mojtest.repository.users.TeacherRepository;
 import com.finki.mojtest.service.QuestionService;
 import jakarta.persistence.EntityNotFoundException;
@@ -19,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -30,7 +26,7 @@ public class QuestionServiceImpl implements QuestionService {
     private final TeacherRepository teacherRepository;
     private final MetadataRepository metadataRepository;
     private final TestRepository testRepository;
-
+    private final FileRepository fileRepository;
     @Override
     public Question createQuestion(Question question) {
         return questionRepository.save(question);
@@ -38,10 +34,14 @@ public class QuestionServiceImpl implements QuestionService {
 
     @Override
     public Question createQuestionByDTO(QuestionDTO questionDTO) {
-        // First, map the QuestionDTO to a Question entity (this doesn't include relationships)
-        Question question = QuestionMapper.fromDTO(questionDTO, null,null, null, null); // No relationships mapped yet
+        Question question = QuestionMapper.fromDTO(questionDTO, null,null, null, null,null,null); // No relationships mapped yet
 
-        // Resolve the creator (Teacher) from the creatorId
+        File image = null;
+        if(questionDTO.getImage()!=null){
+            image = fileRepository.findById(questionDTO.getImage().getId()).orElse(null);
+            image = FileMapper.updateFromDto(image,questionDTO.getImage(),new Date());
+        }
+        question.setImage(image);
         Teacher creator = teacherRepository.findById(questionDTO.getCreatorId())
                 .orElseThrow(() -> new EntityNotFoundException("Teacher not found"));
 
@@ -59,9 +59,16 @@ public class QuestionServiceImpl implements QuestionService {
         question.setCreator(creator); // Set the Teacher (creator) to the Question
         question.setMetadata(metadataList); // Set the Metadata to the Question
         question.setTests(testList); // Set the Tests to the Question
+        question = questionRepository.save(question);
 
-        // Save the Question to the repository
-        return questionRepository.save(question);
+        // manually setting the related entity id to the file
+        if(image != null){
+            image.setRelatedEntityId(question.getId());
+            fileRepository.save(image);
+        }
+
+
+        return question;
     }
 
 
@@ -94,7 +101,7 @@ public class QuestionServiceImpl implements QuestionService {
                 Collections.emptyList();
 
         // Use the mapper to update the existing entity
-        QuestionMapper.updateFromDTO(existingQuestion, questionDTO, creator, tests, metadata);
+        QuestionMapper.updateFromDTO(existingQuestion, questionDTO, creator, tests, metadata, new Date());
 
         // Save and return the updated entity
         return questionRepository.save(existingQuestion);
