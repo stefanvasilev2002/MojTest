@@ -36,7 +36,11 @@ import QuestionForm from "../components/crud/QuestionForm.jsx";
 import TestForm from "../components/crud/TestForm.jsx";
 import TakeTestPage from "../pages/TakeTestPage.jsx";
 import TestResultsPage from "../pages/TestResultsPage.jsx";
-
+import CreateTestPage from "../pages/teacher/CreateTestPage.jsx";
+import CreateQuestionPage from "../pages/teacher/CreateQuestionsPage.jsx";
+import EditQuestionPage from "../pages/teacher/EditQuestionPage.jsx";
+import EditTestPage from "../pages/teacher/EditTestPage.jsx";
+import QuestionsPage from "../pages/teacher/QuestionsPage.jsx";
 const AppRoutes = () => {
     return (
         <AuthProvider>
@@ -49,13 +53,19 @@ const AppRoutes = () => {
                     <Route path="/login" element={<PublicRoute><PublicLayout><LoginPage /></PublicLayout></PublicRoute>} />
                     <Route path="/register" element={<PublicRoute><PublicLayout><RegisterPage /></PublicLayout></PublicRoute>} />
 
+
                     {/* Teacher Routes */}
                     <Route path="/teacher-dashboard" element={
                         <PrivateRoute requiredRole={["teacher", "admin"]}>
-                            <TeacherLayout />  {/* Renders the layout */}
+                            <TeacherLayout />
                         </PrivateRoute>
                     }>
-                        <Route path="/teacher-dashboard" element={<TeacherDashboard />} />  {/* Teacher dashboard as a child route */}
+                        <Route index element={<TeacherDashboard />} />
+                        <Route path="create-test" element={<CreateTestPage />} />
+                        <Route path="edit-test/:id" element={<EditTestPage />} />
+                        <Route path="test/:testId/questions" element={<QuestionsPage />} />
+                        <Route path="test/:testId/questions/create" element={<CreateQuestionPage />} />
+                        <Route path="test/:testId/questions/:questionId/edit" element={<EditQuestionPage />} />
                     </Route>
 
 
