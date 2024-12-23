@@ -1,5 +1,6 @@
 package com.finki.mojtest.model.dtos;
 
+import com.finki.mojtest.model.Metadata;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -21,4 +22,6 @@ public class TestDTO {
     private List<Long> metadataIds;  // List of Metadata IDs associated with this Test
     private List<Long> testQuestionIds;  // List of TestQuestion IDs associated with this Test
     private List<Long> studentTestIds;  // List of StudentTest IDs associated with this Test
+    private List<MetadataDTO> metadata; // Add this
+
 }

@@ -11,7 +11,7 @@ import java.util.List;
 @Repository
 public interface QuestionRepository extends JpaRepository<Question, Long> {
     List<Question> findByCreatorId(Long teacherId); // Questions created by a specific teacher
-    List<Question> findByType(String type); // Filter questions by type
+    List<Question> findByQuestionType(String type); // Filter questions by type
     List<Question> findByPointsGreaterThanEqual(int points); // Questions with a minimum score
 
     @Query("SELECT q FROM Question q JOIN q.tests t WHERE t.id = :testId")

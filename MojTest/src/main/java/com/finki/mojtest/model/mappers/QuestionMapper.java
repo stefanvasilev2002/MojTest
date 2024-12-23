@@ -21,7 +21,7 @@ public class QuestionMapper {
 
         QuestionDTO dto = new QuestionDTO();
         dto.setId(question.getId());
-        dto.setType(question.getType() != null ? question.getType().name() : "ESSAY"); // Convert enum to string
+        dto.setType(question.getQuestionType() != null ? question.getQuestionType().name() : "ESSAY"); // Convert enum to string
         dto.setDescription(question.getDescription());
         dto.setPoints(question.getPoints());
         dto.setNegativePointsPerAnswer(question.getNegativePointsPerAnswer());
@@ -64,7 +64,7 @@ public class QuestionMapper {
 
         Question question = new Question();
         question.setId(dto.getId());
-        question.setType(dto.getType() != null ? QuestionType.valueOf(dto.getType()) : QuestionType.ESSAY); // Convert enum to string
+        question.setQuestionType(dto.getType() != null ? QuestionType.valueOf(dto.getType()) : QuestionType.ESSAY); // Convert enum to string
         question.setDescription(dto.getDescription());
         question.setPoints(dto.getPoints());
         question.setNegativePointsPerAnswer(dto.getNegativePointsPerAnswer());
@@ -86,7 +86,7 @@ public class QuestionMapper {
         if (existingQuestion == null || dto == null) return null;
 
         // Update simple fields
-        existingQuestion.setType(dto.getType() != null ? QuestionType.valueOf(dto.getType().toUpperCase()) : null); // Convert string to enum
+        existingQuestion.setQuestionType(dto.getType() != null ? QuestionType.valueOf(dto.getType().toUpperCase()) : null); // Convert string to enum
         existingQuestion.setDescription(dto.getDescription());
         existingQuestion.setPoints(dto.getPoints());
         existingQuestion.setNegativePointsPerAnswer(dto.getNegativePointsPerAnswer());

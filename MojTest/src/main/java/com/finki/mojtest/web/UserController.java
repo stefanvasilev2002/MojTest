@@ -1,7 +1,9 @@
 package com.finki.mojtest.web;
 
 import com.finki.mojtest.model.Test;
+import com.finki.mojtest.model.dtos.UserDTO;
 import com.finki.mojtest.model.exceptions.DuplicateFieldException;
+import com.finki.mojtest.model.users.Student;
 import com.finki.mojtest.model.users.User;
 import com.finki.mojtest.service.UserService;
 import jakarta.persistence.EntityNotFoundException;
@@ -41,7 +43,7 @@ public class UserController {
         }
     }
 
-    @GetMapping("/{id}")
+    /*@GetMapping("/{id}")
     public ResponseEntity<User> getUserById(@PathVariable Long id) {
         try {
             User user = userService.getUserById(id);
@@ -49,7 +51,7 @@ public class UserController {
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
-    }
+    }*/
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteUser(@PathVariable Long id) {
@@ -64,5 +66,19 @@ public class UserController {
     public ResponseEntity<List<User>> getAllTests() {
         List<User> users = userService.getAllUsers();
         return new ResponseEntity<>(users, HttpStatus.OK);
+    }
+    @GetMapping("/{id}")
+    public ResponseEntity<UserDTO> getUserDetails(@PathVariable Long id) {
+        return userService.findById(id)
+                .map(user -> {
+                    UserDTO dto = new UserDTO();
+                    dto.setId(user.getId());
+                    dto.setUsername(user.getUsername());
+                    if (user instanceof Student) {
+                        dto.setGrade(((Student) user).getGrade());
+                    }
+                    return ResponseEntity.ok(dto);
+                })
+                .orElse(ResponseEntity.notFound().build());
     }
 }

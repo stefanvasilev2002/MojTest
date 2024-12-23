@@ -4,6 +4,7 @@ import com.finki.mojtest.model.dtos.UserDTO;
 import com.finki.mojtest.model.users.User;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface UserService {
     User createUserAuth(UserDTO user);
@@ -14,5 +15,7 @@ public interface UserService {
     User updateUser(Long id, User updatedUser);
     void deleteUser(Long id);
     List<User> getUsersByRole(String role);
+
+    Optional<User> findById(Long id);
 }
 

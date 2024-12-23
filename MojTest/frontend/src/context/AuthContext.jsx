@@ -9,11 +9,33 @@ export const AuthProvider = ({ children }) => {
         if (storedToken) {
             try {
                 const decodedToken = jwt_decode.jwtDecode(storedToken);
-                return {
-                    id: decodedToken.userId, // Changed from sub to userId
+                // First, get basic user info from token
+                const userInfo = {
+                    id: decodedToken.userId,
                     username: decodedToken.sub,
                     token: storedToken
                 };
+
+                // Immediately fetch additional user details if token exists
+                fetch(`http://localhost:8080/api/users/${decodedToken.userId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${storedToken}`
+                    }
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        // Update user state with grade information
+                        const updatedUser = {
+                            ...userInfo,
+                            grade: data.grade
+                        };
+                        setUser(updatedUser);
+                    })
+                    .catch(error => {
+                        console.error('Error fetching user details:', error);
+                    });
+
+                return userInfo;
             } catch (error) {
                 localStorage.removeItem('token');
                 localStorage.removeItem('role');
@@ -26,25 +48,43 @@ export const AuthProvider = ({ children }) => {
     const [role, setRole] = useState(() => {
         return localStorage.getItem('role') || null;
     });
+
     const [isInitialized, setIsInitialized] = useState(false);
 
     useEffect(() => {
         setIsInitialized(true);
     }, []);
 
-    const login = (token, userRole) => {
+    const login = async (token, userRole) => {
         try {
             const decodedToken = jwt_decode.jwtDecode(token);
             localStorage.setItem('token', token);
             localStorage.setItem('role', userRole);
-            setUser({
-                id: decodedToken.userId, // Changed from sub to userId
-                username: decodedToken.sub,
-                token: token
+
+            // Fetch full user details after login
+            const response = await fetch(`http://localhost:8080/api/users/${decodedToken.userId}`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
             });
+
+            if (!response.ok) {
+                throw new Error('Failed to fetch user details');
+            }
+
+            const userData = await response.json();
+
+            // Set user with all details including grade
+            setUser({
+                id: decodedToken.userId,
+                username: decodedToken.sub,
+                token: token,
+                grade: userData.grade
+            });
+
             setRole(userRole);
         } catch (error) {
-            console.error('Error decoding token:', error);
+            console.error('Error during login:', error);
             logout();
         }
     };

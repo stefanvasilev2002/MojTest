@@ -10,6 +10,4 @@ public class TestFeedbackDTO {
     private int totalScore;
     private int maxScore;
     private List<AnswerFeedbackDTO> answerFeedbackList;
-
-    // Getters and setters
 }

@@ -4,19 +4,18 @@ import {useAuth} from '../context/AuthContext';
 import RadioAnswer from "../components/answers/RadioAnswer.jsx";
 import MultipleChoiceAnswer from "../components/answers/MultipleChoiceAnswer.jsx";
 import NumericAnswer from "../components/answers/NumericAnswer.jsx";
+import EssayAnswer from "../components/answers/EssayAnswer.jsx";
 
 const TakeTestPage = () => {
     const {studentTestId} = useParams();
     const {state: initialState} = useLocation();
     const {user} = useAuth();
     const navigate = useNavigate();
-    console.log("TakeTestPage mounted1"); // Add this log
 
     const [testData, setTestData] = useState(initialState || null);
     const [loading, setLoading] = useState(!initialState);
     const [error, setError] = useState(null);
     const [answers, setAnswers] = useState({});
-    console.log("TakeTestPage mounted2"); // Add this log
 
     useEffect(() => {
         console.log("Initial state from location:", initialState);
@@ -25,7 +24,6 @@ const TakeTestPage = () => {
             console.log("Fetching test data...");
             fetchTestData();
         } else {
-            // Initialize answers state if initialState is provided
             const initialAnswers = {};
             testData.questions.forEach(question => {
                 initialAnswers[question.questionId] = null;
@@ -51,10 +49,9 @@ const TakeTestPage = () => {
             setTestData(data);
             setLoading(false);
 
-            // Initialize answers state after fetching data
             const initialAnswers = {};
             data.questions.forEach(question => {
-                initialAnswers[question.questionId] = null;
+                initialAnswers[question.questionId] = question.questionType === 'MULTIPLE_CHOICE' ? [] : null;
             });
             setAnswers(initialAnswers);
         } catch (err) {
@@ -64,9 +61,10 @@ const TakeTestPage = () => {
         }
     };
 
-    const handleAnswerChange = (questionId, answerId) => {
-        setAnswers({...answers, [questionId]: answerId});
+    const handleAnswerChange = (questionId, answer) => {
+        setAnswers({...answers, [questionId]: answer});
     };
+
     const handleCheckBoxChange = (questionId, answerId) => {
         const currentAnswers = Array.isArray(answers[questionId]) ? answers[questionId] : [];
         const isSelected = currentAnswers.includes(answerId);
@@ -74,24 +72,46 @@ const TakeTestPage = () => {
         setAnswers({
             ...answers,
             [questionId]: isSelected
-                ? currentAnswers.filter(id => id !== answerId) // Remove answer
-                : [...currentAnswers, answerId],              // Add answer
+                ? currentAnswers.filter(id => id !== answerId)
+                : [...currentAnswers, answerId],
         });
     };
 
-
     const handleSubmitTest = async () => {
         try {
-            const answersToSend = Object.entries(answers).flatMap(([questionId, answerIds]) => {
-                // Ensure answerIds is always an array
-                const ids = Array.isArray(answerIds) ? answerIds : [answerIds];
+            const answersToSend = Object.entries(answers).flatMap(([questionId, answerValue]) => {
+                const question = testData.questions.find(q => q.questionId.toString() === questionId);
+                if (!question || !answerValue) return [];
 
-                return ids.map(answerId => ({
-                    questionId: parseInt(questionId),  // Ensure questionId is a number
-                    answerId: parseInt(answerId),      // Ensure answerId is a number
-                }));
-            });
-            console.log(answersToSend)
+                switch (question.questionType) {
+                    case 'MULTIPLE_CHOICE':
+                        const answerIds = Array.isArray(answerValue) ? answerValue : [answerValue];
+                        return answerIds.map(answerId => ({
+                            questionId: parseInt(questionId),
+                            answerId: parseInt(answerId),
+                            questionType: question.questionType
+                        }));
+                    case 'NUMERIC':
+                    case 'ESSAY':
+                    case 'FILL_IN_THE_BLANK':
+                        return [{
+                            questionId: parseInt(questionId),
+                            textAnswer: answerValue.toString(),
+                            questionType: question.questionType
+                        }];
+                    case 'TRUE_FALSE':
+                        return [{
+                            questionId: parseInt(questionId),
+                            answerId: parseInt(answerValue),
+                            questionType: question.questionType
+                        }];
+                    default:
+                        return [];
+                }
+            }).filter(answer => answer !== null);
+
+            console.log('Submitting answers:', answersToSend);
+
             const response = await fetch(`http://localhost:8080/api/student-tests/${studentTestId}/submit`, {
                 method: 'POST',
                 headers: {
@@ -102,7 +122,8 @@ const TakeTestPage = () => {
             });
 
             if (!response.ok) {
-                throw new Error('Failed to submit test');
+                const errorText = await response.text();
+                throw new Error(`Failed to submit test: ${errorText}`);
             }
 
             const feedback = await response.json();
@@ -111,7 +132,7 @@ const TakeTestPage = () => {
             navigate('/test-results', {state: feedback});
         } catch (err) {
             console.error('Error submitting test:', err);
-            alert('Failed to submit test: ' + err.message);
+            alert(err.message);
         }
     };
 
@@ -132,9 +153,6 @@ const TakeTestPage = () => {
             </div>
         );
     }
-    console.log("Current loading state:", loading);
-    console.log("Current error state:", error);
-    console.log("Current testData:", testData);
 
     return (
         <div className="min-h-screen bg-gray-50 p-6">
@@ -154,13 +172,14 @@ const TakeTestPage = () => {
                                         question={question}
                                         questionId={question.questionId}
                                         correctAnswer={answers[question.questionId]}
-                                        onAnswerChange={handleAnswerChange}/>
+                                        onAnswerChange={handleAnswerChange}
+                                    />
                                 )}
                                 {question.questionType === 'MULTIPLE_CHOICE' && (
                                     <MultipleChoiceAnswer
                                         question={question}
                                         questionId={question.questionId}
-                                        selectedAnswers={answers[question.questionId]|| []}
+                                        selectedAnswers={answers[question.questionId] || []}
                                         onAnswerChange={handleCheckBoxChange}
                                     />
                                 )}
@@ -169,7 +188,16 @@ const TakeTestPage = () => {
                                         question={question}
                                         questionId={question.questionId}
                                         correctAnswer={answers[question.questionId]}
-                                        onAnswerChange={handleAnswerChange}/>
+                                        onAnswerChange={handleAnswerChange}
+                                    />
+                                )}
+                                {question.questionType === 'ESSAY' && (
+                                    <EssayAnswer
+                                        question={question}
+                                        questionId={question.questionId}
+                                        correctAnswer={answers[question.questionId]}
+                                        onAnswerChange={handleAnswerChange}
+                                    />
                                 )}
                             </div>
                         </div>

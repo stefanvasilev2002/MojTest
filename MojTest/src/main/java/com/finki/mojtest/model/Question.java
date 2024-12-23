@@ -20,7 +20,7 @@ public class Question {
     private Long id;
 
     @Enumerated(EnumType.STRING)
-    private QuestionType type;
+    private QuestionType questionType;
     private String description;
     private int points;
     private int negativePointsPerAnswer;

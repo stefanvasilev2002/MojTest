@@ -1,16 +1,15 @@
 package com.finki.mojtest.service.impl;
 
-import com.finki.mojtest.model.Answer;
-import com.finki.mojtest.model.Question;
-import com.finki.mojtest.model.StudentAnswer;
-import com.finki.mojtest.model.StudentTest;
+import com.finki.mojtest.model.*;
 import com.finki.mojtest.model.dtos.*;
+import com.finki.mojtest.model.enumerations.QuestionType;
 import com.finki.mojtest.repository.AnswerRepository;
 import com.finki.mojtest.repository.QuestionRepository;
 import com.finki.mojtest.repository.StudentAnswerRepository;
 import com.finki.mojtest.repository.StudentTestRepository;
 import com.finki.mojtest.service.StudentTestService;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -19,6 +18,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 public class StudentTestServiceImpl implements StudentTestService {
     private final StudentTestRepository studentTestRepository;
     private final StudentAnswerRepository studentAnswerRepository;
@@ -149,79 +149,239 @@ public class StudentTestServiceImpl implements StudentTestService {
         return studentTestRepository.save(studentTest);
     }
 
+    @Override
+    @Transactional
     public TestFeedbackDTO evaluateTest(Long studentTestId, List<AnswerSubmissionDTO> answers) {
-        // Retrieve the student test from the database
         StudentTest studentTest = studentTestRepository.findById(studentTestId)
                 .orElseThrow(() -> new EntityNotFoundException("Student Test not found"));
 
-        // Prepare feedback DTO
         TestFeedbackDTO feedbackDTO = new TestFeedbackDTO();
         feedbackDTO.setStudentTestId(studentTestId);
 
-        // List to store feedback details for each answer
         List<AnswerFeedbackDTO> answerFeedbackList = new ArrayList<>();
-
-        // Map of the answers submitted by the student, keyed by the question ID
-        Map<Long, List<AnswerSubmissionDTO>> answerMap = answers.stream()
+        Map<Long, List<AnswerSubmissionDTO>> submittedAnswerMap = answers.stream()
                 .collect(Collectors.groupingBy(AnswerSubmissionDTO::getQuestionId));
 
-        // Calculate the score by iterating through the test's answers
         int totalScore = 0;
         int maxScore = 0;
 
-        for (Map.Entry<Long, List<AnswerSubmissionDTO>> entry : answerMap.entrySet()) {
-            Long questionId = entry.getKey();
-            List<AnswerSubmissionDTO> submittedAnswers = entry.getValue();
-            Question question = questionRepository.findById(questionId).get(); // Retrieve the question
+        // Delete existing answers
+        List<StudentAnswer> existingAnswers = studentAnswerRepository.findByStudentTestId(studentTestId);
+        if (!existingAnswers.isEmpty()) {
+            studentAnswerRepository.deleteAll(existingAnswers);
+            studentAnswerRepository.flush(); // Ensure deletions are processed
+        }
 
-            // Track correctness of multiple answers for the same question
-            List<String> correctAnswerTexts = new ArrayList<>();
-            List<String> submittedAnswerTexts = new ArrayList<>();
-            boolean isCorrect = true;
+        // Get a Set of processed question IDs to avoid duplicates
+        Set<Long> processedQuestionIds = new HashSet<>();
 
-            for (AnswerSubmissionDTO dto : submittedAnswers) {
-                // Evaluate each submitted answer
-                Answer answer = answerRepository.findById(dto.getAnswerId()).get();
-                boolean answerIsCorrect = question.getAnswers().stream()
-                        .anyMatch(x -> Objects.equals(x.getId(), dto.getAnswerId()) && x.isCorrect());
+        // Process ALL questions in the test
+        for (TestQuestion testQuestion : studentTest.getTest().getQuestions()) {
+            Question question = testQuestion.getQuestion();
 
-                if (answerIsCorrect) {
-                    correctAnswerTexts.add(answer.getAnswerText());
-                }
-                submittedAnswerTexts.add(answer.getAnswerText());
+            // Skip if we've already processed this question
+            if (!processedQuestionIds.add(question.getId())) {
+                continue;
+            }
 
-                // Update the score
-                int questionScore = question.getPoints();
-                if (answerIsCorrect) {
-                    totalScore += questionScore;
-                } else {
+            List<AnswerSubmissionDTO> submittedAnswers = submittedAnswerMap.getOrDefault(question.getId(), new ArrayList<>());
+
+            AnswerFeedbackDTO answerFeedbackDTO = new AnswerFeedbackDTO();
+            answerFeedbackDTO.setQuestionId(question.getId());
+            answerFeedbackDTO.setQuestionText(question.getDescription());
+
+            // If no answer was submitted
+            if (submittedAnswers.isEmpty()) {
+                processUnansweredQuestion(studentTest, testQuestion, question, answerFeedbackDTO);
+                if (question.getQuestionType() != QuestionType.ESSAY) {
                     totalScore -= question.getNegativePointsPerAnswer();
-                    isCorrect = false; // If any answer is wrong, the whole submission is incorrect
+                }
+            } else {
+                boolean isCorrect = processAnsweredQuestion(
+                        studentTest, testQuestion, question, submittedAnswers, answerFeedbackDTO);
+
+                if (isCorrect) {
+                    totalScore += question.getPoints();
+                } else if (question.getQuestionType() != QuestionType.ESSAY) {
+                    totalScore -= question.getNegativePointsPerAnswer();
                 }
             }
 
-            // Prepare the feedback DTO for this question
-            AnswerFeedbackDTO answerFeedbackDTO = new AnswerFeedbackDTO();
-            answerFeedbackDTO.setQuestionId(questionId);
-            answerFeedbackDTO.setCorrectAnswer(isCorrect);  // The overall correctness of the question
-            answerFeedbackDTO.setQuestionText(question.getDescription());
-            answerFeedbackDTO.setCorrectAnswerText(Collections.singletonList(String.join(", ", correctAnswerTexts)));
-            answerFeedbackDTO.setSubmittedAnswerText(Collections.singletonList(String.join(", ", submittedAnswerTexts)));
-
+            maxScore += question.getPoints();
             answerFeedbackList.add(answerFeedbackDTO);
-            maxScore += question.getPoints(); // Track maximum score
         }
 
-        // Set feedback and score to DTO
         feedbackDTO.setAnswerFeedbackList(answerFeedbackList);
-        feedbackDTO.setTotalScore(totalScore);
+        feedbackDTO.setTotalScore(Math.max(0, totalScore));
         feedbackDTO.setMaxScore(maxScore);
 
-        // Return feedback DTO
+        // Update and save student test
+        studentTest.setScore(Math.max(0, totalScore));
+        studentTestRepository.save(studentTest);
+
         return feedbackDTO;
     }
 
+    private void processUnansweredQuestion(StudentTest studentTest, TestQuestion testQuestion,
+                                           Question question, AnswerFeedbackDTO answerFeedbackDTO) {
+        StudentAnswer studentAnswer = new StudentAnswer();
+        studentAnswer.setStudentTest(studentTest);
+        studentAnswer.setTestQuestion(testQuestion);
+        studentAnswerRepository.save(studentAnswer);
 
+        answerFeedbackDTO.setCorrectAnswer(false);
+        answerFeedbackDTO.setSubmittedAnswerText(Collections.singletonList("No answer provided"));
+
+        List<String> correctAnswerTexts = question.getAnswers().stream()
+                .filter(Answer::isCorrect)
+                .map(Answer::getAnswerText)
+                .collect(Collectors.toList());
+        answerFeedbackDTO.setCorrectAnswerText(correctAnswerTexts);
+    }
+
+    private boolean processAnsweredQuestion(StudentTest studentTest, TestQuestion testQuestion,
+                                            Question question, List<AnswerSubmissionDTO> submissions,
+                                            AnswerFeedbackDTO answerFeedbackDTO) {
+        for (AnswerSubmissionDTO submission : submissions) {
+            StudentAnswer studentAnswer = new StudentAnswer();
+            studentAnswer.setStudentTest(studentTest);
+            studentAnswer.setTestQuestion(testQuestion);
+
+            if (submission.getQuestionType() == QuestionType.ESSAY ||
+                    submission.getQuestionType() == QuestionType.FILL_IN_THE_BLANK ||
+                    submission.getQuestionType() == QuestionType.NUMERIC) {
+
+                Answer answer = new Answer();
+                answer.setAnswerText(submission.getTextAnswer());
+                answer.setQuestion(question);
+                answer = answerRepository.save(answer);
+                studentAnswer.setChosenAnswer(answer);
+            } else if (submission.getAnswerId() != null) {
+                Answer answer = answerRepository.findById(submission.getAnswerId())
+                        .orElseThrow(() -> new EntityNotFoundException("Answer not found"));
+                studentAnswer.setChosenAnswer(answer);
+            }
+
+            studentAnswerRepository.save(studentAnswer);
+        }
+
+        // Evaluate based on question type and update feedback
+        switch (question.getQuestionType()) {
+            case MULTIPLE_CHOICE:
+                evaluateMultipleChoice(submissions, question, answerFeedbackDTO);
+                break;
+            case TRUE_FALSE:
+                evaluateTrueFalse(submissions.get(0), question, answerFeedbackDTO);
+                break;
+            case NUMERIC:
+                evaluateNumeric(submissions.get(0), question, answerFeedbackDTO);
+                break;
+            case FILL_IN_THE_BLANK:
+                evaluateFillInTheBlank(submissions.get(0), question, answerFeedbackDTO);
+                break;
+            case ESSAY:
+                evaluateEssay(submissions.get(0), question, answerFeedbackDTO);
+                break;
+        }
+
+        return answerFeedbackDTO.isCorrectAnswer();
+    }    private void evaluateMultipleChoice(List<AnswerSubmissionDTO> submissions, Question question, AnswerFeedbackDTO feedback) {
+        List<String> correctAnswerTexts = new ArrayList<>();
+        List<String> submittedAnswerTexts = new ArrayList<>();
+        Set<Long> correctAnswerIds = question.getAnswers().stream()
+                .filter(Answer::isCorrect)
+                .map(Answer::getId)
+                .collect(Collectors.toSet());
+
+        Set<Long> submittedAnswerIds = submissions.stream()
+                .map(AnswerSubmissionDTO::getAnswerId)
+                .collect(Collectors.toSet());
+
+        // Get text of submitted answers
+        for (AnswerSubmissionDTO submission : submissions) {
+            Answer answer = answerRepository.findById(submission.getAnswerId())
+                    .orElseThrow(() -> new EntityNotFoundException("Answer not found"));
+            submittedAnswerTexts.add(answer.getAnswerText());
+        }
+
+        // Get text of correct answers
+        question.getAnswers().stream()
+                .filter(Answer::isCorrect)
+                .forEach(answer -> correctAnswerTexts.add(answer.getAnswerText()));
+
+        // Check if answers match exactly
+        boolean isCorrect = correctAnswerIds.equals(submittedAnswerIds);
+
+        feedback.setCorrectAnswer(isCorrect);
+        feedback.setCorrectAnswerText(correctAnswerTexts);
+        feedback.setSubmittedAnswerText(submittedAnswerTexts);
+    }
+
+    private void evaluateTrueFalse(AnswerSubmissionDTO submission, Question question, AnswerFeedbackDTO feedback) {
+        Answer submittedAnswer = answerRepository.findById(submission.getAnswerId())
+                .orElseThrow(() -> new EntityNotFoundException("Answer not found"));
+
+        Answer correctAnswer = question.getAnswers().stream()
+                .filter(Answer::isCorrect)
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("No correct answer found"));
+
+        boolean isCorrect = submittedAnswer.isCorrect();
+
+        feedback.setCorrectAnswer(isCorrect);
+        feedback.setCorrectAnswerText(Collections.singletonList(correctAnswer.getAnswerText()));
+        feedback.setSubmittedAnswerText(Collections.singletonList(submittedAnswer.getAnswerText()));
+    }
+
+    private void evaluateNumeric(AnswerSubmissionDTO submission, Question question, AnswerFeedbackDTO feedback) {
+        try {
+            double submittedValue = Double.parseDouble(submission.getTextAnswer());
+            Answer correctAnswer = question.getAnswers().stream()
+                    .filter(Answer::isCorrect)
+                    .findFirst()
+                    .orElseThrow(() -> new RuntimeException("No correct answer found"));
+
+            double correctValue = Double.parseDouble(correctAnswer.getAnswerText());
+            boolean isCorrect = Math.abs(submittedValue - correctValue) < 0.0001; // Allow small floating-point differences
+
+            feedback.setCorrectAnswer(isCorrect);
+            feedback.setCorrectAnswerText(Collections.singletonList(correctAnswer.getAnswerText()));
+            feedback.setSubmittedAnswerText(Collections.singletonList(submission.getTextAnswer()));
+        } catch (NumberFormatException e) {
+            feedback.setCorrectAnswer(false);
+            feedback.setSubmittedAnswerText(Collections.singletonList("Invalid number: " + submission.getTextAnswer()));
+        }
+    }
+
+    private void evaluateFillInTheBlank(AnswerSubmissionDTO submission, Question question, AnswerFeedbackDTO feedback) {
+        Answer correctAnswer = question.getAnswers().stream()
+                .filter(Answer::isCorrect)
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("No correct answer found"));
+
+        boolean isCorrect = submission.getTextAnswer() != null &&
+                submission.getTextAnswer().trim().equalsIgnoreCase(correctAnswer.getAnswerText().trim());
+
+        feedback.setCorrectAnswer(isCorrect);
+        feedback.setCorrectAnswerText(Collections.singletonList(correctAnswer.getAnswerText()));
+        feedback.setSubmittedAnswerText(Collections.singletonList(submission.getTextAnswer()));
+    }
+
+    private void evaluateEssay(AnswerSubmissionDTO submission, Question question, AnswerFeedbackDTO feedback) {
+        // Store the essay answer without evaluation
+        feedback.setCorrectAnswer(true); // Essays require manual grading
+        feedback.setSubmittedAnswerText(Collections.singletonList(submission.getTextAnswer()));
+
+        // Include model answer if available
+        Optional<Answer> modelAnswer = question.getAnswers().stream()
+                .filter(Answer::isCorrect)
+                .findFirst();
+
+        feedback.setCorrectAnswerText(Collections.singletonList(
+                modelAnswer.map(Answer::getAnswerText)
+                        .orElse("This essay requires manual grading.")
+        ));
+    }
 
     private int calculateScore(List<StudentAnswer> answers) {
         return answers.stream()

@@ -9,5 +9,5 @@ public class TestTakingDTO {
     private Long studentTestId;
     private String testTitle;
     private Integer timeLimit;
-    private List<TestQuestionAnswerDTO> answers; // Changed to match frontend structure
+    private List<TestQuestionAnswerDTO> answers;
 }

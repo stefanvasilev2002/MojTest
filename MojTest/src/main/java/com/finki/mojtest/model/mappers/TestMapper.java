@@ -2,6 +2,7 @@ package com.finki.mojtest.model.mappers;
 
 import com.finki.mojtest.model.Question;
 import com.finki.mojtest.model.Test;
+import com.finki.mojtest.model.dtos.MetadataDTO;
 import com.finki.mojtest.model.dtos.TestDTO;
 import com.finki.mojtest.model.users.Teacher;
 import com.finki.mojtest.model.Metadata;
@@ -31,6 +32,18 @@ public class TestMapper {
 
         dto.setMetadataIds(test.getMetadata() != null ?
                 test.getMetadata().stream().map(Metadata::getId).collect(Collectors.toList()) :
+                Collections.emptyList());
+
+        dto.setMetadata(test.getMetadata() != null ?
+                test.getMetadata().stream()
+                        .map(metadata -> {
+                            MetadataDTO metadataDTO = new MetadataDTO();
+                            metadataDTO.setId(metadata.getId());
+                            metadataDTO.setKey(metadata.getKey());
+                            metadataDTO.setValue(metadata.getValue());
+                            return metadataDTO;
+                        })
+                        .collect(Collectors.toList()) :
                 Collections.emptyList());
 
         dto.setTestQuestionIds(test.getQuestions() != null ?
