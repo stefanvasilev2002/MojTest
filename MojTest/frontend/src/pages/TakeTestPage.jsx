@@ -5,7 +5,9 @@ import RadioAnswer from "../components/answers/RadioAnswer.jsx";
 import MultipleChoiceAnswer from "../components/answers/MultipleChoiceAnswer.jsx";
 import NumericAnswer from "../components/answers/NumericAnswer.jsx";
 import EssayAnswer from "../components/answers/EssayAnswer.jsx";
-
+import HintButton from "../components/student/HintButton.jsx"
+import Timer from "../components/student/Timer.jsx";
+import TimeUpModal from "../components/student/TimeUpModal.jsx";
 const TakeTestPage = () => {
     const {studentTestId} = useParams();
     const {state: initialState} = useLocation();
@@ -15,22 +17,72 @@ const TakeTestPage = () => {
     const [testData, setTestData] = useState(initialState || null);
     const [loading, setLoading] = useState(!initialState);
     const [error, setError] = useState(null);
-    const [answers, setAnswers] = useState({});
+    const [showTimeUpModal, setShowTimeUpModal] = useState(false);
 
+    const [answers, setAnswers] = useState(() => {
+        const savedAnswers = localStorage.getItem(`test_${studentTestId}_answers`);
+        return savedAnswers ? JSON.parse(savedAnswers) : {};
+    });
+
+    const [hintsUsed, setHintsUsed] = useState(() => {
+        const savedHints = localStorage.getItem(`test_${studentTestId}_hints`);
+        return savedHints ? JSON.parse(savedHints) : {};
+    });
+
+    const handleTimeUp = () => {
+        setShowTimeUpModal(true);
+        // Submit after a short delay to allow modal to be seen
+        setTimeout(() => {
+            handleSubmitTest();
+        }, 2000);
+    };
+
+    useEffect(() => {
+        // Save answers whenever they change
+        localStorage.setItem(`test_${studentTestId}_answers`, JSON.stringify(answers));
+    }, [answers, studentTestId]);
+
+    useEffect(() => {
+        // Save hints whenever they change
+        localStorage.setItem(`test_${studentTestId}_hints`, JSON.stringify(hintsUsed));
+    }, [hintsUsed, studentTestId]);
     useEffect(() => {
         console.log("Initial state from location:", initialState);
 
-        if (!testData) {
-            console.log("Fetching test data...");
-            fetchTestData();
+        if (testData == null) {
+            // Check if we have saved test data
+            const savedTestData = localStorage.getItem(`test_${studentTestId}_data`);
+            if (savedTestData) {
+                setTestData(JSON.parse(savedTestData));
+                setLoading(false);
+            } else {
+                fetchTestData();
+            }
         } else {
-            const initialAnswers = {};
-            testData.questions.forEach(question => {
-                initialAnswers[question.questionId] = null;
-            });
-            setAnswers(initialAnswers);
+            // Save test data when we get it
+            localStorage.setItem(`test_${studentTestId}_data`, JSON.stringify(testData));
+
+            // Only initialize answers if they don't exist
+            if (Object.keys(answers).length === 0) {
+                const initialAnswers = {};
+                testData.questions.forEach(question => {
+                    initialAnswers[question.questionId] = question.questionType === 'MULTIPLE_CHOICE' ? [] : null;
+                });
+                setAnswers(initialAnswers);
+            }
         }
-    }, [studentTestId]);
+    }, [studentTestId, testData]);
+
+    // Clear all test data after submission
+    const clearTestStorage = () => {
+        localStorage.removeItem(`test_${studentTestId}_start_time`);
+        localStorage.removeItem(`test_${studentTestId}_time`);
+        localStorage.removeItem(`test_${studentTestId}_lastUpdate`);
+        localStorage.removeItem(`test_${studentTestId}_answers`);
+        localStorage.removeItem(`test_${studentTestId}_hints`);
+        localStorage.removeItem(`test_${studentTestId}_data`);
+        localStorage.removeItem('last_test_id');
+    };
 
     const fetchTestData = async () => {
         try {
@@ -64,7 +116,9 @@ const TakeTestPage = () => {
     const handleAnswerChange = (questionId, answer) => {
         setAnswers({...answers, [questionId]: answer});
     };
-
+    const handleHintUsed = (questionId) => {
+        setHintsUsed(prev => ({...prev, [questionId]: true}));
+    };
     const handleCheckBoxChange = (questionId, answerId) => {
         const currentAnswers = Array.isArray(answers[questionId]) ? answers[questionId] : [];
         const isSelected = currentAnswers.includes(answerId);
@@ -128,7 +182,7 @@ const TakeTestPage = () => {
 
             const feedback = await response.json();
             console.log('Test feedback:', feedback);
-
+            clearTestStorage();
             navigate('/test-results', {state: feedback});
         } catch (err) {
             console.error('Error submitting test:', err);
@@ -156,11 +210,24 @@ const TakeTestPage = () => {
 
     return (
         <div className="min-h-screen bg-gray-50 p-6">
+            <TimeUpModal
+                isOpen={showTimeUpModal}
+                onClose={() => setShowTimeUpModal(false)}
+            />
+            {testData && (
+                <Timer
+                    timeLimit={testData.timeLimit}
+                    onTimeUp={handleTimeUp}
+                    testId={studentTestId}
+                />
+            )}
             <div className="max-w-4xl mx-auto">
                 <h1 className="text-3xl font-bold text-blue-600 mb-6">{testData.testTitle}</h1>
                 <p className="text-lg text-gray-600 mb-4">Time limit: {testData.timeLimit} minutes</p>
                 <div className="space-y-6">
                     {testData.questions.map((question, index) => (
+                        console.log("Test Data:", testData),
+                        console.log("Question:", question),
                         <div key={question.questionId} className="bg-white p-6 rounded-lg shadow">
                             <h2 className="text-xl font-semibold mb-2">
                                 Question {index + 1}: {question.description}
@@ -199,6 +266,12 @@ const TakeTestPage = () => {
                                         onAnswerChange={handleAnswerChange}
                                     />
                                 )}
+                                <HintButton
+                                    hint={question.hint}
+                                    questionId={question.questionId}
+                                    hintsUsed={hintsUsed}
+                                    onHintTaken={handleHintUsed}
+                                />
                             </div>
                         </div>
                     ))}

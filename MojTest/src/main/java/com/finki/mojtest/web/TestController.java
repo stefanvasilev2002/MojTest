@@ -53,6 +53,7 @@ public class TestController {
             questionDTO.setPoints(question.getPoints());
             questionDTO.setStudentAnswerId(studentAnswer.getId());
             questionDTO.setQuestionType(question.getQuestionType().toString());
+            questionDTO.setHint(question.getHint());
             // Get all possible answers for this question
             List<AnswerViewDTO> answers = question.getAnswers().stream()
                     .map(answer -> {

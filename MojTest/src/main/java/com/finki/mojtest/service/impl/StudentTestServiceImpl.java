@@ -110,6 +110,7 @@ public class StudentTestServiceImpl implements StudentTestService {
         Question question = studentAnswer.getTestQuestion().getQuestion();
         questionDTO.setId(question.getId());
         questionDTO.setDescription(question.getDescription());
+        questionDTO.setHint(question.getHint());
 
         List<AnswerDTO> answers = question.getAnswers().stream()
                 .map(answer -> {
@@ -247,16 +248,7 @@ public class StudentTestServiceImpl implements StudentTestService {
             studentAnswer.setStudentTest(studentTest);
             studentAnswer.setTestQuestion(testQuestion);
 
-            if (submission.getQuestionType() == QuestionType.ESSAY ||
-                    submission.getQuestionType() == QuestionType.FILL_IN_THE_BLANK ||
-                    submission.getQuestionType() == QuestionType.NUMERIC) {
-
-                Answer answer = new Answer();
-                answer.setAnswerText(submission.getTextAnswer());
-                answer.setQuestion(question);
-                answer = answerRepository.save(answer);
-                studentAnswer.setChosenAnswer(answer);
-            } else if (submission.getAnswerId() != null) {
+            if (submission.getAnswerId() != null) {
                 Answer answer = answerRepository.findById(submission.getAnswerId())
                         .orElseThrow(() -> new EntityNotFoundException("Answer not found"));
                 studentAnswer.setChosenAnswer(answer);
