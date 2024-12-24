@@ -22,5 +22,8 @@ public interface TestService {
     List<Test> getTestsByTitle(String title);
 
     StudentTest startTest(Long testId, Long studentId);
+    Test addQuestionToTest(Long testId, Long questionId);
+
+    Test removeQuestionFromTest(Long testId, Long questionId);
 }
 

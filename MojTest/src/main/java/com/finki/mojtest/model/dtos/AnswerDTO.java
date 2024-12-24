@@ -12,4 +12,5 @@ import java.util.List;
 public class AnswerDTO {
     private Long id;
     private String answerText;
+    private boolean isCorrect;
 }

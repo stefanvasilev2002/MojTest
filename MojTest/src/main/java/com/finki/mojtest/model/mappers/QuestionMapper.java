@@ -17,69 +17,43 @@ import java.util.stream.Collectors;
 public class QuestionMapper {
 
     public static QuestionDTO toDTO(Question question) {
-        if (question == null) return null;
-
         QuestionDTO dto = new QuestionDTO();
         dto.setId(question.getId());
-        dto.setType(question.getQuestionType() != null ? question.getQuestionType().name() : "ESSAY"); // Convert enum to string
+        dto.setType(String.valueOf(question.getQuestionType()));  // Note: using type instead of questionType
         dto.setDescription(question.getDescription());
         dto.setPoints(question.getPoints());
         dto.setNegativePointsPerAnswer(question.getNegativePointsPerAnswer());
         dto.setFormula(question.getFormula());
-        dto.setImage(FileMapper.toDto(question.getImage()));
         dto.setHint(question.getHint());
         dto.setCreatorId(question.getCreator() != null ? question.getCreator().getId() : null);
 
-        // Map answers to AnswerDTO
-        List<AnswerDTO> answerDTOs = question.getAnswers() != null ?
-                question.getAnswers().stream()
-                        .map(answer -> {
-                            AnswerDTO answerDTO = new AnswerDTO();
-                            answerDTO.setId(answer.getId());
-                            answerDTO.setAnswerText(answer.getAnswerText());
-                            return answerDTO;
-                        })
-                        .collect(Collectors.toList()) :
-                Collections.emptyList();
+        // Map answers
+        if (question.getAnswers() != null) {
+            dto.setAnswers(question.getAnswers().stream()
+                    .map(answer -> {
+                        AnswerDTO answerDTO = new AnswerDTO();
+                        answerDTO.setId(answer.getId());
+                        answerDTO.setAnswerText(answer.getAnswerText());
+                        answerDTO.setCorrect(answer.isCorrect());
+                        return answerDTO;
+                    })
+                    .collect(Collectors.toList()));
+        }
 
-        dto.setAnswers(answerDTOs);
-        dto.setTestIds(question.getTests() != null ?
-                question.getTests().stream().map(Test::getId).collect(Collectors.toList()) :
-                Collections.emptyList());
-
-        dto.setMetadataIds(question.getMetadata() != null ?
-                question.getMetadata().stream().map(Metadata::getId).collect(Collectors.toList()) :
-                Collections.emptyList());
-
-        dto.setAnswerIds(question.getAnswers() != null ?
-                question.getAnswers().stream().map(Answer::getId).collect(Collectors.toList()) :
-                Collections.emptyList());
-
-        dto.setAnswers(answerDTOs);
         return dto;
     }
 
-    public static Question fromDTO(QuestionDTO dto, Teacher creator, List<Test> tests, List<Metadata> metadata, List<Answer> answers,String filePath, Date uploadedAt) {
-        if (dto == null) return null;
-
+    public static Question fromDTO(QuestionDTO dto) {
         Question question = new Question();
         question.setId(dto.getId());
-        question.setQuestionType(dto.getType() != null ? QuestionType.valueOf(dto.getType()) : QuestionType.ESSAY); // Convert enum to string
+        question.setQuestionType(dto.getType() != null ? QuestionType.valueOf(dto.getType()) : QuestionType.MULTIPLE_CHOICE); // Default to MULTIPLE_CHOICE if null
         question.setDescription(dto.getDescription());
         question.setPoints(dto.getPoints());
         question.setNegativePointsPerAnswer(dto.getNegativePointsPerAnswer());
         question.setFormula(dto.getFormula());
-        question.setImage(FileMapper.toEntityFromDto(dto.getImage(), uploadedAt));
         question.setHint(dto.getHint());
-        question.setCreator(creator);  // This is set using the creatorId field from the DTO
 
-        // Set relationships, these could be null
-        question.setTests(tests != null ? tests : Collections.emptyList());
-        question.setMetadata(metadata != null ? metadata : Collections.emptyList());
-        question.setAnswers(answers != null ? answers : Collections.emptyList());
-
-        question.setDescription(dto.getDescription());
-
+        // Answers will be set by the service
         return question;
     }
     public static Question updateFromDTO(Question existingQuestion, QuestionDTO dto, Teacher creator, List<Test> tests, List<Metadata> metadata, Date uploadedAt) {

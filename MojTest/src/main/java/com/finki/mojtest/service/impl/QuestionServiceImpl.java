@@ -2,17 +2,21 @@ package com.finki.mojtest.service.impl;
 
 import com.finki.mojtest.model.*;
 import com.finki.mojtest.model.dtos.QuestionDTO;
+import com.finki.mojtest.model.enumerations.QuestionType;
 import com.finki.mojtest.model.mappers.FileMapper;
 import com.finki.mojtest.model.mappers.QuestionMapper;
 import com.finki.mojtest.model.users.Teacher;
 import com.finki.mojtest.repository.*;
 import com.finki.mojtest.repository.users.TeacherRepository;
+import com.finki.mojtest.repository.users.UserRepository;
 import com.finki.mojtest.service.QuestionService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -29,59 +33,58 @@ public class QuestionServiceImpl implements QuestionService {
     private final MetadataRepository metadataRepository;
     private final TestRepository testRepository;
     private final FileRepository fileRepository;
+    private final UserRepository userRepository;
+    private final StudentAnswerRepository studentAnswerRepository;
+
     @Override
     public Question createQuestion(Question question) {
         return questionRepository.save(question);
     }
 
     @Override
+    @Transactional
     public Question createQuestionByDTO(QuestionDTO questionDTO) {
-        Question question = QuestionMapper.fromDTO(questionDTO, null,null, null, null,null,null); // No relationships mapped yet
-
-        File image = null;
-        if(questionDTO.getImage()!=null){
-            image = fileRepository.findById(questionDTO.getImage().getId()).orElse(null);
-            image = FileMapper.updateFromDto(image,questionDTO.getImage(),new Date());
+        // Validate essential fields
+        if (questionDTO.getCreatorId() == null) {
+            throw new IllegalArgumentException("Creator ID must not be null");
         }
-        question.setImage(image);
-        Teacher creator = teacherRepository.findById(questionDTO.getCreatorId())
-                .orElseThrow(() -> new EntityNotFoundException("Teacher not found"));
-        List<Metadata> metadataList = metadataRepository.findAllById(questionDTO.getMetadataIds());
-        List<Test> testList = testRepository.findAllById(questionDTO.getTestIds());
 
+        // Find the teacher
+        Teacher creator = (Teacher) userRepository.findById(questionDTO.getCreatorId())
+                .orElseThrow(() -> new EntityNotFoundException("Teacher not found with ID: " + questionDTO.getCreatorId()));
 
-        question.setCreator(creator); // Set the Teacher (creator) to the Question
-        question.setMetadata(metadataList); // Set the Metadata to the Question
-        question.setTests(testList); // Set the Tests to the Question
+        // Create the question
+        Question question = QuestionMapper.fromDTO(questionDTO);
+
+        // Set default type if null
+        if (question.getQuestionType() == null) {
+            question.setQuestionType(QuestionType.MULTIPLE_CHOICE);
+        }
+
+        // Set the creator
+        question.setCreator(creator);
+
+        // Save the question first to get its ID
         question = questionRepository.save(question);
 
-        // Create and save the answers if they exist
-        if (questionDTO.getAnswers() != null && !questionDTO.getAnswers().isEmpty()) {
-            Question finalQuestion = question;
-            List<Answer> answers = questionDTO.getAnswers().stream()
-                    .map(answerDTO -> {
-                        Answer answer = new Answer();
-                        answer.setAnswerText(answerDTO.getAnswerText());
-                        answer.setQuestion(finalQuestion);
-                        return answer;
-                    })
-                    .collect(Collectors.toList());
-            answers = answerRepository.saveAll(answers);
-            question.setAnswers(answers);
-
-        }
-        // Set the resolved relationships on the Question entity
-
-
-        // manually setting the related entity id to the file
-        if(image != null){
-            image.setRelatedEntityId(question.getId());
-            fileRepository.save(image);
+        // Create and save answers
+        List<Answer> answers = new ArrayList<>();
+        if (questionDTO.getAnswers() != null) {
+            for (int i = 0; i < questionDTO.getAnswers().size(); i++) {
+                var answerDTO = questionDTO.getAnswers().get(i);
+                Answer answer = new Answer();
+                answer.setAnswerText(answerDTO.getAnswerText());
+                answer.setCorrect(question.getQuestionType() == QuestionType.MULTIPLE_CHOICE ?
+                        answerDTO.isCorrect() : i == 0); // For non-MC questions, first answer is correct
+                answer.setQuestion(question);
+                answers.add(answerRepository.save(answer));
+            }
         }
 
-        return question;
+        // Set answers and save again
+        question.setAnswers(answers);
+        return questionRepository.save(question);
     }
-
 
     @Override
     public Question getQuestionById(Long id) {
@@ -136,15 +139,28 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
 
-    @Transactional
     @Override
+    @Transactional
     public void deleteQuestion(Long id) {
-        Question question = getQuestionById(id);
+        Question question = questionRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Question not found with id: " + id));
 
-        // Delete associated answers
+        // 1. Remove the question from all tests' question banks
+        for (Test test : question.getTests()) {
+            test.getQuestionBank().remove(question);
+            testRepository.save(test);
+        }
+
+        // 2. Delete all student answers associated with this question's answers
+        for (Answer answer : question.getAnswers()) {
+            // Delete all student answers that reference this answer
+            studentAnswerRepository.deleteAll(answer.getChosenBy());
+        }
+
+        // 3. Delete all answers associated with this question
         answerRepository.deleteAll(question.getAnswers());
 
-        // Delete the question
+        // 4. Finally, delete the question itself
         questionRepository.delete(question);
     }
 

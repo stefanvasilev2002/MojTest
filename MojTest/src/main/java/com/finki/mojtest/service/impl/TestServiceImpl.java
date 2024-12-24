@@ -35,7 +35,44 @@ public class TestServiceImpl implements TestService {
     private final StudentRepository studentRepository;
     private final StudentAnswerRepository studentAnswerRepository;
     private final UserRepository userRepository;
+    @Transactional
+    public Test addQuestionToTest(Long testId, Long questionId) {
+        Test test = testRepository.findById(testId)
+                .orElseThrow(() -> new EntityNotFoundException("Test not found with id: " + testId));
 
+        Question question = questionRepository.findById(questionId)
+                .orElseThrow(() -> new EntityNotFoundException("Question not found with id: " + questionId));
+
+        // Check if question is already in the test
+        if (test.getQuestionBank().contains(question)) {
+            throw new IllegalStateException("Question is already in the test");
+        }
+
+        // Add question to test's question bank
+        test.getQuestionBank().add(question);
+
+        return testRepository.save(test);
+    }
+
+    @Transactional
+    public Test removeQuestionFromTest(Long testId, Long questionId) {
+        Test test = testRepository.findById(testId)
+                .orElseThrow(() -> new EntityNotFoundException("Test not found with id: " + testId));
+
+        Question question = questionRepository.findById(questionId)
+                .orElseThrow(() -> new EntityNotFoundException("Question not found with id: " + questionId));
+
+        // Check if question is in the test
+        if (!test.getQuestionBank().contains(question)) {
+            throw new IllegalStateException("Question is not in the test");
+        }
+
+        // Remove question from test's question bank
+        test.getQuestionBank().remove(question);
+
+
+        return testRepository.save(test);
+    }
     @Override
     public Test createTest(TestDTO testDTO) {
         // Resolve relationships based on the DTO data
