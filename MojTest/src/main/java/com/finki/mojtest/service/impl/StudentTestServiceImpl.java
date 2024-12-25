@@ -3,13 +3,14 @@ package com.finki.mojtest.service.impl;
 import com.finki.mojtest.model.*;
 import com.finki.mojtest.model.dtos.*;
 import com.finki.mojtest.model.enumerations.QuestionType;
-import com.finki.mojtest.repository.AnswerRepository;
-import com.finki.mojtest.repository.QuestionRepository;
-import com.finki.mojtest.repository.StudentAnswerRepository;
-import com.finki.mojtest.repository.StudentTestRepository;
+import com.finki.mojtest.repository.*;
 import com.finki.mojtest.service.StudentTestService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -24,12 +25,14 @@ public class StudentTestServiceImpl implements StudentTestService {
     private final StudentAnswerRepository studentAnswerRepository;
     private final AnswerRepository answerRepository;
     private final QuestionRepository questionRepository;
+    private final TestQuestionRepository testQuestionRepository;
 
-    public StudentTestServiceImpl(StudentTestRepository studentTestRepository, StudentAnswerRepository studentAnswerRepository, AnswerRepository answerRepository, QuestionRepository questionRepository) {
+    public StudentTestServiceImpl(StudentTestRepository studentTestRepository, StudentAnswerRepository studentAnswerRepository, AnswerRepository answerRepository, QuestionRepository questionRepository, TestQuestionRepository testQuestionRepository) {
         this.studentTestRepository = studentTestRepository;
         this.studentAnswerRepository = studentAnswerRepository;
         this.answerRepository = answerRepository;
         this.questionRepository = questionRepository;
+        this.testQuestionRepository = testQuestionRepository;
     }
 
     @Override
@@ -221,6 +224,30 @@ public class StudentTestServiceImpl implements StudentTestService {
         studentTestRepository.save(studentTest);
 
         return feedbackDTO;
+    }
+
+    @Override
+    public Page<TestAttemptDTO> getTestAttempts(Long testId, Long studentId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("dateTaken").descending().and(Sort.by("timeTaken").descending()));
+
+        Page<StudentTest> attempts = studentTestRepository.findByTestIdAndStudentId(testId, studentId, pageable);
+
+        return attempts.map(attempt -> {
+            // For each attempt, calculate total points from its specific answers
+            int totalPoints = attempt.getAnswers().stream()
+                    .map(StudentAnswer::getTestQuestion)  // Get TestQuestion from each StudentAnswer
+                    .map(TestQuestion::getQuestion)       // Get Question from TestQuestion
+                    .mapToInt(Question::getPoints)        // Sum the points
+                    .sum();
+
+            return new TestAttemptDTO(
+                    attempt.getId(),
+                    attempt.getScore(),
+                    totalPoints,  // Now using points only from questions in this specific attempt
+                    attempt.getDateTaken(),
+                    attempt.getTimeTaken()
+            );
+        });
     }
 
     private void processUnansweredQuestion(StudentTest studentTest, TestQuestion testQuestion,

@@ -3,8 +3,9 @@ import useTest from '../hooks/crud/useTest';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import TestFilters from '../components/TestFilters';
-
+import TestAttempts from "../components/student/TestAttempts.jsx";
 const StudentDashboard = () => {
+    const [selectedTestId, setSelectedTestId] = useState(null);
     const { items: tests, loading, error } = useTest();
     const { user } = useAuth();
     const navigate = useNavigate();
@@ -202,8 +203,8 @@ const StudentDashboard = () => {
                                                 key={`${meta.key}-${meta.value}`}
                                                 className="inline-block px-2 py-1 text-xs font-semibold bg-blue-100 text-blue-800 rounded"
                                             >
-                                                {meta.key}: {meta.value}
-                                            </span>
+                                            {meta.key}: {meta.value}
+                                        </span>
                                         ))}
                                     </div>
 
@@ -211,16 +212,32 @@ const StudentDashboard = () => {
                                         <span>{test.numQuestions} questions</span>
                                     </div>
 
-                                    <button
-                                        onClick={() => handleStartTest(test.id)}
-                                        className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors"
-                                    >
-                                        Start Test
-                                    </button>
+                                    <div className="flex justify-between gap-2">
+                                        <button
+                                            onClick={() => handleStartTest(test.id)}
+                                            className="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors"
+                                        >
+                                            Start Test
+                                        </button>
+                                        <button
+                                            onClick={() => setSelectedTestId(test.id)}
+                                            className="bg-gray-600 text-white py-2 px-4 rounded-lg hover:bg-gray-700 transition-colors"
+                                        >
+                                            View Attempts
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         ))}
                     </div>
+                )}
+
+                {/* Test Attempts Modal */}
+                {selectedTestId && (
+                    <TestAttempts
+                        testId={selectedTestId}
+                        onClose={() => setSelectedTestId(null)}
+                    />
                 )}
             </div>
         </div>

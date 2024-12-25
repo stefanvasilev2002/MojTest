@@ -2,10 +2,12 @@ package com.finki.mojtest.web;
 
 import com.finki.mojtest.model.StudentTest;
 import com.finki.mojtest.model.dtos.AnswerSubmissionDTO;
+import com.finki.mojtest.model.dtos.TestAttemptDTO;
 import com.finki.mojtest.model.dtos.TestFeedbackDTO;
 import com.finki.mojtest.model.dtos.TestTakingDTO;
 import com.finki.mojtest.service.StudentTestService;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,7 +23,19 @@ public class StudentTestController {
     public StudentTestController(StudentTestService studentTestService) {
         this.studentTestService = studentTestService;
     }
-
+    @GetMapping("/attempts/{testId}")
+    public ResponseEntity<Page<TestAttemptDTO>> getTestAttempts(
+            @PathVariable Long testId,
+            @RequestParam Long studentId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        try {
+            Page<TestAttemptDTO> attempts = studentTestService.getTestAttempts(testId, studentId, page, size);
+            return ResponseEntity.ok(attempts);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
     @PostMapping("/{id}/submit")
     public ResponseEntity<TestFeedbackDTO> submitTest(@PathVariable Long id, @RequestBody List<AnswerSubmissionDTO> answers) {
         System.out.println("Submitting test for " + answers.size());
