@@ -8,6 +8,8 @@ import EssayAnswer from "../components/answers/EssayAnswer.jsx";
 import HintButton from "../components/student/HintButton.jsx"
 import Timer from "../components/student/Timer.jsx";
 import TimeUpModal from "../components/student/TimeUpModal.jsx";
+import FillInTheBlankAnswer from "../components/answers/FillInTheBlankAnswer.jsx";
+
 const TakeTestPage = () => {
     const {studentTestId} = useParams();
     const {state: initialState} = useLocation();
@@ -227,61 +229,86 @@ const TakeTestPage = () => {
                 <div className="space-y-6">
                     {testData.questions.map((question, index) => (
                         console.log("Test Data:", testData),
-                        console.log("Question:", question),
-                        <div key={question.questionId} className="bg-white p-6 rounded-lg shadow">
-                            <h2 className="text-xl font-semibold mb-2">
-                                Question {index + 1}: {question.description}
-                            </h2>
-                            <p className="text-gray-500 mb-4">Points: {question.points}</p>
-                            <div className="space-y-2">
-                                {question.questionType === 'TRUE_FALSE' && (
-                                    <RadioAnswer
-                                        question={question}
+                            console.log("Question:", question),
+                            <div key={question.questionId} className="bg-white p-6 rounded-lg shadow">
+                                <h2 className="text-xl font-semibold mb-2">
+                                    Question {index + 1}: {question.description}
+                                </h2>
+                                <p className="text-gray-500 mb-4">Points: {question.points}</p>
+                                <div className="space-y-2">
+                                    {question.questionType === 'TRUE_FALSE' && (
+                                        <RadioAnswer
+                                            question={question}
+                                            questionId={question.questionId}
+                                            correctAnswer={answers[question.questionId]}
+                                            onAnswerChange={handleAnswerChange}
+                                        />
+                                    )}
+                                    {question.questionType === 'MULTIPLE_CHOICE' && (
+                                        <MultipleChoiceAnswer
+                                            question={question}
+                                            questionId={question.questionId}
+                                            selectedAnswers={answers[question.questionId] || []}
+                                            onAnswerChange={handleCheckBoxChange}
+                                        />
+                                    )}
+                                    {question.questionType === 'NUMERIC' && (
+                                        <NumericAnswer
+                                            question={question}
+                                            questionId={question.questionId}
+                                            correctAnswer={answers[question.questionId]}
+                                            onAnswerChange={handleAnswerChange}
+                                        />
+                                    )}
+                                    {question.questionType === 'ESSAY' && (
+                                        <EssayAnswer
+                                            question={question}
+                                            questionId={question.questionId}
+                                            correctAnswer={answers[question.questionId]}
+                                            onAnswerChange={handleAnswerChange}
+                                        />
+                                    )}
+                                    {question.questionType === 'FILL_IN_THE_BLANK' && (
+                                        <FillInTheBlankAnswer
+                                            question={question}
+                                            questionId={question.questionId}
+                                            answer={answers[question.questionId]}
+                                            onAnswerChange={handleAnswerChange}
+                                        />
+                                    )}
+                                    <HintButton
+                                        hint={question.hint}
                                         questionId={question.questionId}
-                                        correctAnswer={answers[question.questionId]}
-                                        onAnswerChange={handleAnswerChange}
+                                        hintsUsed={hintsUsed}
+                                        onHintTaken={handleHintUsed}
                                     />
-                                )}
-                                {question.questionType === 'MULTIPLE_CHOICE' && (
-                                    <MultipleChoiceAnswer
-                                        question={question}
-                                        questionId={question.questionId}
-                                        selectedAnswers={answers[question.questionId] || []}
-                                        onAnswerChange={handleCheckBoxChange}
-                                    />
-                                )}
-                                {question.questionType === 'NUMERIC' && (
-                                    <NumericAnswer
-                                        question={question}
-                                        questionId={question.questionId}
-                                        correctAnswer={answers[question.questionId]}
-                                        onAnswerChange={handleAnswerChange}
-                                    />
-                                )}
-                                {question.questionType === 'ESSAY' && (
-                                    <EssayAnswer
-                                        question={question}
-                                        questionId={question.questionId}
-                                        correctAnswer={answers[question.questionId]}
-                                        onAnswerChange={handleAnswerChange}
-                                    />
-                                )}
-                                <HintButton
-                                    hint={question.hint}
-                                    questionId={question.questionId}
-                                    hintsUsed={hintsUsed}
-                                    onHintTaken={handleHintUsed}
-                                />
+                                </div>
                             </div>
-                        </div>
                     ))}
                 </div>
-                <button
-                    className="mt-6 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors"
-                    onClick={handleSubmitTest}
-                >
-                    Submit Test
-                </button>
+                <div className="flex gap-4 mt-6">
+                    <button
+                        className="bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors"
+                        onClick={handleSubmitTest}
+                    >
+                        Submit Test
+                    </button>
+                    <button
+                        className="bg-gray-600 text-white py-2 px-4 rounded-lg hover:bg-gray-700 transition-colors"
+                        onClick={() => {
+                            const confirmExit = window.confirm(
+                                'Are you sure you want to exit? This will abandon your test and you will need to start over. ' +
+                                'Your answers will not be saved.'
+                            );
+                            if (confirmExit) {
+                                clearTestStorage();
+                                navigate('/student-dashboard');
+                            }
+                        }}
+                    >
+                        Exit Test
+                    </button>
+                </div>
             </div>
         </div>
     );

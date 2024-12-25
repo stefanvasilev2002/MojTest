@@ -7,6 +7,8 @@ const Timer = ({ timeLimit, testId, onTimeUp }) => {
         // If no start time exists, this is a new test
         if (!testStartTime) {
             localStorage.setItem(`test_${testId}_start_time`, Date.now().toString());
+            // Add this line to store the time limit
+            localStorage.setItem(`test_${testId}_time`, timeLimit.toString());
             return timeLimit * 60;
         }
 
@@ -61,6 +63,20 @@ const Timer = ({ timeLimit, testId, onTimeUp }) => {
             setIsWarning(false);
         }
     }, [timeLeft]);
+// Add the new useEffect here for last activity tracking
+    useEffect(() => {
+        const updateLastActivity = () => {
+            localStorage.setItem(`test_${testId}_lastUpdate`, Date.now().toString());
+        };
+
+        // Update immediately when component mounts
+        updateLastActivity();
+
+        // Then update every 30 seconds
+        const interval = setInterval(updateLastActivity, 30000);
+
+        return () => clearInterval(interval);
+    }, [testId]);
 
     const formatTime = (seconds) => {
         const hours = Math.floor(seconds / 3600);

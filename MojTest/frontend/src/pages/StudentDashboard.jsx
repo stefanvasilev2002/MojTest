@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import useTest from '../hooks/crud/useTest';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -16,6 +16,104 @@ const StudentDashboard = () => {
         testType: '',
         duration: ''
     });
+
+    useEffect(() => {
+        const checkActiveTest = () => {
+            const lastTestId = localStorage.getItem('last_test_id');
+            if (!lastTestId) return;
+
+            const testStartTime = localStorage.getItem(`test_${lastTestId}_start_time`);
+            const timeLimit = localStorage.getItem(`test_${lastTestId}_time`); // Fixed variable name here
+
+            if (testStartTime && timeLimit) {
+                const startTime = parseInt(testStartTime);
+                const limit = parseInt(timeLimit);
+                const currentTime = Date.now();
+                const timePassed = (currentTime - startTime) / (1000 * 60); // Convert to minutes
+
+                if (timePassed < limit) {
+                    // In this case, we want to just redirect them back to their test
+                    // without showing a confirmation dialog since they're in the middle of a test
+                    navigate(`/take-test/${lastTestId}`);
+                } else {
+                    // Test has expired, clean up storage
+                    clearTestStorage(lastTestId);
+                }
+            }
+        };
+
+        checkActiveTest();
+    }, [navigate]);
+
+    const clearTestStorage = (testId) => {
+        localStorage.removeItem(`test_${testId}_start_time`);
+        localStorage.removeItem(`test_${testId}_time`);
+        localStorage.removeItem(`test_${testId}_lastUpdate`);
+        localStorage.removeItem(`test_${testId}_answers`);
+        localStorage.removeItem(`test_${testId}_hints`);
+        localStorage.removeItem(`test_${testId}_data`);
+        localStorage.removeItem('last_test_id');
+    };
+
+    const handleStartTest = async (testId) => {
+        try {
+            // Check if there's an active test
+            const lastTestId = localStorage.getItem('last_test_id');
+            if (lastTestId) {
+                const testStartTime = localStorage.getItem(`test_${lastTestId}_start_time`);
+                const testTimeLimit = localStorage.getItem(`test_${lastTestId}_time`);
+
+                if (testStartTime && testTimeLimit) {
+                    const startTime = parseInt(testStartTime);
+                    const timeLimit = parseInt(testTimeLimit);
+                    const currentTime = Date.now();
+                    const timePassed = (currentTime - startTime) / (1000 * 60); // Convert to minutes
+
+                    if (timePassed < timeLimit) {
+                        // There's an active test
+                        const continueTest = window.confirm(
+                            'You have an ongoing test. Would you like to continue that test? ' +
+                            'Clicking Cancel will abandon the previous test and start a new one.'
+                        );
+
+                        if (continueTest) {
+                            navigate(`/take-test/${lastTestId}`);
+                            return;
+                        } else {
+                            // Clear previous test data if user wants to start a new one
+                            clearTestStorage(lastTestId);
+                        }
+                    } else {
+                        // Test has expired, clean up storage
+                        clearTestStorage(lastTestId);
+                    }
+                }
+            }
+
+            // Start new test
+            const response = await fetch(`http://localhost:8080/api/tests/start/${testId}?studentId=${user.id}`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${user.token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to start test');
+            }
+
+            const data = await response.json();
+
+            // Store the new test ID
+            localStorage.setItem('last_test_id', data.studentTestId);
+
+            navigate(`/take-test/${data.studentTestId}`, { state: data });
+        } catch (err) {
+            console.error('Error starting test:', err);
+            alert('Failed to start test: ' + (err.message || 'Please try again'));
+        }
+    };
 
     const handleFilterChange = (filterName, value) => {
         setFilters(prev => ({
@@ -47,27 +145,6 @@ const StudentDashboard = () => {
         });
     }, [tests, filters, user.grade]);
 
-    const handleStartTest = async (testId) => {
-        try {
-            const response = await fetch(`http://localhost:8080/api/tests/start/${testId}?studentId=${user.id}`, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${user.token}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to start test');
-            }
-
-            const data = await response.json();
-            navigate(`/take-test/${data.studentTestId}`, { state: data });
-        } catch (err) {
-            console.error('Error starting test:', err);
-            alert('Failed to start test: ' + (err.message || 'Please try again'));
-        }
-    };
 
     if (loading) {
         return (
