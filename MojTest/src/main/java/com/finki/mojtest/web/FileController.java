@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -15,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.Date;
+import java.util.Map;
 
 @RequiredArgsConstructor
 @RestController
@@ -110,20 +112,27 @@ public class FileController {
     }
 
     @GetMapping("/download/{id}/inline")
-    public ResponseEntity<Resource> downloadFileInline(@PathVariable Long id) {
+    public ResponseEntity<Resource> downloadFileInline(@PathVariable Long id) throws MalformedURLException {
         File fileEntity = fileRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("File not found with id: " + id));
-
+                .orElseThrow(() -> new RuntimeException("File not found"));
+        Resource resource = fileStorageService.loadFileAsResource(fileEntity.getFilePath());
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_TYPE, fileEntity.getFileType())
+                .body(resource);
+    }
+    @GetMapping("/download/{id}/test")
+    public ResponseEntity<Resource> testLoadFile(@PathVariable Long id) {
         try {
+            File fileEntity = fileRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("File not found"));
             Resource resource = fileStorageService.loadFileAsResource(fileEntity.getFilePath());
             return ResponseEntity.ok()
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
+                    .contentType(MediaType.parseMediaType(fileEntity.getFileType()))
                     .body(resource);
-        } catch (MalformedURLException e) {
-            throw new RuntimeException("Error loading file: " + fileEntity.getFileName(), e);
+        } catch (Exception e) {
+            throw new RuntimeException("Error loading file: " + e.getMessage());
         }
     }
-
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> deleteFile(@PathVariable Long id) throws IOException {
         File fileEntity = fileRepository.findById(id)
@@ -133,7 +142,18 @@ public class FileController {
         return ResponseEntity.ok("File deleted successfully.");
 
     }
+    @GetMapping("/check/{id}")
+    public ResponseEntity<?> checkFile(@PathVariable Long id) {
+        File fileEntity = fileRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("File not found with id: " + id));
 
+        return ResponseEntity.ok()
+                .body(Map.of(
+                        "exists", true,
+                        "type", fileEntity.getFileType(),
+                        "path", fileEntity.getFilePath()
+                ));
+    }
     @PutMapping("/update/{id}")
     public ResponseEntity<UploadFileResponse> updateFile(@PathVariable Long id, @RequestParam("file") MultipartFile newFile) {
         File fileEntity = fileRepository.findById(id)

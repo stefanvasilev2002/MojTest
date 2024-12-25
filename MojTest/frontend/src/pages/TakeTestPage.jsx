@@ -1,26 +1,33 @@
-import React, {useEffect, useState} from 'react';
-import {useLocation, useNavigate, useParams} from 'react-router-dom';
-import {useAuth} from '../context/AuthContext';
+import React, { useEffect, useState } from 'react';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import RadioAnswer from "../components/answers/RadioAnswer.jsx";
 import MultipleChoiceAnswer from "../components/answers/MultipleChoiceAnswer.jsx";
 import NumericAnswer from "../components/answers/NumericAnswer.jsx";
 import EssayAnswer from "../components/answers/EssayAnswer.jsx";
-import HintButton from "../components/student/HintButton.jsx"
+import HintButton from "../components/student/HintButton.jsx";
 import Timer from "../components/student/Timer.jsx";
 import TimeUpModal from "../components/student/TimeUpModal.jsx";
 import FillInTheBlankAnswer from "../components/answers/FillInTheBlankAnswer.jsx";
+import ExitConfirmationModal from "../components/student/ExitConfirmationModal.jsx";
+import QuestionNavigation from "../components/student/QuestionNavigation.jsx";
+import SubmitConfirmationModal from "../components/student/SubmitConfirmationModal.jsx";
 
 const TakeTestPage = () => {
-    const {studentTestId} = useParams();
-    const {state: initialState} = useLocation();
-    const {user} = useAuth();
+    const { studentTestId } = useParams();
+    const { state: initialState } = useLocation();
+    const { user } = useAuth();
     const navigate = useNavigate();
 
     const [testData, setTestData] = useState(initialState || null);
     const [loading, setLoading] = useState(!initialState);
     const [error, setError] = useState(null);
     const [showTimeUpModal, setShowTimeUpModal] = useState(false);
+    const [showExitModal, setShowExitModal] = useState(false);
+    const [unansweredQuestions, setUnansweredQuestions] = useState([]);
+    const [showSubmitModal, setShowSubmitModal] = useState(false);
 
+    const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [answers, setAnswers] = useState(() => {
         const savedAnswers = localStorage.getItem(`test_${studentTestId}_answers`);
         return savedAnswers ? JSON.parse(savedAnswers) : {};
@@ -31,28 +38,44 @@ const TakeTestPage = () => {
         return savedHints ? JSON.parse(savedHints) : {};
     });
 
+    // Navigation handlers
+    const handleNextQuestion = () => {
+        if (currentQuestionIndex < testData.questions.length - 1) {
+            setCurrentQuestionIndex(prev => prev + 1);
+        }
+    };
+
+    const handlePrevQuestion = () => {
+        if (currentQuestionIndex > 0) {
+            setCurrentQuestionIndex(prev => prev - 1);
+        }
+    };
+
+    const handleExit = async () => {
+        await abandonTest();
+        navigate('/student-dashboard');
+    };
+
     const handleTimeUp = () => {
         setShowTimeUpModal(true);
-        // Submit after a short delay to allow modal to be seen
         setTimeout(() => {
             handleSubmitTest();
         }, 2000);
     };
 
+    // Local storage effects
     useEffect(() => {
-        // Save answers whenever they change
         localStorage.setItem(`test_${studentTestId}_answers`, JSON.stringify(answers));
     }, [answers, studentTestId]);
 
     useEffect(() => {
-        // Save hints whenever they change
         localStorage.setItem(`test_${studentTestId}_hints`, JSON.stringify(hintsUsed));
     }, [hintsUsed, studentTestId]);
-    useEffect(() => {
-        console.log("Initial state from location:", initialState);
 
+    // Test data initialization effect
+    useEffect(() => {
+        console.log('testData:', testData);
         if (testData == null) {
-            // Check if we have saved test data
             const savedTestData = localStorage.getItem(`test_${studentTestId}_data`);
             if (savedTestData) {
                 setTestData(JSON.parse(savedTestData));
@@ -61,10 +84,8 @@ const TakeTestPage = () => {
                 fetchTestData();
             }
         } else {
-            // Save test data when we get it
             localStorage.setItem(`test_${studentTestId}_data`, JSON.stringify(testData));
 
-            // Only initialize answers if they don't exist
             if (Object.keys(answers).length === 0) {
                 const initialAnswers = {};
                 testData.questions.forEach(question => {
@@ -75,8 +96,8 @@ const TakeTestPage = () => {
         }
     }, [studentTestId, testData]);
 
-    // Clear all test data after submission
-    const clearTestStorage = () => {
+    // Storage management functions
+    const clearLocalStorage = () => {
         localStorage.removeItem(`test_${studentTestId}_start_time`);
         localStorage.removeItem(`test_${studentTestId}_time`);
         localStorage.removeItem(`test_${studentTestId}_lastUpdate`);
@@ -86,6 +107,26 @@ const TakeTestPage = () => {
         localStorage.removeItem('last_test_id');
     };
 
+    const abandonTest = async () => {
+        try {
+            const response = await fetch(`http://localhost:8080/api/student-tests/cancel/${studentTestId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${user.token}`
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to cancel test');
+            }
+            clearLocalStorage();
+        } catch (err) {
+            console.error('Error canceling test:', err);
+            alert('Failed to cancel test: ' + err.message);
+        }
+    };
+
+    // Data fetching and answer handling
     const fetchTestData = async () => {
         try {
             const response = await fetch(`http://localhost:8080/api/student-tests/${studentTestId}/take`, {
@@ -93,13 +134,12 @@ const TakeTestPage = () => {
                     'Authorization': `Bearer ${user.token}`,
                 },
             });
-
+            console.log('response:', response);
             if (!response.ok) {
                 throw new Error('Failed to fetch test data');
             }
 
             const data = await response.json();
-            console.log("Fetched test data:", data);
             setTestData(data);
             setLoading(false);
 
@@ -116,11 +156,13 @@ const TakeTestPage = () => {
     };
 
     const handleAnswerChange = (questionId, answer) => {
-        setAnswers({...answers, [questionId]: answer});
+        setAnswers({ ...answers, [questionId]: answer });
     };
+
     const handleHintUsed = (questionId) => {
         setHintsUsed(prev => ({...prev, [questionId]: true}));
     };
+
     const handleCheckBoxChange = (questionId, answerId) => {
         const currentAnswers = Array.isArray(answers[questionId]) ? answers[questionId] : [];
         const isSelected = currentAnswers.includes(answerId);
@@ -133,6 +175,13 @@ const TakeTestPage = () => {
         });
     };
 
+    const handleOpenSubmitModal = () => {
+        setShowSubmitModal(true);
+    };
+    const handleConfirmSubmit = () => {
+        setShowSubmitModal(false);
+        handleSubmitTest();
+    };
     const handleSubmitTest = async () => {
         try {
             const answersToSend = Object.entries(answers).flatMap(([questionId, answerValue]) => {
@@ -166,8 +215,6 @@ const TakeTestPage = () => {
                 }
             }).filter(answer => answer !== null);
 
-            console.log('Submitting answers:', answersToSend);
-
             const response = await fetch(`http://localhost:8080/api/student-tests/${studentTestId}/submit`, {
                 method: 'POST',
                 headers: {
@@ -183,15 +230,13 @@ const TakeTestPage = () => {
             }
 
             const feedback = await response.json();
-            console.log('Test feedback:', feedback);
-            clearTestStorage();
-            navigate('/test-results', {state: feedback});
+            clearLocalStorage();
+            navigate('/test-results', { state: feedback });
         } catch (err) {
             console.error('Error submitting test:', err);
             alert(err.message);
         }
     };
-
     if (loading) {
         return (
             <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -210,11 +255,25 @@ const TakeTestPage = () => {
         );
     }
 
+    const currentQuestion = testData.questions[currentQuestionIndex];
+
     return (
         <div className="min-h-screen bg-gray-50 p-6">
             <TimeUpModal
                 isOpen={showTimeUpModal}
                 onClose={() => setShowTimeUpModal(false)}
+            />
+            <ExitConfirmationModal
+                isOpen={showExitModal}
+                onClose={() => setShowExitModal(false)}
+                onConfirm={handleExit}
+            />
+            <SubmitConfirmationModal
+                isOpen={showSubmitModal}
+                onClose={() => setShowSubmitModal(false)}
+                onConfirm={handleConfirmSubmit}
+                questions={testData.questions}
+                answers={answers}
             />
             {testData && (
                 <Timer
@@ -223,95 +282,139 @@ const TakeTestPage = () => {
                     testId={studentTestId}
                 />
             )}
-            <div className="max-w-4xl mx-auto">
+            <div className="max-w-7xl mx-auto">
                 <h1 className="text-3xl font-bold text-blue-600 mb-6">{testData.testTitle}</h1>
                 <p className="text-lg text-gray-600 mb-4">Time limit: {testData.timeLimit} minutes</p>
-                <div className="space-y-6">
-                    {testData.questions.map((question, index) => (
-                        console.log("Test Data:", testData),
-                            console.log("Question:", question),
-                            <div key={question.questionId} className="bg-white p-6 rounded-lg shadow">
-                                <h2 className="text-xl font-semibold mb-2">
-                                    Question {index + 1}: {question.description}
+
+                <div className="flex gap-6">
+                    {/* Question Navigation Sidebar */}
+                    <QuestionNavigation
+                        questions={testData.questions}
+                        currentQuestion={currentQuestionIndex}
+                        onQuestionChange={setCurrentQuestionIndex}
+                        answers={answers}
+                    />
+
+                    {/* Current Question Display */}
+                    <div className="flex-1">
+                        <div className="bg-white p-6 rounded-lg shadow">
+                            <div className="flex justify-between items-center mb-4">
+                                <h2 className="text-xl font-semibold">
+                                    Question {currentQuestionIndex + 1} of {testData.questions.length}
                                 </h2>
-                                <p className="text-gray-500 mb-4">Points: {question.points}</p>
-                                <div className="space-y-2">
-                                    {question.questionType === 'TRUE_FALSE' && (
+                                <span className="text-gray-500">
+                                    Points: {currentQuestion.points}
+                                </span>
+                            </div>
+
+                            <div className="mb-6">
+                                <p className="text-lg mb-4">{currentQuestion.description}</p>
+                                {currentQuestion.imageId && (
+                                    console.log('Image URL:', `http://localhost:8080/api/files/download/${currentQuestion.imageId}/inline`),
+                                        <img
+                                            src={`http://localhost:8080/api/files/download/${currentQuestion.imageId}/inline`}
+                                            alt="Question illustration"
+                                            className="mb-4 max-w-full h-auto"
+                                            onError={(e) => console.error('Image load error:', e)}
+                                        />
+                                )}
+                                <div className="space-y-4">
+                                    {currentQuestion.questionType === 'TRUE_FALSE' && (
                                         <RadioAnswer
-                                            question={question}
-                                            questionId={question.questionId}
-                                            correctAnswer={answers[question.questionId]}
+                                            question={currentQuestion}
+                                            questionId={currentQuestion.questionId}
+                                            correctAnswer={answers[currentQuestion.questionId]}
                                             onAnswerChange={handleAnswerChange}
                                         />
                                     )}
-                                    {question.questionType === 'MULTIPLE_CHOICE' && (
+                                    {currentQuestion.questionType === 'MULTIPLE_CHOICE' && (
                                         <MultipleChoiceAnswer
-                                            question={question}
-                                            questionId={question.questionId}
-                                            selectedAnswers={answers[question.questionId] || []}
+                                            question={currentQuestion}
+                                            questionId={currentQuestion.questionId}
+                                            selectedAnswers={answers[currentQuestion.questionId] || []}
                                             onAnswerChange={handleCheckBoxChange}
                                         />
                                     )}
-                                    {question.questionType === 'NUMERIC' && (
+                                    {currentQuestion.questionType === 'NUMERIC' && (
                                         <NumericAnswer
-                                            question={question}
-                                            questionId={question.questionId}
-                                            correctAnswer={answers[question.questionId]}
+                                            question={currentQuestion}
+                                            questionId={currentQuestion.questionId}
+                                            correctAnswer={answers[currentQuestion.questionId]}
                                             onAnswerChange={handleAnswerChange}
                                         />
                                     )}
-                                    {question.questionType === 'ESSAY' && (
+                                    {currentQuestion.questionType === 'ESSAY' && (
                                         <EssayAnswer
-                                            question={question}
-                                            questionId={question.questionId}
-                                            correctAnswer={answers[question.questionId]}
+                                            question={currentQuestion}
+                                            questionId={currentQuestion.questionId}
+                                            correctAnswer={answers[currentQuestion.questionId]}
                                             onAnswerChange={handleAnswerChange}
                                         />
                                     )}
-                                    {question.questionType === 'FILL_IN_THE_BLANK' && (
+                                    {currentQuestion.questionType === 'FILL_IN_THE_BLANK' && (
                                         <FillInTheBlankAnswer
-                                            question={question}
-                                            questionId={question.questionId}
-                                            answer={answers[question.questionId]}
+                                            question={currentQuestion}
+                                            questionId={currentQuestion.questionId}
+                                            answer={answers[currentQuestion.questionId]}
                                             onAnswerChange={handleAnswerChange}
                                         />
                                     )}
+
                                     <HintButton
-                                        hint={question.hint}
-                                        questionId={question.questionId}
+                                        hint={currentQuestion.hint}
+                                        questionId={currentQuestion.questionId}
                                         hintsUsed={hintsUsed}
                                         onHintTaken={handleHintUsed}
                                     />
                                 </div>
+
+                                {/* Question Navigation */}
+                                <div className="flex justify-between mt-6">
+                                    <button
+                                        onClick={handlePrevQuestion}
+                                        disabled={currentQuestionIndex === 0}
+                                        className={`px-4 py-2 rounded ${
+                                            currentQuestionIndex === 0
+                                                ? 'bg-gray-300 cursor-not-allowed'
+                                                : 'bg-blue-600 text-white hover:bg-blue-700'
+                                        }`}
+                                    >
+                                        Previous
+                                    </button>
+                                    <button
+                                        onClick={handleNextQuestion}
+                                        disabled={currentQuestionIndex === testData.questions.length - 1}
+                                        className={`px-4 py-2 rounded ${
+                                            currentQuestionIndex === testData.questions.length - 1
+                                                ? 'bg-gray-300 cursor-not-allowed'
+                                                : 'bg-blue-600 text-white hover:bg-blue-700'
+                                        }`}
+                                    >
+                                        Next
+                                    </button>
+                                </div>
                             </div>
-                    ))}
-                </div>
-                <div className="flex gap-4 mt-6">
-                    <button
-                        className="bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors"
-                        onClick={handleSubmitTest}
-                    >
-                        Submit Test
-                    </button>
-                    <button
-                        className="bg-gray-600 text-white py-2 px-4 rounded-lg hover:bg-gray-700 transition-colors"
-                        onClick={() => {
-                            const confirmExit = window.confirm(
-                                'Are you sure you want to exit? This will abandon your test and you will need to start over. ' +
-                                'Your answers will not be saved.'
-                            );
-                            if (confirmExit) {
-                                clearTestStorage();
-                                navigate('/student-dashboard');
-                            }
-                        }}
-                    >
-                        Exit Test
-                    </button>
+                        </div>
+
+                        {/* Submit/Exit Buttons */}
+                        <div className="flex gap-4 mt-6">
+                            <button
+                                className="bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors"
+                                onClick={handleOpenSubmitModal}
+                            >
+                                Submit Test
+                            </button>
+                            <button
+                                className="bg-gray-600 text-white py-2 px-4 rounded-lg hover:bg-gray-700 transition-colors"
+                                onClick={() => setShowExitModal(true)}
+                            >
+                                Exit Test
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     );
-};
-
+}
 export default TakeTestPage;

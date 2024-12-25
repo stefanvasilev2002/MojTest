@@ -36,6 +36,17 @@ public class StudentTestController {
             return ResponseEntity.notFound().build();
         }
     }
+    @DeleteMapping("/cancel/{id}")
+    public ResponseEntity<Void> cancelStudentTest(@PathVariable Long id) {
+        try {
+            studentTestService.deleteStudentTest(id);
+            return ResponseEntity.ok().build();
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
     @PostMapping("/{id}/submit")
     public ResponseEntity<TestFeedbackDTO> submitTest(@PathVariable Long id, @RequestBody List<AnswerSubmissionDTO> answers) {
         System.out.println("Submitting test for " + answers.size());

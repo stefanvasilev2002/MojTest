@@ -112,7 +112,7 @@ const TestResultsPage = () => {
                 {/* Navigation Buttons */}
                 <div className="mt-6 flex justify-between">
                     <button
-                        onClick={() => navigate('/dashboard')}
+                        onClick={() => navigate('/student-dashboard')}
                         className="bg-gray-600 text-white py-2 px-4 rounded hover:bg-gray-700"
                     >
                         Return to Dashboard

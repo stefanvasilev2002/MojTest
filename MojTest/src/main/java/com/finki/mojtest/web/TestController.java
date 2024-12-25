@@ -47,6 +47,9 @@ public class TestController {
             TestQuestionViewDTO questionDTO = new TestQuestionViewDTO();
             Question question = studentAnswer.getTestQuestion().getQuestion();
 
+            if(question.getImage() != null) {
+                questionDTO.setImageId(question.getImage().getId());
+            }
             questionDTO.setQuestionId(question.getId());
             questionDTO.setTestQuestionId(studentAnswer.getTestQuestion().getId());
             questionDTO.setDescription(question.getDescription());

@@ -14,4 +14,5 @@ public class TestQuestionViewDTO {
     private List<AnswerViewDTO> possibleAnswers;
     private Long studentAnswerId;
     private String hint;
+    private Long imageId;
 }

@@ -108,8 +108,9 @@ const StudentDashboard = () => {
 
             // Store the new test ID
             localStorage.setItem('last_test_id', data.studentTestId);
-
+            console.log("data", data);
             navigate(`/take-test/${data.studentTestId}`, { state: data });
+
         } catch (err) {
             console.error('Error starting test:', err);
             alert('Failed to start test: ' + (err.message || 'Please try again'));
