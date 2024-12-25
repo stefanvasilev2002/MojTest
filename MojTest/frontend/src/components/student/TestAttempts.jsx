@@ -107,7 +107,7 @@ const TestAttempts = ({ testId, onClose }) => {
                                             </p>
                                         </div>
                                         <button
-                                            onClick={() => navigate('/test-results', { state: { studentTestId: attempt.id }})}
+                                            onClick={() => navigate('/test-details', { state: { studentTestId: attempt.id }})}
                                             className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors text-sm"
                                         >
                                             View Details

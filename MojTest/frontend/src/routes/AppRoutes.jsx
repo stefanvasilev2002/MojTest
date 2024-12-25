@@ -43,6 +43,7 @@ import EditQuestionPage from "../pages/teacher/EditQuestionPage.jsx";
 import EditTestPage from "../pages/teacher/EditTestPage.jsx";
 import QuestionsPage from "../pages/teacher/QuestionsPage.jsx";
 import QuestionDetails from "../components/crud/QuestionDetails.jsx";
+import TestDetailsPage from "../pages/TestDetailsPage.jsx";
 const AppRoutes = () => {
     return (
         <AuthProvider>
@@ -97,7 +98,12 @@ const AppRoutes = () => {
                     }>
                         <Route path="/test-results" element={<TestResultsPage/>}/></Route>
 
-
+                    <Route path="/test-details" element={
+                        <PrivateRoute requiredRole={["student", "admin"]}>
+                            <StudentLayout/>
+                        </PrivateRoute>
+                    }>
+                        <Route path="/test-details" element={<TestDetailsPage/>}/></Route>
                     {/* Admin Routes */}
                     <Route path="/crud/hub" element={
                         <PrivateRoute requiredRole="admin">

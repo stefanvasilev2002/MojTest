@@ -250,6 +250,55 @@ public class StudentTestServiceImpl implements StudentTestService {
         });
     }
 
+    @Override
+    public TestResultsDTO getTestResults(Long studentTestId) {
+        StudentTest studentTest = studentTestRepository.findById(studentTestId)
+                .orElseThrow(() -> new EntityNotFoundException("Student test not found"));
+
+        List<QuestionResultDTO> questionResults = studentTest.getAnswers().stream()
+                .map(studentAnswer -> {
+                    Question question = studentAnswer.getTestQuestion().getQuestion();
+                    return QuestionResultDTO.builder()
+                            .questionId(question.getId())
+                            .description(question.getDescription())
+                            .questionType(question.getQuestionType().toString())
+                            .points(question.getPoints())
+                            .studentAnswer(getStudentAnswer(studentAnswer))
+                            .correctAnswer(getCorrectAnswer(question))
+                            .imageId(question.getImage() != null ? question.getImage().getId() : null)
+                            .build();
+                })
+                .collect(Collectors.toList());
+
+        return TestResultsDTO.builder()
+                .studentTestId(studentTestId)
+                .testTitle(studentTest.getTest().getTitle())
+                .questions(questionResults)
+                .score(studentTest.getScore())
+                .totalPoints(calculateTotalPoints(studentTest))
+                .scorePercentage((double) studentTest.getScore() / calculateTotalPoints(studentTest) * 100)
+                .build();
+    }
+
+    private String getStudentAnswer(StudentAnswer sa) {
+        return sa.getChosenAnswer() != null ?
+                sa.getChosenAnswer().getAnswerText() :
+                sa.getSubmittedValue();
+    }
+
+    private String getCorrectAnswer(Question q) {
+        return q.getAnswers().stream()
+                .filter(Answer::isCorrect)
+                .map(Answer::getAnswerText)
+                .collect(Collectors.joining(", "));
+    }
+
+    private int calculateTotalPoints(StudentTest st) {
+        return st.getTest().getQuestions().stream()
+                .mapToInt(tq -> tq.getQuestion().getPoints())
+                .sum();
+    }
+
     private void processUnansweredQuestion(StudentTest studentTest, TestQuestion testQuestion,
                                            Question question, AnswerFeedbackDTO answerFeedbackDTO) {
         StudentAnswer studentAnswer = new StudentAnswer();

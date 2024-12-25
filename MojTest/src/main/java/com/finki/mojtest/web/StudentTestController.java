@@ -1,10 +1,7 @@
 package com.finki.mojtest.web;
 
 import com.finki.mojtest.model.StudentTest;
-import com.finki.mojtest.model.dtos.AnswerSubmissionDTO;
-import com.finki.mojtest.model.dtos.TestAttemptDTO;
-import com.finki.mojtest.model.dtos.TestFeedbackDTO;
-import com.finki.mojtest.model.dtos.TestTakingDTO;
+import com.finki.mojtest.model.dtos.*;
 import com.finki.mojtest.service.StudentTestService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.data.domain.Page;
@@ -101,6 +98,11 @@ public class StudentTestController {
     public ResponseEntity<StudentTest> getStudentTestById(@PathVariable Long id) {
         StudentTest studentTest = studentTestService.getStudentTestById(id);
         return new ResponseEntity<>(studentTest, HttpStatus.OK);
+    }
+    @GetMapping("/results/{studentTestId}")
+    public ResponseEntity<TestResultsDTO> getTestResults(@PathVariable Long studentTestId) {
+        TestResultsDTO results = studentTestService.getTestResults(studentTestId);
+        return ResponseEntity.ok(results);
     }
 
     // Update an existing StudentTest

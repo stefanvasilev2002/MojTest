@@ -1,10 +1,7 @@
 package com.finki.mojtest.service;
 
 import com.finki.mojtest.model.StudentTest;
-import com.finki.mojtest.model.dtos.AnswerSubmissionDTO;
-import com.finki.mojtest.model.dtos.TestAttemptDTO;
-import com.finki.mojtest.model.dtos.TestFeedbackDTO;
-import com.finki.mojtest.model.dtos.TestTakingDTO;
+import com.finki.mojtest.model.dtos.*;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
@@ -25,4 +22,6 @@ public interface StudentTestService {
     TestFeedbackDTO evaluateTest(Long id, List<AnswerSubmissionDTO> answers);
 
     Page<TestAttemptDTO> getTestAttempts(Long testId, Long studentId, int page, int size);
+
+    TestResultsDTO getTestResults(Long studentTestId);
 }
