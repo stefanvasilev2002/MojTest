@@ -23,37 +23,4 @@ public class TestAttemptDTO {
         this.dateTaken = dateTaken;
         this.timeTaken = timeTaken;
     }
-
-    // Getters and Setters
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public int getScore() {
-        return score;
-    }
-
-    public void setScore(int score) {
-        this.score = score;
-    }
-
-    public LocalDate getDateTaken() {
-        return dateTaken;
-    }
-
-    public void setDateTaken(LocalDate dateTaken) {
-        this.dateTaken = dateTaken;
-    }
-
-    public LocalTime getTimeTaken() {
-        return timeTaken;
-    }
-
-    public void setTimeTaken(LocalTime timeTaken) {
-        this.timeTaken = timeTaken;
-    }
 }

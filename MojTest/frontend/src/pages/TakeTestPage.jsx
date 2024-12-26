@@ -190,24 +190,24 @@ const TakeTestPage = () => {
 
                 switch (question.questionType) {
                     case 'MULTIPLE_CHOICE':
-                        const answerIds = Array.isArray(answerValue) ? answerValue : [answerValue];
-                        return answerIds.map(answerId => ({
-                            questionId: parseInt(questionId),
-                            answerId: parseInt(answerId),
-                            questionType: question.questionType
-                        }));
-                    case 'NUMERIC':
-                    case 'ESSAY':
-                    case 'FILL_IN_THE_BLANK':
                         return [{
                             questionId: parseInt(questionId),
-                            textAnswer: answerValue.toString(),
+                            answerIds: Array.isArray(answerValue) ? answerValue.map(id => parseInt(id)) : [parseInt(answerValue)],
                             questionType: question.questionType
                         }];
                     case 'TRUE_FALSE':
                         return [{
                             questionId: parseInt(questionId),
-                            answerId: parseInt(answerValue),
+                            answerIds: [parseInt(answerValue)],
+                            questionType: question.questionType
+                        }];
+                    case 'NUMERIC':
+                    case 'ESSAY':
+                    case 'FILL_IN_THE_BLANK':
+                        return [{
+                            questionId: parseInt(questionId),
+                            answerIds: [],
+                            textAnswer: answerValue.toString(),
                             questionType: question.questionType
                         }];
                     default:
@@ -236,8 +236,7 @@ const TakeTestPage = () => {
             console.error('Error submitting test:', err);
             alert(err.message);
         }
-    };
-    if (loading) {
+    };    if (loading) {
         return (
             <div className="min-h-screen bg-gray-50 flex items-center justify-center">
                 <p className="text-lg">Loading test...</p>

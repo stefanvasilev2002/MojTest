@@ -156,300 +156,445 @@ public class StudentTestServiceImpl implements StudentTestService {
     @Override
     @Transactional
     public TestFeedbackDTO evaluateTest(Long studentTestId, List<AnswerSubmissionDTO> answers) {
+        // 1. Retrieve the StudentTest and validate
         StudentTest studentTest = studentTestRepository.findById(studentTestId)
-                .orElseThrow(() -> new EntityNotFoundException("Student Test not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Student test not found"));
 
-        TestFeedbackDTO feedbackDTO = new TestFeedbackDTO();
-        feedbackDTO.setStudentTestId(studentTestId);
-
-        List<AnswerFeedbackDTO> answerFeedbackList = new ArrayList<>();
-        Map<Long, List<AnswerSubmissionDTO>> submittedAnswerMap = answers.stream()
-                .collect(Collectors.groupingBy(AnswerSubmissionDTO::getQuestionId));
-
-        int totalScore = 0;
-        int maxScore = 0;
-
-        // Delete existing answers
-        List<StudentAnswer> existingAnswers = studentAnswerRepository.findByStudentTestId(studentTestId);
-        if (!existingAnswers.isEmpty()) {
-            studentAnswerRepository.deleteAll(existingAnswers);
-            studentAnswerRepository.flush(); // Ensure deletions are processed
+        if (studentTest.getTimeTaken() == null) {
+            throw new IllegalStateException("Test hasn't been started");
         }
 
-        // Get a Set of processed question IDs to avoid duplicates
-        Set<Long> processedQuestionIds = new HashSet<>();
+        // Create a map of questionId to submission for quick lookup
+        Map<Long, AnswerSubmissionDTO> submissionMap = answers.stream()
+                .collect(Collectors.toMap(
+                        AnswerSubmissionDTO::getQuestionId,
+                        submission -> submission
+                ));
 
-        // Process ALL questions in the test
-        for (TestQuestion testQuestion : studentTest.getTest().getQuestions()) {
-            Question question = testQuestion.getQuestion();
+        TestFeedbackDTO feedback = new TestFeedbackDTO();
+        feedback.setStudentTestId(studentTestId);
+        List<AnswerFeedbackDTO> feedbackList = new ArrayList<>();
+        int totalScore = 0;
+        int maxPossibleScore = 0;
 
-            // Skip if we've already processed this question
-            if (!processedQuestionIds.add(question.getId())) {
-                continue;
-            }
+        // 2. Process all questions from the student test
+        for (StudentAnswer studentAnswer : studentTest.getAnswers()) {
+            Question question = studentAnswer.getTestQuestion().getQuestion();
+            TestQuestion testQuestion = studentAnswer.getTestQuestion();
+            maxPossibleScore += question.getPoints();
 
-            List<AnswerSubmissionDTO> submittedAnswers = submittedAnswerMap.getOrDefault(question.getId(), new ArrayList<>());
+            AnswerFeedbackDTO answerFeedback = new AnswerFeedbackDTO();
+            answerFeedback.setQuestionId(question.getId());
+            answerFeedback.setQuestionText(question.getDescription());
 
-            AnswerFeedbackDTO answerFeedbackDTO = new AnswerFeedbackDTO();
-            answerFeedbackDTO.setQuestionId(question.getId());
-            answerFeedbackDTO.setQuestionText(question.getDescription());
+            // Get the submission for this question if it exists
+            AnswerSubmissionDTO submission = submissionMap.get(question.getId());
 
-            // If no answer was submitted
-            if (submittedAnswers.isEmpty()) {
-                processUnansweredQuestion(studentTest, testQuestion, question, answerFeedbackDTO);
-                if (question.getQuestionType() != QuestionType.ESSAY) {
-                    totalScore -= question.getNegativePointsPerAnswer();
+            // 3. Evaluate based on question type
+            boolean isCorrect = false;
+            int questionScore = 0;
+
+            if (submission == null) {
+                // Question was not answered
+                answerFeedback.setSubmittedAnswerText(Collections.singletonList("No answer provided"));
+                switch (question.getQuestionType()) {
+                    case MULTIPLE_CHOICE, TRUE_FALSE, NUMERIC, FILL_IN_THE_BLANK -> {
+                        List<String> correctAnswer = question.getAnswers().stream()
+                                .filter(Answer::isCorrect)
+                                .map(Answer::getAnswerText)
+                                .toList();
+                        answerFeedback.setCorrectAnswerText(correctAnswer);
+                    }
+                    case ESSAY -> {
+                        String correctAnswerText = question.getAnswers().stream()
+                                .filter(Answer::isCorrect)
+                                .map(Answer::getAnswerText)
+                                .collect(Collectors.joining(", "));
+                        answerFeedback.setCorrectAnswerText(Collections.singletonList(correctAnswerText));
+                    }
                 }
             } else {
-                boolean isCorrect = processAnsweredQuestion(
-                        studentTest, testQuestion, question, submittedAnswers, answerFeedbackDTO);
+                switch (question.getQuestionType()) {
+                    case MULTIPLE_CHOICE -> {
+                        Set<Long> correctAnswerIds = question.getAnswers().stream()
+                                .filter(Answer::isCorrect)
+                                .map(Answer::getId)
+                                .collect(Collectors.toSet());
 
-                if (isCorrect) {
-                    totalScore += question.getPoints();
-                } else if (question.getQuestionType() != QuestionType.ESSAY) {
-                    totalScore -= question.getNegativePointsPerAnswer();
+                        List<Long> submittedAnswerIds = submission.getAnswerIds();
+
+                        if (submittedAnswerIds != null && !submittedAnswerIds.isEmpty()) {
+                            double pointsPerAnswer = (double) question.getPoints() / correctAnswerIds.size();
+                            double negativePointsPerAnswer = question.getNegativePointsPerAnswer() == 0 ?
+                                    pointsPerAnswer : question.getNegativePointsPerAnswer();
+
+                            int correctSelections = 0;
+                            for (Long answerId : submittedAnswerIds) {
+                                if (correctAnswerIds.contains(answerId)) {
+                                    correctSelections++;
+                                    questionScore += (int) Math.round(pointsPerAnswer);
+                                } else {
+                                    questionScore -= (int) negativePointsPerAnswer;
+                                }
+                            }
+
+                            isCorrect = correctSelections == correctAnswerIds.size() &&
+                                    submittedAnswerIds.size() == correctAnswerIds.size();
+
+                            // Get answer texts for feedback
+                            List<String> submittedAnswerTexts = question.getAnswers().stream()
+                                    .filter(a -> submittedAnswerIds.contains(a.getId()))
+                                    .map(Answer::getAnswerText)
+                                    .collect(Collectors.toList());
+
+                            List<String> correctAnswerTexts = question.getAnswers().stream()
+                                    .filter(Answer::isCorrect)
+                                    .map(Answer::getAnswerText)
+                                    .collect(Collectors.toList());
+
+                            answerFeedback.setSubmittedAnswerText(submittedAnswerTexts);
+                            answerFeedback.setCorrectAnswerText(correctAnswerTexts);
+
+                            // Store the submitted answers for later processing
+                            studentAnswer.setChosenAnswer(
+                                    answerRepository.findById(submittedAnswerIds.get(0)).orElse(null)
+                            );
+                            studentAnswerRepository.save(studentAnswer);
+
+                            // Store additional answers separately after the main loop
+                            if (submittedAnswerIds.size() > 1) {
+                                for (int i = 1; i < submittedAnswerIds.size(); i++) {
+                                    StudentAnswer additionalAnswer = new StudentAnswer();
+                                    additionalAnswer.setStudentTest(studentTest);
+                                    additionalAnswer.setTestQuestion(testQuestion);
+                                    Answer chosenAnswer = answerRepository.findById(submittedAnswerIds.get(i)).orElse(null);
+                                    additionalAnswer.setChosenAnswer(chosenAnswer);
+                                    studentAnswerRepository.save(additionalAnswer);
+                                }
+                            }
+                        }
+                        }
+                    case TRUE_FALSE -> {
+                        List<Long> trueFalseAnswerIds = submission.getAnswerIds();
+                        if (trueFalseAnswerIds != null && !trueFalseAnswerIds.isEmpty()) {
+                            Long trueFalseAnswerId = trueFalseAnswerIds.get(0);
+                            Answer chosenTrueFalseAnswer = question.getAnswers().stream()
+                                    .filter(a -> a.getId().equals(trueFalseAnswerId))
+                                    .findFirst()
+                                    .orElse(null);
+
+                            if (chosenTrueFalseAnswer != null) {
+                                isCorrect = chosenTrueFalseAnswer.isCorrect();
+                                questionScore = isCorrect ? question.getPoints() : -question.getNegativePointsPerAnswer();
+
+                                Answer correctAnswer = question.getAnswers().stream()
+                                        .filter(Answer::isCorrect)
+                                        .findFirst()
+                                        .orElseThrow(() -> new IllegalStateException("No correct answer found"));
+
+                                answerFeedback.setSubmittedAnswerText(Collections.singletonList(chosenTrueFalseAnswer.getAnswerText()));
+                                answerFeedback.setCorrectAnswerText(Collections.singletonList(correctAnswer.getAnswerText()));
+
+                                studentAnswer.setChosenAnswer(chosenTrueFalseAnswer);
+                                studentAnswerRepository.save(studentAnswer);
+                            }
+                        }
+                    }
+                    case NUMERIC -> {
+                        String submittedValue = submission.getTextAnswer();
+                        Answer numericAnswer = question.getAnswers().stream()
+                                .filter(Answer::isCorrect)
+                                .findFirst()
+                                .orElseThrow(() -> new IllegalStateException("No correct answer found"));
+
+                        try {
+                            double submittedNumber = Double.parseDouble(submittedValue);
+                            double correctNumber = Double.parseDouble(numericAnswer.getAnswerText());
+                            double tolerance = 0.001;
+
+                            isCorrect = Math.abs(submittedNumber - correctNumber) <= tolerance;
+                            questionScore = isCorrect ? question.getPoints() : -question.getNegativePointsPerAnswer();
+
+                            answerFeedback.setSubmittedAnswerText(Collections.singletonList(submittedValue));
+                            answerFeedback.setCorrectAnswerText(Collections.singletonList(numericAnswer.getAnswerText()));
+
+                            studentAnswer.setSubmittedValue(submittedValue);
+                            studentAnswerRepository.save(studentAnswer);
+                        } catch (NumberFormatException e) {
+                            isCorrect = false;
+                            questionScore = 0;
+                            answerFeedback.setSubmittedAnswerText(Collections.singletonList("Invalid number format"));
+                            answerFeedback.setCorrectAnswerText(Collections.singletonList(numericAnswer.getAnswerText()));
+                        }
+                    }
+                    case ESSAY -> {
+                        String essayAnswer = submission.getTextAnswer();
+                        answerFeedback.setSubmittedAnswerText(Collections.singletonList(essayAnswer));
+                        answerFeedback.setCorrectAnswerText(
+                                question.getAnswers().stream()
+                                        .filter(Answer::isCorrect)
+                                        .map(Answer::getAnswerText)
+                                        .collect(Collectors.toList())
+                        );
+                        questionScore = question.getPoints();
+                        isCorrect = true;
+
+                        studentAnswer.setSubmittedValue(essayAnswer);
+                        studentAnswerRepository.save(studentAnswer);
+                    }
+                    case FILL_IN_THE_BLANK -> {
+                        String submittedText = submission.getTextAnswer().trim().toLowerCase();
+                        Answer fillInBlankAnswer = question.getAnswers().stream()
+                                .filter(Answer::isCorrect)
+                                .findFirst()
+                                .orElseThrow(() -> new IllegalStateException("No correct answer found"));
+
+                        List<String> validAnswers = Arrays.stream(fillInBlankAnswer.getAnswerText().split(","))
+                                .map(String::trim)
+                                .map(String::toLowerCase)
+                                .collect(Collectors.toList());
+
+                        isCorrect = validAnswers.contains(submittedText);
+                        questionScore = isCorrect ? question.getPoints() : -question.getNegativePointsPerAnswer();
+
+                        answerFeedback.setSubmittedAnswerText(Collections.singletonList(submission.getTextAnswer()));
+                        answerFeedback.setCorrectAnswerText(validAnswers);
+
+                        studentAnswer.setSubmittedValue(submittedText);
+                        studentAnswerRepository.save(studentAnswer);
+                    }
                 }
             }
 
-            maxScore += question.getPoints();
-            answerFeedbackList.add(answerFeedbackDTO);
+            // 4. Update feedback
+            answerFeedback.setCorrectAnswer(isCorrect);
+            feedbackList.add(answerFeedback);
+            totalScore += questionScore;
         }
 
-        feedbackDTO.setAnswerFeedbackList(answerFeedbackList);
-        feedbackDTO.setTotalScore(Math.max(0, totalScore));
-        feedbackDTO.setMaxScore(maxScore);
-
-        // Update and save student test
-        studentTest.setScore(Math.max(0, totalScore));
+        // 5. Update and save final score
+        studentTest.setScore(Math.max(totalScore, 0));
         studentTestRepository.save(studentTest);
 
-        return feedbackDTO;
-    }
+        // 6. Set final feedback
+        feedback.setTotalScore(Math.max(totalScore, 0));
+        feedback.setMaxScore(maxPossibleScore);
+        feedback.setAnswerFeedbackList(feedbackList);
 
+        return feedback;
+    }
     @Override
     public Page<TestAttemptDTO> getTestAttempts(Long testId, Long studentId, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("dateTaken").descending().and(Sort.by("timeTaken").descending()));
+        Pageable pageable = PageRequest.of(page, size, Sort.by("dateTaken").descending()
+                .and(Sort.by("timeTaken").descending()));
 
-        Page<StudentTest> attempts = studentTestRepository.findByTestIdAndStudentId(testId, studentId, pageable);
+        // Get paginated student tests
+        Page<StudentTest> studentTests = studentTestRepository.findByTestIdAndStudentId(testId, studentId, pageable);
 
-        return attempts.map(attempt -> {
-            // For each attempt, calculate total points from its specific answers
-            int totalPoints = attempt.getAnswers().stream()
-                    .map(StudentAnswer::getTestQuestion)  // Get TestQuestion from each StudentAnswer
-                    .map(TestQuestion::getQuestion)       // Get Question from TestQuestion
-                    .mapToInt(Question::getPoints)        // Sum the points
+        // Transform to DTOs
+        return studentTests.map(studentTest -> {
+            // Group answers by question to avoid counting duplicates
+            Map<Long, Question> questionMap = studentTest.getAnswers().stream()
+                    .collect(Collectors.toMap(
+                            sa -> sa.getTestQuestion().getQuestion().getId(),
+                            sa -> sa.getTestQuestion().getQuestion(),
+                            (existing, replacement) -> existing // Keep first occurrence
+                    ));
+
+            int totalPoints = questionMap.values().stream()
+                    .mapToInt(Question::getPoints)
                     .sum();
 
             return new TestAttemptDTO(
-                    attempt.getId(),
-                    attempt.getScore(),
-                    totalPoints,  // Now using points only from questions in this specific attempt
-                    attempt.getDateTaken(),
-                    attempt.getTimeTaken()
+                    studentTest.getId(),
+                    studentTest.getScore(),
+                    totalPoints,
+                    studentTest.getDateTaken(),
+                    studentTest.getTimeTaken()
             );
         });
     }
 
     @Override
+    @Transactional
     public TestResultsDTO getTestResults(Long studentTestId) {
         StudentTest studentTest = studentTestRepository.findById(studentTestId)
                 .orElseThrow(() -> new EntityNotFoundException("Student test not found"));
 
-        List<QuestionResultDTO> questionResults = studentTest.getAnswers().stream()
-                .map(studentAnswer -> {
-                    Question question = studentAnswer.getTestQuestion().getQuestion();
-                    return QuestionResultDTO.builder()
-                            .questionId(question.getId())
-                            .description(question.getDescription())
-                            .questionType(question.getQuestionType().toString())
-                            .points(question.getPoints())
-                            .studentAnswer(getStudentAnswer(studentAnswer))
-                            .correctAnswer(getCorrectAnswer(question))
-                            .imageId(question.getImage() != null ? question.getImage().getId() : null)
-                            .build();
-                })
-                .collect(Collectors.toList());
+        List<QuestionResultDTO> questionResults = new ArrayList<>();
+        double totalPoints = 0;
+
+        // Group answers by question
+        Map<Long, List<StudentAnswer>> answersByQuestion = studentTest.getAnswers().stream()
+                .collect(Collectors.groupingBy(sa -> sa.getTestQuestion().getQuestion().getId()));
+
+        // Process each question once
+        for (Map.Entry<Long, List<StudentAnswer>> entry : answersByQuestion.entrySet()) {
+            List<StudentAnswer> questionAnswers = entry.getValue();
+            StudentAnswer firstAnswer = questionAnswers.get(0);
+            Question question = firstAnswer.getTestQuestion().getQuestion();
+            totalPoints += question.getPoints();
+
+            String studentAnswerText;
+            String correctAnswerText;
+            double earnedPoints = 0;
+
+            switch (question.getQuestionType()) {
+                case MULTIPLE_CHOICE -> {
+                    Set<Long> correctAnswerIds = question.getAnswers().stream()
+                            .filter(Answer::isCorrect)
+                            .map(Answer::getId)
+                            .collect(Collectors.toSet());
+
+                    List<Answer> chosenAnswers = questionAnswers.stream()
+                            .map(StudentAnswer::getChosenAnswer)
+                            .filter(Objects::nonNull)
+                            .collect(Collectors.toList());
+
+                    if (!chosenAnswers.isEmpty()) {
+                        List<String> submittedAnswerTextList = chosenAnswers.stream()
+                                .map(Answer::getAnswerText)
+                                .collect(Collectors.toList());
+                        studentAnswerText = String.join(", ", submittedAnswerTextList);
+
+                        double pointsPerAnswer = (double) question.getPoints() / correctAnswerIds.size();
+                        double negativePointsPerAnswer = question.getNegativePointsPerAnswer() == 0 ?
+                                pointsPerAnswer : question.getNegativePointsPerAnswer();
+
+                        for (Answer answer : chosenAnswers) {
+                            if (correctAnswerIds.contains(answer.getId())) {
+                                earnedPoints += pointsPerAnswer;
+                            } else {
+                                earnedPoints -= negativePointsPerAnswer;
+                            }
+                        }
+                    } else {
+                        studentAnswerText = "No answer provided";
+                    }
+
+                    correctAnswerText = question.getAnswers().stream()
+                            .filter(Answer::isCorrect)
+                            .map(Answer::getAnswerText)
+                            .collect(Collectors.joining(", "));
+                }
+                case TRUE_FALSE -> {
+                    if (firstAnswer.getChosenAnswer() != null) {
+                        studentAnswerText = firstAnswer.getChosenAnswer().getAnswerText();
+                        correctAnswerText = question.getAnswers().stream()
+                                .filter(Answer::isCorrect)
+                                .map(Answer::getAnswerText)
+                                .findFirst()
+                                .orElse("N/A");
+
+                        earnedPoints = firstAnswer.getChosenAnswer().isCorrect() ?
+                                question.getPoints() : -question.getNegativePointsPerAnswer();
+                    } else {
+                        studentAnswerText = "No answer provided";
+                        correctAnswerText = question.getAnswers().stream()
+                                .filter(Answer::isCorrect)
+                                .map(Answer::getAnswerText)
+                                .findFirst()
+                                .orElse("N/A");
+                    }
+                }
+                case NUMERIC -> {
+                    studentAnswerText = firstAnswer.getSubmittedValue() != null ?
+                            firstAnswer.getSubmittedValue() : "No answer provided";
+
+                    Answer correctAnswer = question.getAnswers().stream()
+                            .filter(Answer::isCorrect)
+                            .findFirst()
+                            .orElseThrow(() -> new IllegalStateException("No correct answer found"));
+                    correctAnswerText = correctAnswer.getAnswerText();
+
+                    if (firstAnswer.getSubmittedValue() != null) {
+                        try {
+                            double submittedNumber = Double.parseDouble(firstAnswer.getSubmittedValue());
+                            double correctNumber = Double.parseDouble(correctAnswer.getAnswerText());
+                            double tolerance = 0.001;
+
+                            earnedPoints = Math.abs(submittedNumber - correctNumber) <= tolerance ?
+                                    question.getPoints() : -question.getNegativePointsPerAnswer();
+                        } catch (NumberFormatException e) {
+                            earnedPoints = -question.getNegativePointsPerAnswer();
+                        }
+                    }
+                }
+                case FILL_IN_THE_BLANK -> {
+                    studentAnswerText = firstAnswer.getSubmittedValue() != null ?
+                            firstAnswer.getSubmittedValue() : "No answer provided";
+
+                    Answer correctAnswer = question.getAnswers().stream()
+                            .filter(Answer::isCorrect)
+                            .findFirst()
+                            .orElseThrow(() -> new IllegalStateException("No correct answer found"));
+
+                    List<String> validAnswers = Arrays.stream(correctAnswer.getAnswerText().split(","))
+                            .map(String::trim)
+                            .map(String::toLowerCase)
+                            .collect(Collectors.toList());
+
+                    correctAnswerText = correctAnswer.getAnswerText();
+
+                    if (firstAnswer.getSubmittedValue() != null) {
+                        String submittedText = firstAnswer.getSubmittedValue().trim().toLowerCase();
+                        earnedPoints = validAnswers.contains(submittedText) ?
+                                question.getPoints() : -question.getNegativePointsPerAnswer();
+                    }
+                }
+                case ESSAY -> {
+                    studentAnswerText = firstAnswer.getSubmittedValue() != null ?
+                            firstAnswer.getSubmittedValue() : "No answer provided";
+                    correctAnswerText = question.getAnswers().stream()
+                            .filter(Answer::isCorrect)
+                            .map(Answer::getAnswerText)
+                            .findFirst()
+                            .orElse("N/A");
+                    if (firstAnswer.getSubmittedValue() != null){
+                        earnedPoints = question.getPoints();
+                    }
+                    else {
+                        earnedPoints = 0;
+                    }
+                }
+                default -> {
+                    studentAnswerText = "Unsupported question type";
+                    correctAnswerText = "Unsupported question type";
+                }
+            }
+
+            // Ensure points don't go below 0 for individual questions
+
+            QuestionResultDTO questionResult = QuestionResultDTO.builder()
+                    .questionId(question.getId())
+                    .description(question.getDescription())
+                    .questionType(question.getQuestionType().toString())
+                    .points(question.getPoints())
+                    .earnedPoints(earnedPoints)
+                    .studentAnswer(studentAnswerText)
+                    .correctAnswer(correctAnswerText)
+                    .imageId(question.getImage() != null ? question.getImage().getId() : null)
+                    .build();
+
+            questionResults.add(questionResult);
+        }
+
+        double score = questionResults.stream()
+                .mapToDouble(QuestionResultDTO::getEarnedPoints)
+                .sum();
+
+        double scorePercentage = totalPoints > 0 ? (score * 100.0) / totalPoints : 0;
 
         return TestResultsDTO.builder()
                 .studentTestId(studentTestId)
                 .testTitle(studentTest.getTest().getTitle())
                 .questions(questionResults)
-                .score(studentTest.getScore())
-                .totalPoints(calculateTotalPoints(studentTest))
-                .scorePercentage((double) studentTest.getScore() / calculateTotalPoints(studentTest) * 100)
+                .score(score)
+                .totalPoints(totalPoints)
+                .scorePercentage(scorePercentage)
                 .build();
     }
 
-    private String getStudentAnswer(StudentAnswer sa) {
-        return sa.getChosenAnswer() != null ?
-                sa.getChosenAnswer().getAnswerText() :
-                sa.getSubmittedValue();
-    }
-
-    private String getCorrectAnswer(Question q) {
-        return q.getAnswers().stream()
-                .filter(Answer::isCorrect)
-                .map(Answer::getAnswerText)
-                .collect(Collectors.joining(", "));
-    }
-
-    private int calculateTotalPoints(StudentTest st) {
-        return st.getTest().getQuestions().stream()
-                .mapToInt(tq -> tq.getQuestion().getPoints())
-                .sum();
-    }
-
-    private void processUnansweredQuestion(StudentTest studentTest, TestQuestion testQuestion,
-                                           Question question, AnswerFeedbackDTO answerFeedbackDTO) {
-        StudentAnswer studentAnswer = new StudentAnswer();
-        studentAnswer.setStudentTest(studentTest);
-        studentAnswer.setTestQuestion(testQuestion);
-        studentAnswerRepository.save(studentAnswer);
-
-        answerFeedbackDTO.setCorrectAnswer(false);
-        answerFeedbackDTO.setSubmittedAnswerText(Collections.singletonList("No answer provided"));
-
-        List<String> correctAnswerTexts = question.getAnswers().stream()
-                .filter(Answer::isCorrect)
-                .map(Answer::getAnswerText)
-                .collect(Collectors.toList());
-        answerFeedbackDTO.setCorrectAnswerText(correctAnswerTexts);
-    }
-
-    private boolean processAnsweredQuestion(StudentTest studentTest, TestQuestion testQuestion,
-                                            Question question, List<AnswerSubmissionDTO> submissions,
-                                            AnswerFeedbackDTO answerFeedbackDTO) {
-        for (AnswerSubmissionDTO submission : submissions) {
-            StudentAnswer studentAnswer = new StudentAnswer();
-            studentAnswer.setStudentTest(studentTest);
-            studentAnswer.setTestQuestion(testQuestion);
-
-            if (submission.getAnswerId() != null) {
-                Answer answer = answerRepository.findById(submission.getAnswerId())
-                        .orElseThrow(() -> new EntityNotFoundException("Answer not found"));
-                studentAnswer.setChosenAnswer(answer);
-            }
-
-            studentAnswerRepository.save(studentAnswer);
-        }
-
-        // Evaluate based on question type and update feedback
-        switch (question.getQuestionType()) {
-            case MULTIPLE_CHOICE:
-                evaluateMultipleChoice(submissions, question, answerFeedbackDTO);
-                break;
-            case TRUE_FALSE:
-                evaluateTrueFalse(submissions.get(0), question, answerFeedbackDTO);
-                break;
-            case NUMERIC:
-                evaluateNumeric(submissions.get(0), question, answerFeedbackDTO);
-                break;
-            case FILL_IN_THE_BLANK:
-                evaluateFillInTheBlank(submissions.get(0), question, answerFeedbackDTO);
-                break;
-            case ESSAY:
-                evaluateEssay(submissions.get(0), question, answerFeedbackDTO);
-                break;
-        }
-
-        return answerFeedbackDTO.isCorrectAnswer();
-    }    private void evaluateMultipleChoice(List<AnswerSubmissionDTO> submissions, Question question, AnswerFeedbackDTO feedback) {
-        List<String> correctAnswerTexts = new ArrayList<>();
-        List<String> submittedAnswerTexts = new ArrayList<>();
-        Set<Long> correctAnswerIds = question.getAnswers().stream()
-                .filter(Answer::isCorrect)
-                .map(Answer::getId)
-                .collect(Collectors.toSet());
-
-        Set<Long> submittedAnswerIds = submissions.stream()
-                .map(AnswerSubmissionDTO::getAnswerId)
-                .collect(Collectors.toSet());
-
-        // Get text of submitted answers
-        for (AnswerSubmissionDTO submission : submissions) {
-            Answer answer = answerRepository.findById(submission.getAnswerId())
-                    .orElseThrow(() -> new EntityNotFoundException("Answer not found"));
-            submittedAnswerTexts.add(answer.getAnswerText());
-        }
-
-        // Get text of correct answers
-        question.getAnswers().stream()
-                .filter(Answer::isCorrect)
-                .forEach(answer -> correctAnswerTexts.add(answer.getAnswerText()));
-
-        // Check if answers match exactly
-        boolean isCorrect = correctAnswerIds.equals(submittedAnswerIds);
-
-        feedback.setCorrectAnswer(isCorrect);
-        feedback.setCorrectAnswerText(correctAnswerTexts);
-        feedback.setSubmittedAnswerText(submittedAnswerTexts);
-    }
-
-    private void evaluateTrueFalse(AnswerSubmissionDTO submission, Question question, AnswerFeedbackDTO feedback) {
-        Answer submittedAnswer = answerRepository.findById(submission.getAnswerId())
-                .orElseThrow(() -> new EntityNotFoundException("Answer not found"));
-
-        Answer correctAnswer = question.getAnswers().stream()
-                .filter(Answer::isCorrect)
-                .findFirst()
-                .orElseThrow(() -> new RuntimeException("No correct answer found"));
-
-        boolean isCorrect = submittedAnswer.isCorrect();
-
-        feedback.setCorrectAnswer(isCorrect);
-        feedback.setCorrectAnswerText(Collections.singletonList(correctAnswer.getAnswerText()));
-        feedback.setSubmittedAnswerText(Collections.singletonList(submittedAnswer.getAnswerText()));
-    }
-
-    private void evaluateNumeric(AnswerSubmissionDTO submission, Question question, AnswerFeedbackDTO feedback) {
-        try {
-            double submittedValue = Double.parseDouble(submission.getTextAnswer());
-            Answer correctAnswer = question.getAnswers().stream()
-                    .filter(Answer::isCorrect)
-                    .findFirst()
-                    .orElseThrow(() -> new RuntimeException("No correct answer found"));
-
-            double correctValue = Double.parseDouble(correctAnswer.getAnswerText());
-            boolean isCorrect = Math.abs(submittedValue - correctValue) < 0.0001; // Allow small floating-point differences
-
-            feedback.setCorrectAnswer(isCorrect);
-            feedback.setCorrectAnswerText(Collections.singletonList(correctAnswer.getAnswerText()));
-            feedback.setSubmittedAnswerText(Collections.singletonList(submission.getTextAnswer()));
-        } catch (NumberFormatException e) {
-            feedback.setCorrectAnswer(false);
-            feedback.setSubmittedAnswerText(Collections.singletonList("Invalid number: " + submission.getTextAnswer()));
-        }
-    }
-
-    private void evaluateFillInTheBlank(AnswerSubmissionDTO submission, Question question, AnswerFeedbackDTO feedback) {
-        Answer correctAnswer = question.getAnswers().stream()
-                .filter(Answer::isCorrect)
-                .findFirst()
-                .orElseThrow(() -> new RuntimeException("No correct answer found"));
-
-        boolean isCorrect = submission.getTextAnswer() != null &&
-                submission.getTextAnswer().trim().equalsIgnoreCase(correctAnswer.getAnswerText().trim());
-
-        feedback.setCorrectAnswer(isCorrect);
-        feedback.setCorrectAnswerText(Collections.singletonList(correctAnswer.getAnswerText()));
-        feedback.setSubmittedAnswerText(Collections.singletonList(submission.getTextAnswer()));
-    }
-
-    private void evaluateEssay(AnswerSubmissionDTO submission, Question question, AnswerFeedbackDTO feedback) {
-        // Store the essay answer without evaluation
-        feedback.setCorrectAnswer(true); // Essays require manual grading
-        feedback.setSubmittedAnswerText(Collections.singletonList(submission.getTextAnswer()));
-
-        // Include model answer if available
-        Optional<Answer> modelAnswer = question.getAnswers().stream()
-                .filter(Answer::isCorrect)
-                .findFirst();
-
-        feedback.setCorrectAnswerText(Collections.singletonList(
-                modelAnswer.map(Answer::getAnswerText)
-                        .orElse("This essay requires manual grading.")
-        ));
-    }
 
     private int calculateScore(List<StudentAnswer> answers) {
         return answers.stream()
