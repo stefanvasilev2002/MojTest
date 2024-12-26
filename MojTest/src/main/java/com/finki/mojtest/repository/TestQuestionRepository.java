@@ -12,4 +12,5 @@ public interface TestQuestionRepository extends JpaRepository<TestQuestion, Long
     List<TestQuestion> findByTestId(Long testId);
     List<TestQuestion> findByQuestionId(Long questionId);
 
+    void deleteTestQuestionsByQuestionId(Long id);
 }

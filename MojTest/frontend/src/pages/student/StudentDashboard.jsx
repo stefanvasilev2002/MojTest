@@ -1,9 +1,9 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import useTest from '../hooks/crud/useTest';
+import useTest from '../../hooks/crud/useTest.js';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import TestFilters from '../components/TestFilters';
-import TestAttempts from "../components/student/TestAttempts.jsx";
+import { useAuth } from '../../context/AuthContext.jsx';
+import TestFilters from '../../components/TestFilters.jsx';
+import TestAttempts from "../../components/student/TestAttempts.jsx";
 const StudentDashboard = () => {
     const [selectedTestId, setSelectedTestId] = useState(null);
     const { items: tests, loading, error } = useTest();
@@ -105,6 +105,11 @@ const StudentDashboard = () => {
             }
 
             const data = await response.json();
+
+            if(data.questions.length === 0) {
+                alert('This test has no questions. Please try another test.');
+                return;
+            }
 
             // Store the new test ID
             localStorage.setItem('last_test_id', data.studentTestId);

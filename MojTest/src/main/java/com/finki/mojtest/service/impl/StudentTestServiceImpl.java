@@ -319,6 +319,7 @@ public class StudentTestServiceImpl implements StudentTestService {
                             answerFeedback.setCorrectAnswerText(Collections.singletonList(numericAnswer.getAnswerText()));
 
                             studentAnswer.setSubmittedValue(submittedValue);
+                            studentAnswer.setChosenAnswer(numericAnswer);
                             studentAnswerRepository.save(studentAnswer);
                         } catch (NumberFormatException e) {
                             isCorrect = false;
@@ -340,6 +341,10 @@ public class StudentTestServiceImpl implements StudentTestService {
                         isCorrect = true;
 
                         studentAnswer.setSubmittedValue(essayAnswer);
+                        studentAnswer.setChosenAnswer(question.getAnswers().stream()
+                                .filter(Answer::isCorrect)
+                                .findFirst()
+                                .orElseThrow(() -> new IllegalStateException("No correct answer found")));
                         studentAnswerRepository.save(studentAnswer);
                     }
                     case FILL_IN_THE_BLANK -> {
@@ -361,6 +366,7 @@ public class StudentTestServiceImpl implements StudentTestService {
                         answerFeedback.setCorrectAnswerText(validAnswers);
 
                         studentAnswer.setSubmittedValue(submittedText);
+                        studentAnswer.setChosenAnswer(fillInBlankAnswer);
                         studentAnswerRepository.save(studentAnswer);
                     }
                 }

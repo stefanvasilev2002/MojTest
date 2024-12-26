@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import useAuthActions from "../hooks/useAuthActions";
-import {predefinedKeyValues} from "../config/predefinedKeyValues.js";
+import useAuthActions from "../../hooks/useAuthActions.js";
+import {predefinedKeyValues} from "../../config/predefinedKeyValues.js";
 
 const RegisterPage = () => {
     const { t } = useTranslation('common');

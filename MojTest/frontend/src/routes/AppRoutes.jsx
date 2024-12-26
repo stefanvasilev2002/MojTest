@@ -6,12 +6,12 @@ import LandingPage from "../pages/LandingPage.jsx";  // Your landing page compon
 import PublicRoute from './PublicRoute';  // Updated PublicRoute
 import PrivateRoute from './PrivateRoute';  // Updated PrivateRoute
 import AboutTeacherPage from '../pages/AboutTeacherPage';  // Your AboutTeacherPage
-import AboutStudentPage from '../pages/AboutStudentPage';  // Your AboutStudentPage
-import TeacherDashboard from '../pages/TeacherDashboard';  // Your TeacherDashboard
-import StudentDashboard from '../pages/StudentDashboard';  // Your StudentDashboard
+import AboutStudentPage from '../pages/student/AboutStudentPage.jsx';  // Your AboutStudentPage
+import TeacherDashboard from '../pages/teacher/TeacherDashboard.jsx';  // Your TeacherDashboard
+import StudentDashboard from '../pages/student/StudentDashboard.jsx';  // Your StudentDashboard
 import DebugPage from '../pages/DebugPage';
-import LoginPage from "../pages/LoginPage.jsx";
-import RegisterPage from "../pages/RegisterPage.jsx";
+import LoginPage from "../pages/auth/LoginPage.jsx";
+import RegisterPage from "../pages/auth/RegisterPage.jsx";
 import TeacherLayout from "../layouts/TeacherLayout.jsx";
 import StudentLayout from "../layouts/StudentLayout.jsx";
 import PublicLayout from "../layouts/PublicLayout.jsx";
@@ -35,15 +35,15 @@ import TeacherForm from "../components/crud/TeacherForm.jsx";
 import AdminForm from "../components/crud/AdminForm.jsx";
 import QuestionForm from "../components/crud/QuestionForm.jsx";
 import TestForm from "../components/crud/TestForm.jsx";
-import TakeTestPage from "../pages/TakeTestPage.jsx";
-import TestResultsPage from "../pages/TestResultsPage.jsx";
+import TakeTestPage from "../pages/student/TakeTestPage.jsx";
+import TestResultsPage from "../pages/student/TestResultsPage.jsx";
 import CreateTestPage from "../pages/teacher/CreateTestPage.jsx";
 import CreateQuestionPage from "../pages/teacher/CreateQuestionsPage.jsx";
 import EditQuestionPage from "../pages/teacher/EditQuestionPage.jsx";
 import EditTestPage from "../pages/teacher/EditTestPage.jsx";
 import QuestionsPage from "../pages/teacher/QuestionsPage.jsx";
 import QuestionDetails from "../components/crud/QuestionDetails.jsx";
-import TestDetailsPage from "../pages/TestDetailsPage.jsx";
+import TestDetailsPage from "../pages/student/TestDetailsPage.jsx";
 const AppRoutes = () => {
     return (
         <AuthProvider>

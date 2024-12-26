@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../../context/AuthContext.jsx';
 import { Clock, ArrowLeft, CheckCircle, XCircle } from 'lucide-react';
 
 const TestDetailsPage = () => {

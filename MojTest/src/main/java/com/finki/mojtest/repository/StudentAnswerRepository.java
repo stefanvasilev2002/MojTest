@@ -1,5 +1,6 @@
 package com.finki.mojtest.repository;
 
+import com.finki.mojtest.model.Answer;
 import com.finki.mojtest.model.StudentAnswer;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -12,4 +13,6 @@ public interface StudentAnswerRepository extends JpaRepository<StudentAnswer, Lo
     List<StudentAnswer> findByTestQuestionId(Long testQuestionId); // Answers for a specific test question
 
     void deleteAllByStudentTestId(Long studentTestId);
+
+    List<StudentAnswer> findAllByChosenAnswerIn(List<Answer> answers);
 }

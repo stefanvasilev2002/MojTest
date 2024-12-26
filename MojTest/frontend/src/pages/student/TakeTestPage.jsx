@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import RadioAnswer from "../components/answers/RadioAnswer.jsx";
-import MultipleChoiceAnswer from "../components/answers/MultipleChoiceAnswer.jsx";
-import NumericAnswer from "../components/answers/NumericAnswer.jsx";
-import EssayAnswer from "../components/answers/EssayAnswer.jsx";
-import HintButton from "../components/student/HintButton.jsx";
-import Timer from "../components/student/Timer.jsx";
-import TimeUpModal from "../components/student/TimeUpModal.jsx";
-import FillInTheBlankAnswer from "../components/answers/FillInTheBlankAnswer.jsx";
-import ExitConfirmationModal from "../components/student/ExitConfirmationModal.jsx";
-import QuestionNavigation from "../components/student/QuestionNavigation.jsx";
-import SubmitConfirmationModal from "../components/student/SubmitConfirmationModal.jsx";
+import { useAuth } from '../../context/AuthContext.jsx';
+import RadioAnswer from "../../components/answers/RadioAnswer.jsx";
+import MultipleChoiceAnswer from "../../components/answers/MultipleChoiceAnswer.jsx";
+import NumericAnswer from "../../components/answers/NumericAnswer.jsx";
+import EssayAnswer from "../../components/answers/EssayAnswer.jsx";
+import HintButton from "../../components/student/HintButton.jsx";
+import Timer from "../../components/student/Timer.jsx";
+import TimeUpModal from "../../components/student/TimeUpModal.jsx";
+import FillInTheBlankAnswer from "../../components/answers/FillInTheBlankAnswer.jsx";
+import ExitConfirmationModal from "../../components/student/ExitConfirmationModal.jsx";
+import QuestionNavigation from "../../components/student/QuestionNavigation.jsx";
+import SubmitConfirmationModal from "../../components/student/SubmitConfirmationModal.jsx";
 
 const TakeTestPage = () => {
     const { studentTestId } = useParams();

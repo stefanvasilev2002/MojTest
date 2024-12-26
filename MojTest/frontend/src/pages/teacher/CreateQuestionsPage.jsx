@@ -39,27 +39,28 @@ const CreateQuestionPage = () => {
     const getInitialAnswers = (type) => {
         switch (type) {
             case 'MULTIPLE_CHOICE':
-                return [
-                    { answerText: '', isCorrect: false },
-                    { answerText: '', isCorrect: false },
-                    { answerText: '', isCorrect: false },
-                    { answerText: '', isCorrect: false }
-                ];
+                return Array(4).fill().map(() => ({ answerText: '', isCorrect: false }));
             case 'TRUE_FALSE':
                 return [
                     { answerText: 'True', isCorrect: false },
                     { answerText: 'False', isCorrect: false }
                 ];
             case 'FILL_IN_THE_BLANK':
+                return [{ answerText: '', isCorrect: true }];
             case 'NUMERIC':
                 return [{ answerText: '', isCorrect: true }];
             case 'ESSAY':
-                return [];
+                return [{ answerText: '', isCorrect: true }];
             default:
                 return [];
         }
     };
-
+    const handleNumericAnswer = (e, index) => {
+        const value = e.target.value;
+        if (value === '' || /^\d+$/.test(value)) {
+            handleAnswerChange(index, 'answerText', value);
+        }
+    };
     const handleInputChange = (e) => {
         const { name, value, type } = e.target;
         setFormData(prev => ({
@@ -123,9 +124,15 @@ const CreateQuestionPage = () => {
                 throw new Error('At least one correct answer must be selected');
             }
 
+            if (selectedType === 'ESSAY' && formData.answers[0].answerText.trim() === '') {
+                throw new Error('Answer template is required for essay questions');
+            }
             // Filter out empty answers
             const validAnswers = formData.answers.filter(a => a.answerText.trim() !== '');
 
+            if (validAnswers.length === 0) {
+                throw new Error('At least one non-empty answer is required');
+            }
             // Create question with creator ID
             const questionData = {
                 ...formData,
@@ -147,7 +154,9 @@ const CreateQuestionPage = () => {
         } finally {
             setLoading(false);
         }
-    };    return (
+    };
+
+    return (
         <div className="p-6">
             <div className="max-w-4xl mx-auto">
                 <div className="mb-6">
@@ -168,7 +177,6 @@ const CreateQuestionPage = () => {
                 )}
 
                 <form onSubmit={handleSubmit} className="space-y-6">
-                    {/* Question Type */}
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
                             Question Type
@@ -186,7 +194,6 @@ const CreateQuestionPage = () => {
                         </select>
                     </div>
 
-                    {/* Question Description */}
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
                             Question
@@ -202,7 +209,6 @@ const CreateQuestionPage = () => {
                         />
                     </div>
 
-                    {/* Points */}
                     <div className="grid grid-cols-2 gap-4">
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -233,7 +239,6 @@ const CreateQuestionPage = () => {
                         </div>
                     </div>
 
-                    {/* Hint */}
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
                             Hint (Optional)
@@ -248,7 +253,6 @@ const CreateQuestionPage = () => {
                         />
                     </div>
 
-                    {/* Formula (for numeric questions) */}
                     {selectedType === 'NUMERIC' && (
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -265,8 +269,7 @@ const CreateQuestionPage = () => {
                         </div>
                     )}
 
-                    {/* Answers Section */}
-                    {selectedType !== 'ESSAY' && (
+                    {selectedType !== 'ESSAY' ? (
                         <div className="space-y-4">
                             <div className="flex justify-between items-center">
                                 <h3 className="text-lg font-medium text-gray-900">Answers</h3>
@@ -283,20 +286,31 @@ const CreateQuestionPage = () => {
                             </div>
                             {formData.answers.map((answer, index) => (
                                 <div key={index} className="flex items-center gap-4">
-                                    <input
-                                        type="text"
-                                        value={answer.answerText}
-                                        onChange={(e) => handleAnswerChange(index, 'answerText', e.target.value)}
-                                        className="flex-1 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                                        placeholder="Enter answer"
-                                        disabled={selectedType === 'TRUE_FALSE'}
-                                    />
+                                    {selectedType === 'NUMERIC' ? (
+                                        <input
+                                            type="text"
+                                            value={answer.answerText}
+                                            onChange={(e) => handleNumericAnswer(e, index)}
+                                            className="flex-1 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                            placeholder="Enter numeric answer"
+                                        />
+                                    ) : (
+                                        <input
+                                            type="text"
+                                            value={answer.answerText}
+                                            onChange={(e) => handleAnswerChange(index, 'answerText', e.target.value)}
+                                            className="flex-1 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                            placeholder="Enter answer"
+                                            disabled={selectedType === 'TRUE_FALSE'}
+                                        />
+                                    )}
+
                                     {selectedType === 'MULTIPLE_CHOICE' && (
                                         <>
                                             <label className="flex items-center">
                                                 <input
                                                     type="checkbox"
-                                                    checked={answer.isCorrect}
+                                                    checked={answer.isCorrect || false}
                                                     onChange={(e) => handleAnswerChange(index, 'isCorrect', e.target.checked)}
                                                     className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                                                 />
@@ -313,6 +327,7 @@ const CreateQuestionPage = () => {
                                             )}
                                         </>
                                     )}
+
                                     {selectedType === 'TRUE_FALSE' && (
                                         <label className="flex items-center">
                                             <input
@@ -334,8 +349,27 @@ const CreateQuestionPage = () => {
                                             <span className="ml-2">Correct</span>
                                         </label>
                                     )}
+
+                                    {(selectedType === 'FILL_IN_THE_BLANK' || selectedType === 'NUMERIC') && (
+                                        <input
+                                            type="hidden"
+                                            value="true"
+                                            onChange={() => {}}
+                                        />
+                                    )}
                                 </div>
                             ))}
+                        </div>
+                    ) : (
+                        <div className="space-y-4">
+                            <h3 className="text-lg font-medium text-gray-900">Answer Template (Optional)</h3>
+                            <textarea
+                                value={formData.answers[0]?.answerText || ''}
+                                onChange={(e) => handleAnswerChange(0, 'answerText', e.target.value)}
+                                className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                rows="4"
+                                placeholder="Enter answer..."
+                            />
                         </div>
                     )}
 

@@ -35,6 +35,7 @@ public class QuestionServiceImpl implements QuestionService {
     private final FileRepository fileRepository;
     private final UserRepository userRepository;
     private final StudentAnswerRepository studentAnswerRepository;
+    private final TestQuestionRepository testQuestionRepository;
 
     @Override
     public Question createQuestion(Question question) {
@@ -145,22 +146,24 @@ public class QuestionServiceImpl implements QuestionService {
         Question question = questionRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Question not found with id: " + id));
 
-        // 1. Remove the question from all tests' question banks
-        for (Test test : question.getTests()) {
+        // 1. Delete all student answers first
+        List<StudentAnswer> studentAnswers = studentAnswerRepository.findAllByChosenAnswerIn(question.getAnswers());
+        studentAnswerRepository.deleteAll(studentAnswers);
+
+        // 2. Delete test questions
+
+        testQuestionRepository.deleteTestQuestionsByQuestionId(id);
+
+        // 3. Remove the question from tests' question banks
+        question.getTests().forEach(test -> {
             test.getQuestionBank().remove(question);
             testRepository.save(test);
-        }
+        });
 
-        // 2. Delete all student answers associated with this question's answers
-        for (Answer answer : question.getAnswers()) {
-            // Delete all student answers that reference this answer
-            studentAnswerRepository.deleteAll(answer.getChosenBy());
-        }
-
-        // 3. Delete all answers associated with this question
+        // 4. Delete answers
         answerRepository.deleteAll(question.getAnswers());
 
-        // 4. Finally, delete the question itself
+        // 5. Delete the question
         questionRepository.delete(question);
     }
 

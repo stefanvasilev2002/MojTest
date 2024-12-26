@@ -3,11 +3,13 @@ package com.finki.mojtest.service;
 import com.finki.mojtest.model.StudentTest;
 import com.finki.mojtest.model.Test;
 import com.finki.mojtest.model.dtos.TestDTO;
+import com.finki.mojtest.model.dtos.TestFromTeacherDTO;
 
 import java.util.List;
 
 public interface TestService {
     Test createTest(TestDTO testDTO);
+    Test createTestFromTeacher(TestFromTeacherDTO testDTO);
 
     Test getTestById(Long id);
 
@@ -25,5 +27,7 @@ public interface TestService {
     Test addQuestionToTest(Long testId, Long questionId);
 
     Test removeQuestionFromTest(Long testId, Long questionId);
+
+    Test updateTestFromTeacher(Long id, TestFromTeacherDTO testDTO);
 }
 

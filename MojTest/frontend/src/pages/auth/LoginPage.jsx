@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import useAuthActions from "../hooks/useAuthActions";
+import useAuthActions from "../../hooks/useAuthActions.js";
 import { useTranslation } from "react-i18next";
 
 const LoginPage = () => {
@@ -10,8 +10,8 @@ const LoginPage = () => {
     const navigate = useNavigate();
     const { handleLogin, loading, error } = useAuthActions();
     const [localError, setLocalError] = useState(null);
+    const passwordRef = useRef(null);
 
-    // Update local error when the error from useAuthActions changes
     useEffect(() => {
         if (error) {
             setLocalError(error);
@@ -39,7 +39,13 @@ const LoginPage = () => {
         }
     };
 
-    // Clear local error when user starts typing
+    const handleKeyDown = (e, nextRef) => {
+        if (e.key === 'Enter' && nextRef) {
+            e.preventDefault();
+            nextRef.current?.focus();
+        }
+    };
+
     const handleInputChange = (setter) => (e) => {
         setter(e.target.value);
         if (localError) {
@@ -54,15 +60,18 @@ const LoginPage = () => {
                     {t('loginPage.title')}
                 </h2>
 
-                <form onSubmit={handleSubmit} className="space-y-4">
+                <form onSubmit={handleSubmit} className="space-y-4" autoComplete="on">
                     <div>
                         <label className="block mb-2 text-gray-600">
                             {t('loginPage.username')}
                         </label>
                         <input
                             type="text"
+                            name="username"
+                            autoComplete="username"
                             value={username}
                             onChange={handleInputChange(setUsername)}
+                            onKeyDown={(e) => handleKeyDown(e, passwordRef)}
                             className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                             placeholder={t('loginPage.enterUsername')}
                             required
@@ -74,7 +83,10 @@ const LoginPage = () => {
                             {t('loginPage.password')}
                         </label>
                         <input
+                            ref={passwordRef}
                             type="password"
+                            name="password"
+                            autoComplete="current-password"
                             value={password}
                             onChange={handleInputChange(setPassword)}
                             className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"

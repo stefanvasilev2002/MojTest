@@ -1,6 +1,6 @@
 // src/pages/teacher/CreateTestPage.jsx
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import {useLocation, useNavigate} from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import TestForm from "../../components/teacher/TestForm.jsx";
 import useTest from '../../hooks/crud/useTest';  // Use your existing hook
@@ -9,7 +9,8 @@ const CreateTestPage = () => {
     const navigate = useNavigate();
     const { user } = useAuth();
     const { createItem } = useTest();  // Use your existing CRUD hook
-
+    const location = useLocation();
+    const userId = location.state?.userId;
     const handleSubmit = async (formData) => {
         try {
             await createItem(formData);
@@ -27,6 +28,7 @@ const CreateTestPage = () => {
                 <TestForm
                     onSubmit={handleSubmit}
                     isEditing={false}
+                    userId={userId}
                 />
             </div>
         </div>

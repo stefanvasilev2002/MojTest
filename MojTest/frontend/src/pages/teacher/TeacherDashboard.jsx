@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import useTest from '../hooks/crud/useTest';
-import { useAuth } from '../context/AuthContext';
+import useTest from '../../hooks/crud/useTest.js';
+import { useAuth } from '../../context/AuthContext.jsx';
 
 const TeacherDashboard = () => {
     const { items: tests, loading: testsLoading, error: testsError, deleteItem: deleteTest } = useTest();
@@ -10,7 +10,9 @@ const TeacherDashboard = () => {
     const [selectedTest, setSelectedTest] = useState(null);
 
     const handleCreateTest = () => {
-        navigate('/teacher-dashboard/create-test');
+        navigate('/teacher-dashboard/create-test', {
+            state: { userId: user.id }
+        });
     };
 
     const handleEditTest = (testId) => {

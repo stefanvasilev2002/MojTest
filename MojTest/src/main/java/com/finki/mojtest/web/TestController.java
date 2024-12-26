@@ -110,9 +110,9 @@ public class TestController {
 
     // Create a new test
     @PostMapping
-    public ResponseEntity<TestDTO> createTest(@RequestBody TestDTO testDTO) {
-        Test createdTest = testService.createTest(testDTO);  // Delegate to the service
-        TestDTO createdTestDTO = TestMapper.toDTO(createdTest); // Convert to TestDTO
+    public ResponseEntity<TestFromTeacherDTO> createTestFromTeacher(@RequestBody TestFromTeacherDTO testDTO) {
+        Test createdTest = testService.createTestFromTeacher(testDTO);  // Delegate to the service
+        TestFromTeacherDTO createdTestDTO = TestMapper.toTestFromTeacherDTO(createdTest); // Convert to TestDTO
         return new ResponseEntity<>(createdTestDTO, HttpStatus.CREATED);
     }
 
@@ -123,7 +123,12 @@ public class TestController {
         TestDTO testDTO = TestMapper.toDTO(test);  // Convert to TestDTO
         return new ResponseEntity<>(testDTO, HttpStatus.OK);
     }
-
+    @GetMapping("get-test-for-teacher/{id}")
+    public ResponseEntity<TestFromTeacherDTO> getTestByIdForTeacher(@PathVariable Long id) {
+        Test test = testService.getTestById(id);
+        TestFromTeacherDTO testDTO = TestMapper.toTestFromTeacherDTO(test);
+        return new ResponseEntity<>(testDTO, HttpStatus.OK);
+    }
     // Get all tests
     @GetMapping
     public ResponseEntity<List<TestDTO>> getAllTests() {
@@ -141,7 +146,12 @@ public class TestController {
         TestDTO updatedTestDTO = TestMapper.toDTO(updatedTest);  // Convert to TestDTO
         return new ResponseEntity<>(updatedTestDTO, HttpStatus.OK);
     }
-
+    @PutMapping("/update-test-from-teacher/{id}")
+    public ResponseEntity<TestFromTeacherDTO> updateTestFromTeacher(@PathVariable Long id, @RequestBody TestFromTeacherDTO testDTO) {
+        Test updatedTest = testService.updateTestFromTeacher(id, testDTO); // Delegate to the service
+        TestFromTeacherDTO updatedTestDTO = TestMapper.toTestFromTeacherDTO(updatedTest);  // Convert to TestDTO
+        return new ResponseEntity<>(updatedTestDTO, HttpStatus.OK);
+    }
     // Delete a test
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTest(@PathVariable Long id) {

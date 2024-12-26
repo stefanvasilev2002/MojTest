@@ -1,7 +1,9 @@
 package com.finki.mojtest.service.impl;
 
 import com.finki.mojtest.model.*;
+import com.finki.mojtest.model.dtos.MetadataDTO;
 import com.finki.mojtest.model.dtos.TestDTO;
+import com.finki.mojtest.model.dtos.TestFromTeacherDTO;
 import com.finki.mojtest.model.mappers.TestMapper;
 import com.finki.mojtest.model.users.Student;
 import com.finki.mojtest.model.users.Teacher;
@@ -14,7 +16,6 @@ import com.finki.mojtest.service.TestService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -22,6 +23,7 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -73,6 +75,31 @@ public class TestServiceImpl implements TestService {
 
         return testRepository.save(test);
     }
+
+    @Override
+    public Test updateTestFromTeacher(Long id, TestFromTeacherDTO testDTO) {
+        Test test = testRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Test not found with id: " + id));
+
+        test.setTitle(testDTO.getTitle());
+        test.setDescription(testDTO.getDescription());
+        test.setNumQuestions(testDTO.getNumQuestions());
+        test.setTimeLimit(testDTO.getTimeLimit());
+
+        for (MetadataDTO metaDTO : testDTO.getMetadata()) {
+            Metadata metadata = metadataRepository.findByKeyAndValue(metaDTO.getKey(), metaDTO.getValue())
+                    .orElseGet(() -> {
+                        Metadata newMeta = new Metadata();
+                        newMeta.setKey(metaDTO.getKey());
+                        newMeta.setValue(metaDTO.getValue());
+                        return metadataRepository.save(newMeta);
+                    });
+
+            test.getMetadata().add(metadata);
+        }
+        return testRepository.save(test);
+    }
+
     @Override
     public Test createTest(TestDTO testDTO) {
         // Resolve relationships based on the DTO data
@@ -91,7 +118,31 @@ public class TestServiceImpl implements TestService {
         // Save the test entity to the repository
         return testRepository.save(test);
     }
+    @Override
+    public Test createTestFromTeacher(TestFromTeacherDTO testDTO) {
+        Test test = new Test();
+        test.setTitle(testDTO.getTitle());
+        test.setDescription(testDTO.getDescription());
+        test.setNumQuestions(testDTO.getNumQuestions());
+        test.setTimeLimit(testDTO.getTimeLimit());
 
+        // Handle metadata
+        if (testDTO.getMetadata() != null) {
+            List<Metadata> metadataList = testDTO.getMetadata().stream()
+                    .map(metaDTO -> metadataRepository.findByKeyAndValue(metaDTO.getKey(), metaDTO.getValue())
+                            .orElseGet(() -> {
+                                Metadata newMeta = new Metadata();
+                                newMeta.setKey(metaDTO.getKey());
+                                newMeta.setValue(metaDTO.getValue());
+                                return metadataRepository.save(newMeta);
+                            }))
+                    .collect(Collectors.toList());
+
+            test.setMetadata(metadataList);
+        }
+
+        return testRepository.save(test);
+    }
     @Override
     public Test getTestById(Long id) {
         return testRepository.findById(id)

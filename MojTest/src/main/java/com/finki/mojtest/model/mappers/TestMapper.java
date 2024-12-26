@@ -4,6 +4,7 @@ import com.finki.mojtest.model.Question;
 import com.finki.mojtest.model.Test;
 import com.finki.mojtest.model.dtos.MetadataDTO;
 import com.finki.mojtest.model.dtos.TestDTO;
+import com.finki.mojtest.model.dtos.TestFromTeacherDTO;
 import com.finki.mojtest.model.users.Teacher;
 import com.finki.mojtest.model.Metadata;
 import com.finki.mojtest.model.TestQuestion;
@@ -90,6 +91,32 @@ public class TestMapper {
         existingTest.setMetadata(metadata != null ? metadata : Collections.emptyList());
         existingTest.setQuestions(testQuestions != null ? testQuestions : Collections.emptyList());
         existingTest.setStudentTests(studentTests != null ? studentTests : Collections.emptyList());
+    }
+
+    public static TestFromTeacherDTO toTestFromTeacherDTO(Test createdTest) {
+        if (createdTest == null) return null;
+
+        TestFromTeacherDTO dto = new TestFromTeacherDTO();
+        dto.setId(createdTest.getId());
+        dto.setTitle(createdTest.getTitle());
+        dto.setDescription(createdTest.getDescription());
+        dto.setNumQuestions(createdTest.getNumQuestions());
+        dto.setCreatorId(createdTest.getCreator() != null ? createdTest.getCreator().getId() : null);
+        dto.setTimeLimit(createdTest.getTimeLimit());
+
+        // Map related entities (using helper methods with null checks)
+        dto.setMetadata(createdTest.getMetadata() != null ?
+                createdTest.getMetadata().stream()
+                        .map(metadata -> {
+                            MetadataDTO metadataDTO = new MetadataDTO();
+                            metadataDTO.setId(metadata.getId());
+                            metadataDTO.setKey(metadata.getKey());
+                            metadataDTO.setValue(metadata.getValue());
+                            return metadataDTO;
+                        })
+                        .collect(Collectors.toList()) :
+                Collections.emptyList());
+        return dto;
     }
 }
 

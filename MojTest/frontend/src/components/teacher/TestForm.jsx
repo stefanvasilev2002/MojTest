@@ -1,25 +1,39 @@
 import React, { useState, useEffect } from 'react';
+import {predefinedKeyValues} from "../../constants/metadata.js";
 
-const TestForm = ({ initialData, onSubmit, isEditing }) => {
+const TestForm = ({ initialData, onSubmit, isEditing, userId }) => {
     const [formData, setFormData] = useState({
         title: '',
         description: '',
         timeLimit: 60,
+        creatorId: userId,
+        numQuestions: 1,
+        metadata: {},
         ...initialData
     });
 
     const [errors, setErrors] = useState({});
-
     useEffect(() => {
         if (initialData) {
             setFormData({
                 title: initialData.title || '',
                 description: initialData.description || '',
                 timeLimit: initialData.timeLimit || 60,
+                creatorId: initialData.creatorId || userId,
+                numQuestions: initialData.numQuestions || 1,
+                metadata: initialData.metadata || {}
             });
         }
-    }, [initialData]);
-
+    }, [initialData, userId]);
+    const handleMetadataChange = (key, value) => {
+        setFormData(prev => ({
+            ...prev,
+            metadata: {
+                ...prev.metadata,
+                [key]: value
+            }
+        }));
+    };
     const validateForm = () => {
         const newErrors = {};
         if (!formData.title.trim()) {
@@ -28,6 +42,12 @@ const TestForm = ({ initialData, onSubmit, isEditing }) => {
         if (formData.timeLimit < 1) {
             newErrors.timeLimit = 'Time limit must be at least 1 minute';
         }
+        if (!formData.creatorId) {
+            newErrors.creatorId = 'Creator ID is required';
+        }
+        if (formData.numQuestions < 1) {
+            newErrors.numQuestions = 'Test must have at least 1 question';
+        }
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
@@ -35,7 +55,16 @@ const TestForm = ({ initialData, onSubmit, isEditing }) => {
     const handleSubmit = (e) => {
         e.preventDefault();
         if (validateForm()) {
-            onSubmit(formData);
+            // Convert metadata to array format for backend
+            const metadataArray = Object.entries(formData.metadata).map(([key, value]) => ({
+                key,
+                value
+            }));
+
+            onSubmit({
+                ...formData,
+                metadata: metadataArray
+            });
         }
     };
 
@@ -45,7 +74,6 @@ const TestForm = ({ initialData, onSubmit, isEditing }) => {
             ...prev,
             [name]: name === 'timeLimit' ? parseInt(value) || '' : value
         }));
-        // Clear error when field is modified
         if (errors[name]) {
             setErrors(prev => ({ ...prev, [name]: undefined }));
         }
@@ -53,6 +81,7 @@ const TestForm = ({ initialData, onSubmit, isEditing }) => {
 
     return (
         <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl mx-auto">
+            <input type="hidden" name="creatorId" value={formData.creatorId}/>
             <div>
                 <label htmlFor="title" className="block text-sm font-medium text-gray-700">
                     Title
@@ -89,7 +118,28 @@ const TestForm = ({ initialData, onSubmit, isEditing }) => {
                     rows="3"
                 />
             </div>
-
+            <div>
+                <label htmlFor="numQuestions" className="block text-sm font-medium text-gray-700">
+                    Number of questions in the test
+                </label>
+                <input
+                    id="numQuestions"
+                    name="numQuestions"
+                    type="number"
+                    value={formData.numQuestions}
+                    onChange={handleChange}
+                    className={`mt-1 block w-full rounded-md border p-2
+                        ${errors.timeLimit
+                        ? 'border-red-500 focus:ring-red-500'
+                        : 'border-gray-300 focus:ring-blue-500'
+                    } focus:border-transparent focus:ring-2 transition-colors`}
+                    min="1"
+                    required
+                />
+                {errors.numQuestions && (
+                    <p className="mt-1 text-sm text-red-600">{errors.numQuestions}</p>
+                )}
+            </div>
             <div>
                 <label htmlFor="timeLimit" className="block text-sm font-medium text-gray-700">
                     Time Limit (minutes)
@@ -112,7 +162,30 @@ const TestForm = ({ initialData, onSubmit, isEditing }) => {
                     <p className="mt-1 text-sm text-red-600">{errors.timeLimit}</p>
                 )}
             </div>
-
+            <div className="space-y-4">
+                <h3 className="text-lg font-medium text-gray-900">Test Metadata</h3>
+                {Object.entries(predefinedKeyValues).map(([key, values]) => (
+                    <div key={key}>
+                        <label htmlFor={key} className="block text-sm font-medium text-gray-700">
+                            {key}
+                        </label>
+                        <select
+                            id={key}
+                            value={formData.metadata[key] || ''}
+                            onChange={(e) => handleMetadataChange(key, e.target.value)}
+                            className="mt-1 block w-full rounded-md border border-gray-300 p-2
+                                focus:border-transparent focus:ring-2 focus:ring-blue-500 transition-colors"
+                        >
+                            <option value="">Select {key}</option>
+                            {values.map(value => (
+                                <option key={value} value={value}>
+                                    {value}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                ))}
+            </div>
             <div className="flex gap-4 justify-end">
                 <button
                     type="button"
