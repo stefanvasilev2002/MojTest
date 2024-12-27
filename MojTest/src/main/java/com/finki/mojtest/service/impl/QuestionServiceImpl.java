@@ -2,6 +2,7 @@ package com.finki.mojtest.service.impl;
 
 import com.finki.mojtest.model.*;
 import com.finki.mojtest.model.dtos.QuestionDTO;
+import com.finki.mojtest.model.dtos.QuestionFromTeacherDTO;
 import com.finki.mojtest.model.enumerations.QuestionType;
 import com.finki.mojtest.model.mappers.FileMapper;
 import com.finki.mojtest.model.mappers.QuestionMapper;
@@ -170,5 +171,82 @@ public class QuestionServiceImpl implements QuestionService {
     @Override
     public List<Question> getQuestionsByTestId(Long testId) {
         return questionRepository.findByTestId(testId);
+    }
+
+    @Override
+    @Transactional
+    public Question createAndAddQuestionToTest(Long testId, QuestionFromTeacherDTO questionCreateDTO) {
+        // Validate inputs
+        if (questionCreateDTO.getCreatorId() == null) {
+            throw new IllegalArgumentException("Creator ID must not be null");
+        }
+
+        // Find the test
+        Test test = testRepository.findById(testId)
+                .orElseThrow(() -> new EntityNotFoundException("Test not found with ID: " + testId));
+
+        // Find the teacher
+        Teacher creator = (Teacher) userRepository.findById(questionCreateDTO.getCreatorId())
+                .orElseThrow(() -> new EntityNotFoundException("Teacher not found with ID: " + questionCreateDTO.getCreatorId()));
+
+        // Create the question entity
+        Question question = new Question();
+        question.setQuestionType(questionCreateDTO.getType() != null ?
+                QuestionType.valueOf(questionCreateDTO.getType()) :
+                QuestionType.MULTIPLE_CHOICE);
+
+        question.setDescription(questionCreateDTO.getDescription());
+        question.setPoints(questionCreateDTO.getPoints());
+        question.setNegativePointsPerAnswer(questionCreateDTO.getNegativePointsPerAnswer());
+        question.setFormula(questionCreateDTO.getFormula());
+        question.setHint(questionCreateDTO.getHint());
+        question.setCreator(creator);
+
+        // Save question first to get its ID
+        question = questionRepository.save(question);
+
+        // Create and save metadata
+        if (questionCreateDTO.getMetadata() != null) {
+            Question finalQuestion = question;
+            List<Metadata> metadataList = questionCreateDTO.getMetadata().stream()
+                    .map(metadataDTO -> {
+                        Metadata metadata = metadataRepository.findByKeyAndValue(metadataDTO.getKey(), metadataDTO.getValue())
+                                .orElseGet(() -> {
+                                    Metadata newMetadata = new Metadata();
+                                    newMetadata.setKey(metadataDTO.getKey());
+                                    newMetadata.setValue(metadataDTO.getValue());
+                                    return metadataRepository.save(newMetadata);
+                                });
+                        metadata.getQuestions().add(finalQuestion);
+                        return metadata;
+                    })
+                    .collect(Collectors.toList());
+
+            question.setMetadata(metadataList);
+        }
+
+        // Create and save answers
+        if (questionCreateDTO.getAnswers() != null) {
+            Question finalQuestion1 = question;
+            List<Answer> answers = questionCreateDTO.getAnswers().stream()
+                    .map(answerDTO -> {
+                        Answer answer = new Answer();
+                        answer.setAnswerText(answerDTO.getAnswerText());
+                        answer.setCorrect(answerDTO.isCorrect());
+                        answer.setQuestion(finalQuestion1);
+                        answer.setCorrect(answerDTO.isCorrect());
+                        return answerRepository.save(answer);
+                    })
+                    .collect(Collectors.toList());
+
+            question.setAnswers(answers);
+        }
+
+        // Add question to test
+        test.getQuestionBank().add(question);
+        testRepository.save(test);
+
+        // Save and return the final question
+        return questionRepository.save(question);
     }
 }

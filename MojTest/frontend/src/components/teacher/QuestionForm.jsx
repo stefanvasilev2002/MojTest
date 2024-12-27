@@ -1,260 +1,400 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
 import { useAuth } from '../../context/AuthContext';
+import { predefinedKeyValues } from "../../constants/metadata.js";
 
-const QuestionForm = ({ onSubmit, isEditing, initialData = {} }) => {
+const QuestionForm = ({ onSubmit, isEditing = false, initialData = {}, loading = false }) => {
     const { user } = useAuth();
+    const [error, setError] = useState(null);
+    const [selectedType, setSelectedType] = useState(initialData.type || 'MULTIPLE_CHOICE');
     const [formData, setFormData] = useState({
-        questionType: 'MULTIPLE_CHOICE',
-        description: '',
-        points: 1,
-        negativePointsPerAnswer: 0,
-        formula: '',
-        hint: '',
-        answers: [],
-        ...initialData
+        description: initialData.description || '',
+        points: initialData.points || 1,
+        negativePointsPerAnswer: initialData.negativePointsPerAnswer || 0,
+        hint: initialData.hint || '',
+        formula: initialData.formula || '',
+        type: initialData.type || 'MULTIPLE_CHOICE',
+        creatorId: initialData.creatorId || user?.id,
+        metadata: initialData.metadata || {},
+        answers: []
     });
 
-    const [answers, setAnswers] = useState([]);
-    const [error, setError] = useState(null);
-
     useEffect(() => {
-        if (isEditing && initialData.answers) {
-            setAnswers(initialData.answers);
-        } else {
-            // Initialize with empty answers based on question type
-            resetAnswersForType(formData.questionType);
-        }
-    }, [isEditing, initialData]);
+        if (initialData) {
+            const questionType = initialData.type || 'MULTIPLE_CHOICE';
+            setSelectedType(questionType);
 
-    const resetAnswersForType = (type) => {
+            let processedAnswers;
+            if (initialData.answers && initialData.answers.length > 0) {
+                processedAnswers = initialData.answers.map(answer => ({
+                    answerText: answer.answerText || '',
+                    isCorrect: answer.isCorrect !== undefined ? answer.isCorrect : answer.correct || false,
+                    id: answer.id
+                }));
+            } else {
+                processedAnswers = getInitialAnswers(questionType);
+            }
+
+            setFormData(prev => ({
+                ...prev,
+                description: initialData.description || '',
+                points: initialData.points || 1,
+                negativePointsPerAnswer: initialData.negativePointsPerAnswer || 0,
+                hint: initialData.hint || '',
+                formula: initialData.formula || '',
+                type: questionType,
+                creatorId: initialData.creatorId || user?.id,
+                metadata: initialData.metadata || {},
+                answers: processedAnswers
+            }));
+        }
+    }, [initialData, user?.id]);
+
+    const getInitialAnswers = useCallback((type) => {
         switch (type) {
             case 'MULTIPLE_CHOICE':
-                setAnswers([
-                    { answerText: '', isCorrect: false },
-                    { answerText: '', isCorrect: false },
-                    { answerText: '', isCorrect: false },
-                    { answerText: '', isCorrect: false }
-                ]);
-                break;
+                return Array(4).fill().map(() => ({ answerText: '', isCorrect: false }));
             case 'TRUE_FALSE':
-                setAnswers([
-                    { answerText: 'True', isCorrect: false },
+                return [
+                    { answerText: 'True', isCorrect: true },
                     { answerText: 'False', isCorrect: false }
-                ]);
-                break;
+                ];
             case 'FILL_IN_THE_BLANK':
             case 'NUMERIC':
-                setAnswers([{ answerText: '', isCorrect: true }]);
-                break;
             case 'ESSAY':
-                setAnswers([]); // Essay questions don't have predefined answers
-                break;
+                return [{ answerText: '', isCorrect: true }];
             default:
-                setAnswers([]);
+                return [];
         }
-    };
+    }, []);
 
-    const handleInputChange = (e) => {
-        const { name, value } = e.target;
+    const handleTypeChange = useCallback((e) => {
+        const type = e.target.value;
+        setSelectedType(type);
         setFormData(prev => ({
             ...prev,
-            [name]: value
+            type: type,
+            answers: getInitialAnswers(type)
         }));
+    }, [getInitialAnswers]);
 
-        if (name === 'questionType') {
-            resetAnswersForType(value);
+    const handleInputChange = useCallback((e) => {
+        const { name, value, type } = e.target;
+        setFormData(prev => ({
+            ...prev,
+            [name]: type === 'number' ? Number(value) : value
+        }));
+    }, []);
+
+    const handleAnswerChange = useCallback((index, field, value) => {
+        setFormData(prev => {
+            const newAnswers = [...prev.answers];
+            newAnswers[index] = {
+                ...newAnswers[index],
+                [field]: value
+            };
+            return {
+                ...prev,
+                answers: newAnswers
+            };
+        });
+    }, []);
+
+    const handleMultipleChoiceChange = useCallback((index, isChecked) => {
+        setFormData(prev => {
+            const newAnswers = prev.answers.map((answer, i) => ({
+                ...answer,
+                isCorrect: i === index ? isChecked : answer.isCorrect
+            }));
+            return {
+                ...prev,
+                answers: newAnswers
+            };
+        });
+    }, []);
+
+    const handleTrueFalseChange = useCallback((index) => {
+        setFormData(prev => {
+            const newAnswers = prev.answers.map((answer, i) => ({
+                ...answer,
+                isCorrect: i === index
+            }));
+            return {
+                ...prev,
+                answers: newAnswers
+            };
+        });
+    }, []);
+
+    const handleMetadataChange = useCallback((key, value) => {
+        setFormData(prev => ({
+            ...prev,
+            metadata: {
+                ...prev.metadata,
+                [key]: value
+            }
+        }));
+    }, []);
+
+    const addAnswer = useCallback(() => {
+        if (formData.answers.length < 8) {
+            setFormData(prev => ({
+                ...prev,
+                answers: [...prev.answers, { answerText: '', isCorrect: false }]
+            }));
         }
-    };
+    }, [formData.answers.length]);
 
-    const handleAnswerChange = (index, field, value) => {
-        const newAnswers = [...answers];
-        newAnswers[index] = {
-            ...newAnswers[index],
-            [field]: value
-        };
-        setAnswers(newAnswers);
-    };
+    const removeAnswer = useCallback((index) => {
+        if (formData.answers.length > 2) {
+            setFormData(prev => ({
+                ...prev,
+                answers: prev.answers.filter((_, i) => i !== index)
+            }));
+        }
+    }, [formData.answers.length]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError(null);
 
-        // Validation
-        if (!formData.description.trim()) {
-            setError('Question description is required');
-            return;
-        }
-
-        if (formData.questionType !== 'ESSAY' && answers.length === 0) {
-            setError('At least one answer is required');
-            return;
-        }
-
-        if (formData.questionType === 'MULTIPLE_CHOICE' && !answers.some(a => a.isCorrect)) {
-            setError('At least one correct answer must be selected');
-            return;
-        }
-
         try {
-            await onSubmit({
+            if (!formData.description.trim()) {
+                throw new Error('Question description is required');
+            }
+
+            if (!user?.id) {
+                throw new Error('You must be logged in to create questions');
+            }
+
+            const validAnswers = formData.answers.filter(a => a.answerText.trim() !== '');
+
+            if (selectedType !== 'ESSAY' && validAnswers.length === 0) {
+                throw new Error('At least one answer is required');
+            }
+
+            if (selectedType === 'MULTIPLE_CHOICE' && !validAnswers.some(a => a.isCorrect)) {
+                throw new Error('At least one correct answer must be selected');
+            }
+
+            const metadataArray = Object.entries(formData.metadata).map(([key, value]) => ({
+                key,
+                value
+            }));
+
+            const questionData = {
                 ...formData,
-                answers: answers.filter(a => a.answerText.trim() !== '')
-            });
+                type: selectedType,
+                answers: validAnswers,
+                creatorId: user.id,
+                metadata: metadataArray
+            };
+
+            await onSubmit(questionData);
         } catch (err) {
             setError(err.message);
+            console.error('Error handling question:', err);
         }
     };
 
     return (
         <form onSubmit={handleSubmit} className="space-y-6">
             {error && (
-                <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+                <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
                     {error}
                 </div>
             )}
 
-            <div className="space-y-4">
-                {/* Question Type Selection */}
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Question Type
-                    </label>
-                    <select
-                        name="questionType"
-                        value={formData.questionType}
-                        onChange={handleInputChange}
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                    >
-                        <option value="MULTIPLE_CHOICE">Multiple Choice</option>
-                        <option value="TRUE_FALSE">True/False</option>
-                        <option value="FILL_IN_THE_BLANK">Fill in the Blank</option>
-                        <option value="ESSAY">Essay</option>
-                        <option value="NUMERIC">Numeric</option>
-                    </select>
-                </div>
+            <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Question Type
+                </label>
+                <select
+                    value={selectedType}
+                    onChange={handleTypeChange}
+                    className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                >
+                    <option value="MULTIPLE_CHOICE">Multiple Choice</option>
+                    <option value="TRUE_FALSE">True/False</option>
+                    <option value="FILL_IN_THE_BLANK">Fill in the Blank</option>
+                    <option value="ESSAY">Essay</option>
+                    <option value="NUMERIC">Numeric</option>
+                </select>
+            </div>
 
-                {/* Question Description */}
+            <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Question
+                </label>
+                <textarea
+                    name="description"
+                    value={formData.description}
+                    onChange={handleInputChange}
+                    required
+                    rows="3"
+                    className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                    placeholder="Enter your question here..."
+                />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Question Description
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Points
                     </label>
-                    <textarea
-                        name="description"
-                        value={formData.description}
+                    <input
+                        type="number"
+                        name="points"
+                        value={formData.points}
                         onChange={handleInputChange}
-                        rows="3"
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                        min="1"
                         required
+                        className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                     />
                 </div>
-
-                {/* Points */}
-                <div className="grid grid-cols-2 gap-4">
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Points
-                        </label>
-                        <input
-                            type="number"
-                            name="points"
-                            value={formData.points}
-                            onChange={handleInputChange}
-                            min="1"
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Negative Points per Wrong Answer
-                        </label>
-                        <input
-                            type="number"
-                            name="negativePointsPerAnswer"
-                            value={formData.negativePointsPerAnswer}
-                            onChange={handleInputChange}
-                            min="0"
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                        />
-                    </div>
-                </div>
-
-                {/* Hint */}
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Hint (Optional)
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Negative Points per Wrong Answer
+                    </label>
+                    <input
+                        type="number"
+                        name="negativePointsPerAnswer"
+                        value={formData.negativePointsPerAnswer}
+                        onChange={handleInputChange}
+                        min="0"
+                        className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                    />
+                </div>
+            </div>
+
+            <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Hint (Optional)
+                </label>
+                <input
+                    type="text"
+                    name="hint"
+                    value={formData.hint}
+                    onChange={handleInputChange}
+                    className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                    placeholder="Provide a hint for students..."
+                />
+            </div>
+
+            {selectedType === 'NUMERIC' && (
+                <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Formula (Optional)
                     </label>
                     <input
                         type="text"
-                        name="hint"
-                        value={formData.hint}
+                        name="formula"
+                        value={formData.formula}
                         onChange={handleInputChange}
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                        className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                        placeholder="Enter a mathematical formula..."
                     />
                 </div>
+            )}
 
-                {/* Formula (for numeric questions) */}
-                {formData.questionType === 'NUMERIC' && (
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Formula (Optional)
-                        </label>
-                        <input
-                            type="text"
-                            name="formula"
-                            value={formData.formula}
-                            onChange={handleInputChange}
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                        />
-                    </div>
-                )}
-
-                {/* Answers Section */}
-                {formData.questionType !== 'ESSAY' && (
-                    <div className="space-y-4">
+            {selectedType === 'ESSAY' ? (
+                <div className="space-y-4">
+                    <h3 className="text-lg font-medium text-gray-900">Answer Template (Optional)</h3>
+                    <textarea
+                        value={formData.answers[0]?.answerText || ''}
+                        onChange={(e) => handleAnswerChange(0, 'answerText', e.target.value)}
+                        className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                        rows="4"
+                        placeholder="Enter answer template..."
+                    />
+                </div>
+            ) : (
+                <div className="space-y-4">
+                    <div className="flex justify-between items-center">
                         <h3 className="text-lg font-medium text-gray-900">Answers</h3>
-                        {answers.map((answer, index) => (
-                            <div key={index} className="flex items-center gap-4">
-                                <input
-                                    type="text"
-                                    value={answer.answerText}
-                                    onChange={(e) => handleAnswerChange(index, 'answerText', e.target.value)}
-                                    className="flex-1 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                                    placeholder="Enter answer"
-                                    disabled={formData.questionType === 'TRUE_FALSE'}
-                                />
-                                {formData.questionType === 'MULTIPLE_CHOICE' && (
+                        {selectedType === 'MULTIPLE_CHOICE' && (
+                            <button
+                                type="button"
+                                onClick={addAnswer}
+                                className="text-blue-600 hover:text-blue-800"
+                                disabled={formData.answers.length >= 8}
+                            >
+                                + Add Answer Option
+                            </button>
+                        )}
+                    </div>
+                    {formData.answers.map((answer, index) => (
+                        <div key={`answer-${index}`} className="flex items-center gap-4">
+                            <input
+                                type="text"
+                                value={answer.answerText}
+                                onChange={(e) => handleAnswerChange(index, 'answerText', e.target.value)}
+                                className="flex-1 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                placeholder="Enter answer"
+                                disabled={selectedType === 'TRUE_FALSE'}
+                            />
+
+                            {selectedType === 'MULTIPLE_CHOICE' && (
+                                <>
                                     <label className="flex items-center">
                                         <input
                                             type="checkbox"
                                             checked={answer.isCorrect}
-                                            onChange={(e) => handleAnswerChange(index, 'isCorrect', e.target.checked)}
+                                            onChange={(e) => handleMultipleChoiceChange(index, e.target.checked)}
                                             className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                                         />
-                                        <span className="ml-2 text-sm text-gray-600">Correct</span>
+                                        <span className="ml-2">Correct</span>
                                     </label>
-                                )}
-                                {formData.questionType === 'TRUE_FALSE' && (
-                                    <label className="flex items-center">
-                                        <input
-                                            type="radio"
-                                            name="correctAnswer"
-                                            checked={answer.isCorrect}
-                                            onChange={() => {
-                                                const newAnswers = answers.map((a, i) => ({
-                                                    ...a,
-                                                    isCorrect: i === index
-                                                }));
-                                                setAnswers(newAnswers);
-                                            }}
-                                            className="border-gray-300 text-blue-600 focus:ring-blue-500"
-                                        />
-                                        <span className="ml-2 text-sm text-gray-600">Correct</span>
-                                    </label>
-                                )}
-                            </div>
-                        ))}
+                                    {formData.answers.length > 2 && (
+                                        <button
+                                            type="button"
+                                            onClick={() => removeAnswer(index)}
+                                            className="text-red-600 hover:text-red-800"
+                                        >
+                                            Remove
+                                        </button>
+                                    )}
+                                </>
+                            )}
+
+                            {selectedType === 'TRUE_FALSE' && (
+                                <label className="flex items-center">
+                                    <input
+                                        type="radio"
+                                        name="correctAnswer"
+                                        checked={answer.isCorrect}
+                                        onChange={() => handleTrueFalseChange(index)}
+                                        className="border-gray-300 text-blue-600 focus:ring-blue-500"
+                                    />
+                                    <span className="ml-2">Correct</span>
+                                </label>
+                            )}
+                        </div>
+                    ))}
+                </div>
+            )}
+
+            <div className="space-y-4">
+                <h3 className="text-lg font-medium text-gray-900">Question Metadata</h3>
+                {Object.entries(predefinedKeyValues).map(([key, values]) => (
+                    <div key={key}>
+                        <label htmlFor={key} className="block text-sm font-medium text-gray-700">
+                            {key}
+                        </label>
+                        <select
+                            id={key}
+                            value={formData.metadata[key] || ''}
+                            onChange={(e) => handleMetadataChange(key, e.target.value)}
+                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                        >
+                            <option value="">Select {key}</option>
+                            {values.map(value => (
+                                <option key={value} value={value}>
+                                    {value}
+                                </option>
+                            ))}
+                        </select>
                     </div>
-                )}
+                ))}
             </div>
 
             <div className="flex justify-end space-x-4">
@@ -267,13 +407,13 @@ const QuestionForm = ({ onSubmit, isEditing, initialData = {} }) => {
                 </button>
                 <button
                     type="submit"
-                    className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                    disabled={loading}
+                    className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
                 >
                     {isEditing ? 'Update Question' : 'Create Question'}
                 </button>
             </div>
         </form>
     );
-};
-
+}
 export default QuestionForm;

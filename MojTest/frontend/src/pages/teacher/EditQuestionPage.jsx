@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import QuestionForm from "../../components/crud/QuestionForm.jsx";
+import QuestionForm from "../../components/teacher/QuestionForm.jsx";
 import useQuestion from '../../hooks/crud/useQuestion';  // Assuming you have this hook
 
 const EditQuestionPage = () => {

@@ -85,7 +85,15 @@ const testQuestionService = {
             throw new Error(error.response?.data || 'Failed to update answer');
         }
     },
-
+// Add this method to your testQuestionService
+    createQuestionInTest: async (testId, questionCreateDTO) => {
+        try {
+            const response = await axios.post(`${BASE_URL}/questions/test/${testId}/create`, questionCreateDTO);
+            return response.data;
+        } catch (error) {
+            throw new Error(error.response?.data || 'Failed to create question in test');
+        }
+    },
     deleteAnswer: async (id) => {
         try {
             await axios.delete(`${BASE_URL}/answers/${id}`);

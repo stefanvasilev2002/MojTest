@@ -3,6 +3,7 @@ package com.finki.mojtest.web;
 import com.finki.mojtest.model.Question;
 import com.finki.mojtest.model.Test;
 import com.finki.mojtest.model.dtos.QuestionDTO;
+import com.finki.mojtest.model.dtos.QuestionFromTeacherDTO;
 import com.finki.mojtest.model.dtos.TestDTO;
 import com.finki.mojtest.model.mappers.QuestionMapper;
 import com.finki.mojtest.model.mappers.TestMapper;
@@ -31,6 +32,13 @@ public class QuestionController {
     @PostMapping
     public ResponseEntity<QuestionDTO> createQuestion(@RequestBody QuestionDTO questionDTO) {
         Question createdQuestion = questionService.createQuestionByDTO(questionDTO);  // Delegate to the service
+        return new ResponseEntity<>(QuestionMapper.toDTO(createdQuestion), HttpStatus.CREATED);
+    }
+    @PostMapping("/test/{testId}/create")
+    public ResponseEntity<QuestionDTO> createAndAddQuestionToTest(
+            @PathVariable Long testId,
+            @RequestBody QuestionFromTeacherDTO questionCreateDTO) {
+        Question createdQuestion = questionService.createAndAddQuestionToTest(testId, questionCreateDTO);
         return new ResponseEntity<>(QuestionMapper.toDTO(createdQuestion), HttpStatus.CREATED);
     }
     // Add question to test's question bank
