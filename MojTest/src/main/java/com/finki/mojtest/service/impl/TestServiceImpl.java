@@ -23,6 +23,7 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -94,6 +95,11 @@ public class TestServiceImpl implements TestService {
                         newMeta.setValue(metaDTO.getValue());
                         return metadataRepository.save(newMeta);
                     });
+
+                    Optional<Metadata> m = test.getMetadata().stream().filter(i->i.getId()
+                            .equals(metadata.getId())).findFirst();
+
+            m.ifPresent(value -> test.getMetadata().remove(value));
 
             test.getMetadata().add(metadata);
         }
@@ -193,7 +199,10 @@ public class TestServiceImpl implements TestService {
         for (StudentTest studentTest : test.getStudentTests()) {
             studentTest.setTest(null);  // Remove reference from StudentTest
         }
-
+        for(TestQuestion testQuestion : testQuestionRepository.findByTestId(id)){
+            studentAnswerRepository.deleteAllByTestQuestion(testQuestion);
+            testQuestionRepository.delete(testQuestion);
+        }
         // Remove the test from the question bank (Many-to-Many relation)
         for (Question question : test.getQuestionBank()) {
             question.getTests().remove(test);  // Remove the test from the list of tests in Question
