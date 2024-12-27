@@ -1,6 +1,7 @@
 package com.finki.mojtest.service.impl;
 
 import com.finki.mojtest.model.*;
+import com.finki.mojtest.model.dtos.MetadataDTO;
 import com.finki.mojtest.model.dtos.QuestionDTO;
 import com.finki.mojtest.model.dtos.QuestionFromTeacherDTO;
 import com.finki.mojtest.model.enumerations.QuestionType;
@@ -112,9 +113,22 @@ public class QuestionServiceImpl implements QuestionService {
                 testRepository.findAllById(questionDTO.getTestIds()) :
                 Collections.emptyList();
 
-        List<Metadata> metadata = (questionDTO.getMetadataIds() != null && !questionDTO.getMetadataIds().isEmpty()) ?
-                metadataRepository.findAllById(questionDTO.getMetadataIds()) :
-                Collections.emptyList();
+        List<Metadata> metadata = new ArrayList<>();
+        if (questionDTO.getMetadataDTOS() != null && !questionDTO.getMetadataDTOS().isEmpty()) {
+            for (MetadataDTO metadataDTO : questionDTO.getMetadataDTOS()) {
+                Metadata existingMetadata = metadataRepository.findByKeyAndValue(metadataDTO.getKey(), metadataDTO.getValue())
+                        .orElse(null);
+
+                if (existingMetadata != null) {
+                    metadata.add(existingMetadata);
+                } else {
+                    Metadata newMetadata = new Metadata();
+                    newMetadata.setKey(metadataDTO.getKey());
+                    newMetadata.setValue(metadataDTO.getValue());
+                    metadata.add(metadataRepository.save(newMetadata));
+                }
+            }
+        }
 
         // Use the mapper to update the existing entity
         QuestionMapper.updateFromDTO(existingQuestion, questionDTO, creator, tests, metadata, new Date());

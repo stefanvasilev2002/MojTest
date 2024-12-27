@@ -35,5 +35,14 @@ public class Metadata {
             inverseJoinColumns = @JoinColumn(name = "test_id")
     )
     private List<Test> tests = new ArrayList<>();
+
+    @Override
+    public String toString() {
+        return "Metadata{" +
+                "id=" + id +
+                ", key='" + key + '\'' +
+                ", value='" + value + '\'' +
+                '}';
+    }
 }
 

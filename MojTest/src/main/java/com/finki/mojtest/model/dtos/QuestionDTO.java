@@ -30,5 +30,7 @@ public class QuestionDTO {
     private List<Long> metadataIds;  // List of Metadata IDs associated with this Question
     private List<Long> answerIds;  // List of Answer IDs related to the Question
     private List<AnswerDTO> answers;
+
+    private List<MetadataDTO> metadataDTOS;
 }
 

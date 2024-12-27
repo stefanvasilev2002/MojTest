@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useCallback} from 'react';
+import React, {useState, useEffect, useCallback, useRef} from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { predefinedKeyValues } from "../../constants/metadata.js";
 
@@ -15,27 +15,36 @@ const QuestionForm = ({ onSubmit, isEditing = false, initialData = {}, loading =
         type: initialData.type || 'MULTIPLE_CHOICE',
         creatorId: initialData.creatorId || user?.id,
         metadata: initialData.metadata || {},
+        metadataDTOS: initialData.metadataDTOS || {},
         answers: []
     });
+    const [isInitialValuesSet, setIsInitialValuesSet] = useState(false); // Ensure values are set once
 
     useEffect(() => {
-        if (initialData) {
+        if (!isInitialValuesSet && initialData) {
+            console.log('Initial Data:', JSON.stringify(initialData, null, 2)); // Log the raw initialData
+
             const questionType = initialData.type || 'MULTIPLE_CHOICE';
             setSelectedType(questionType);
 
-            let processedAnswers;
-            if (initialData.answers && initialData.answers.length > 0) {
-                processedAnswers = initialData.answers.map(answer => ({
-                    answerText: answer.answerText || '',
-                    isCorrect: answer.isCorrect !== undefined ? answer.isCorrect : answer.correct || false,
-                    id: answer.id
-                }));
-            } else {
-                processedAnswers = getInitialAnswers(questionType);
+            const processedAnswers =
+                initialData.answers?.length > 0
+                    ? initialData.answers.map(answer => ({
+                        answerText: answer.answerText || '',
+                        isCorrect: answer.isCorrect !== undefined ? answer.isCorrect : answer.correct || false,
+                        id: answer.id,
+                    }))
+                    : getInitialAnswers(questionType);
+
+            // Map metadataDTOS into a structure suitable for form state
+            const metadataDTOMap = {};
+            if (initialData.metadataDTOS) {
+                initialData.metadataDTOS.forEach(({ key, value }) => {
+                    metadataDTOMap[key] = value;
+                });
             }
 
-            setFormData(prev => ({
-                ...prev,
+            const newFormData = {
                 description: initialData.description || '',
                 points: initialData.points || 1,
                 negativePointsPerAnswer: initialData.negativePointsPerAnswer || 0,
@@ -44,10 +53,16 @@ const QuestionForm = ({ onSubmit, isEditing = false, initialData = {}, loading =
                 type: questionType,
                 creatorId: initialData.creatorId || user?.id,
                 metadata: initialData.metadata || {},
-                answers: processedAnswers
-            }));
+                metadataDTOS: metadataDTOMap,
+                answers: processedAnswers,
+            };
+
+            console.log('Processed Form Data:', JSON.stringify(newFormData, null, 2)); // Log the processed formData
+
+            setFormData(newFormData);
+            setIsInitialValuesSet(true); // Mark as initialized
         }
-    }, [initialData, user?.id]);
+    }, [initialData, isInitialValuesSet, user?.id]);
 
     const getInitialAnswers = useCallback((type) => {
         switch (type) {
@@ -128,8 +143,8 @@ const QuestionForm = ({ onSubmit, isEditing = false, initialData = {}, loading =
     const handleMetadataChange = useCallback((key, value) => {
         setFormData(prev => ({
             ...prev,
-            metadata: {
-                ...prev.metadata,
+            metadataDTOS: {
+                ...prev.metadataDTOS,
                 [key]: value
             }
         }));
@@ -176,7 +191,7 @@ const QuestionForm = ({ onSubmit, isEditing = false, initialData = {}, loading =
                 throw new Error('At least one correct answer must be selected');
             }
 
-            const metadataArray = Object.entries(formData.metadata).map(([key, value]) => ({
+            const metadataArray = Object.entries(formData.metadataDTOS).map(([key, value]) => ({
                 key,
                 value
             }));
@@ -186,7 +201,7 @@ const QuestionForm = ({ onSubmit, isEditing = false, initialData = {}, loading =
                 type: selectedType,
                 answers: validAnswers,
                 creatorId: user.id,
-                metadata: metadataArray
+                metadataDTOS: metadataArray
             };
 
             await onSubmit(questionData);
@@ -382,7 +397,7 @@ const QuestionForm = ({ onSubmit, isEditing = false, initialData = {}, loading =
                         </label>
                         <select
                             id={key}
-                            value={formData.metadata[key] || ''}
+                            value={formData.metadataDTOS[key] || ''}
                             onChange={(e) => handleMetadataChange(key, e.target.value)}
                             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                         >

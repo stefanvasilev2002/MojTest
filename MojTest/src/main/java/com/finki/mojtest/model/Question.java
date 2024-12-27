@@ -53,4 +53,16 @@ public class Question {
     @JsonIgnore  // Prevents recursion when serializing Question's creator (Teacher)
     private Teacher creator;
 
+    @Override
+    public String toString() {
+        return "Question{" +
+                "id=" + id +
+                ", questionType=" + questionType +
+                ", description='" + description + '\'' +
+                ", points=" + points +
+                ", negativePointsPerAnswer=" + negativePointsPerAnswer +
+                ", formula='" + formula + '\'' +
+                ", hint='" + hint + '\'' +
+                '}';
+    }
 }
