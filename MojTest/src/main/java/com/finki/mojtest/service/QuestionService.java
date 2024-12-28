@@ -16,4 +16,6 @@ public interface QuestionService {
     List<Question> getQuestionsByTestId(Long testId);
 
     Question createAndAddQuestionToTest(Long testId, QuestionFromTeacherDTO questionCreateDTO);
+
+    List<Question> getQuestionsNotInTest(Long testId);
 }

@@ -17,7 +17,7 @@ public class TestDTO {
     private int numQuestions;
 
     private Long creatorId;  // Store the ID of the teacher (creator)
-
+    private String name;
     private List<Long> questionIds;  // List of Question IDs associated with this Test
     private List<Long> metadataIds;  // List of Metadata IDs associated with this Test
     private List<Long> testQuestionIds;  // List of TestQuestion IDs associated with this Test

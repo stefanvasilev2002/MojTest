@@ -56,12 +56,14 @@ public class JwtUtil {
         return extractExpiration(token).before(new Date());
     }
 
-    public String generateToken(UserDetails userDetails, Long userId) {
+    public String generateToken(UserDetails userDetails, Long userId, String fullName) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("roles", userDetails.getAuthorities().stream()
                 .map(authority -> authority.getAuthority())
                 .collect(Collectors.toList()));
         claims.put("userId", userId); // Add userId claim
+        claims.put("fullName", fullName);  // Add fullName to claims
+
         return createToken(claims, userDetails.getUsername());
     }
 

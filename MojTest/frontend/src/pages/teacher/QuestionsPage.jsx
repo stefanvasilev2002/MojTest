@@ -1,4 +1,3 @@
-// src/pages/teacher/QuestionsPage.jsx
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
@@ -11,25 +10,38 @@ const QuestionsPage = () => {
     const [questions, setQuestions] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [test, setTest] = useState(null);
 
     useEffect(() => {
-        fetchQuestions();
+        fetchTestAndQuestions().then(r => console.log('Questions fetched'));
     }, [testId]);
 
-    const fetchQuestions = async () => {
+    const fetchTestAndQuestions = async () => {
         try {
             setLoading(true);
-            const data = await testQuestionService.getQuestionsByTestId(testId);
-            setQuestions(data);
-            console.log("Fetched Questions:", JSON.stringify(questions, null, 2));
+            // Fetch test details to check ownership
+            const testData = await fetch(`http://localhost:8080/api/tests/${testId}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${user.token}`,
+                    'Content-Type': 'application/json'
+                },
+            });
+            setTest(await testData.json());
+            console.log('testData:', test);
+
+            const questionsData = await testQuestionService.getQuestionsByTestId(testId);
+            setQuestions(questionsData);
             setError(null);
         } catch (err) {
             setError(err.message);
-            console.error('Error fetching questions:', err);
+            console.error('Error fetching data:', err);
         } finally {
             setLoading(false);
         }
     };
+
+    const isCreator = test?.creatorId === user.id;
 
     const handleCreateQuestion = () => {
         navigate(`/teacher-dashboard/test/${testId}/questions/create`);
@@ -43,7 +55,7 @@ const QuestionsPage = () => {
         if (window.confirm('Are you sure you want to delete this question?')) {
             try {
                 await testQuestionService.deleteQuestion(questionId);
-                fetchQuestions(); // Refresh the list after deletion
+                fetchTestAndQuestions(); // Refresh the list after deletion
             } catch (error) {
                 setError(error.message);
                 console.error('Error deleting question:', error);
@@ -88,19 +100,32 @@ const QuestionsPage = () => {
                 </div>
 
                 <div className="flex justify-between items-center mb-8">
-                    <h1 className="text-4xl font-bold text-blue-600">Test Questions</h1>
-                    <button
-                        onClick={handleCreateQuestion}
-                        className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors"
-                    >
-                        Add New Question
-                    </button>
+                    <div>
+                        <h1 className="text-4xl font-bold text-blue-600">Test Questions</h1>
+                        {!isCreator && (
+                            <p className="text-gray-600 mt-2">
+                                Viewing questions for test created by Teacher {test?.name}
+                            </p>
+                        )}
+                    </div>
+                    {isCreator && (
+                        <button
+                            onClick={handleCreateQuestion}
+                            className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors"
+                        >
+                            Add New Question
+                        </button>
+                    )}
                 </div>
 
                 <div className="grid gap-6">
                     {questions.length === 0 ? (
                         <div className="bg-white rounded-lg shadow p-6 text-center">
-                            <p className="text-gray-600">No questions available. Create your first question!</p>
+                            <p className="text-gray-600">
+                                {isCreator
+                                    ? "No questions available. Create your first question!"
+                                    : "No questions available for this test."}
+                            </p>
                         </div>
                     ) : (
                         questions.map(question => (
@@ -109,7 +134,7 @@ const QuestionsPage = () => {
                                 className="bg-white rounded-lg shadow p-6"
                             >
                                 <div className="flex justify-between items-start">
-                                    <div>
+                                    <div className="flex-grow">
                                         <div className="flex items-center gap-2 mb-2">
                                             <h2 className="text-xl font-semibold">{question.description}</h2>
                                             <span className="bg-blue-100 text-blue-800 text-sm px-2 py-1 rounded">
@@ -144,20 +169,22 @@ const QuestionsPage = () => {
                                             </ul>
                                         </div>
                                     </div>
-                                    <div className="flex gap-2">
-                                        <button
-                                            onClick={() => handleEditQuestion(question.id)}
-                                            className="bg-yellow-600 text-white px-4 py-2 rounded hover:bg-yellow-700 transition-colors"
-                                        >
-                                            Edit
-                                        </button>
-                                        <button
-                                            onClick={() => handleDeleteQuestion(question.id)}
-                                            className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition-colors"
-                                        >
-                                            Delete
-                                        </button>
-                                    </div>
+                                    {isCreator && (
+                                        <div className="flex gap-2 ml-4">
+                                            <button
+                                                onClick={() => handleEditQuestion(question.id)}
+                                                className="bg-yellow-600 text-white px-4 py-2 rounded hover:bg-yellow-700 transition-colors"
+                                            >
+                                                Edit
+                                            </button>
+                                            <button
+                                                onClick={() => handleDeleteQuestion(question.id)}
+                                                className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition-colors"
+                                            >
+                                                Delete
+                                            </button>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         ))

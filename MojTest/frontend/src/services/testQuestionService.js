@@ -31,7 +31,14 @@ const testQuestionService = {
             throw new Error(error.response?.data || 'Failed to fetch questions');
         }
     },
-
+    getAllQuestionsNotInTest: async (testId) => {
+        try {
+            const response = await axios.get(`${BASE_URL}/questions/not-in-test/${testId}`);
+            return response.data;
+        } catch (error) {
+            throw new Error(error.response?.data || 'Failed to fetch questions');
+        }
+    },
     updateQuestion: async (id, questionDTO) => {
         try {
             const response = await axios.put(`${BASE_URL}/questions/${id}`, questionDTO);
@@ -120,6 +127,7 @@ const testQuestionService = {
             throw new Error(error.response?.data || 'Failed to remove question from test');
         }
     }
+
 };
 
 export default testQuestionService;

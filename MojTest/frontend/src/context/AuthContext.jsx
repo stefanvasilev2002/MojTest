@@ -13,7 +13,8 @@ export const AuthProvider = ({ children }) => {
                 const userInfo = {
                     id: decodedToken.userId,
                     username: decodedToken.sub,
-                    token: storedToken
+                    token: storedToken,
+                    fullName: decodedToken.fullName,  // Add these if they're in your JWT
                 };
 
                 // Immediately fetch additional user details if token exists
@@ -24,10 +25,11 @@ export const AuthProvider = ({ children }) => {
                 })
                     .then(response => response.json())
                     .then(data => {
-                        // Update user state with grade information
+                        // Update user state with all information
                         const updatedUser = {
                             ...userInfo,
-                            grade: data.grade
+                            grade: data.grade,
+                            fullName: data.fullName || decodedToken.fullName,  // Prefer API data, fallback to token
                         };
                         setUser(updatedUser);
                     })
@@ -74,12 +76,13 @@ export const AuthProvider = ({ children }) => {
 
             const userData = await response.json();
 
-            // Set user with all details including grade
+            // Set user with all details
             setUser({
                 id: decodedToken.userId,
                 username: decodedToken.sub,
                 token: token,
-                grade: userData.grade
+                grade: userData.grade,
+                fullName: userData.fullName || decodedToken.fullName  // Prefer API data, fallback to token
             });
 
             setRole(userRole);

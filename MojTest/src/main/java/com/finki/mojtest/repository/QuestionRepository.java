@@ -1,6 +1,7 @@
 package com.finki.mojtest.repository;
 
 import com.finki.mojtest.model.Question;
+import com.finki.mojtest.model.Test;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -16,4 +17,6 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
 
     @Query("SELECT q FROM Question q JOIN q.tests t WHERE t.id = :testId")
     List<Question> findByTestId(@Param("testId") Long testId);
+
+    List<Question> findAllByTestsNotContaining(Test test);
 }

@@ -26,7 +26,7 @@ public class QuestionMapper {
         dto.setFormula(question.getFormula());
         dto.setHint(question.getHint());
         dto.setCreatorId(question.getCreator() != null ? question.getCreator().getId() : null);
-
+        dto.setName(question.getCreator() != null ? question.getCreator().getUsername() : null);
         // Map answers
         if (question.getAnswers() != null) {
             dto.setAnswers(question.getAnswers().stream()

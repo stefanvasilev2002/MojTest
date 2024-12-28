@@ -264,4 +264,12 @@ public class QuestionServiceImpl implements QuestionService {
         // Save and return the final question
         return questionRepository.save(question);
     }
+
+    @Override
+    public List<Question> getQuestionsNotInTest(Long testId) {
+        Test test = testRepository.findById(testId)
+                .orElseThrow(() -> new EntityNotFoundException("Test not found with ID: " + testId));
+
+        return questionRepository.findAllByTestsNotContaining(test);
+    }
 }

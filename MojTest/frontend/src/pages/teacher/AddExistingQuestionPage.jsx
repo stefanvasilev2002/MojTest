@@ -14,7 +14,7 @@ const AddExistingQuestionPage = ({ onSelectQuestion }) => {
     useEffect(() => {
         const fetchQuestions = async () => {
             try {
-                const questions = await testQuestionService.getAllQuestions();
+                const questions = await testQuestionService.getAllQuestionsNotInTest(testId);
                 setAllQuestions(questions);
                 setFilteredQuestions(questions);  // Initially, show all questions
                 console.log("Fetched Questions:", JSON.stringify(questions, null, 2));

@@ -26,7 +26,8 @@
     "studentAnswer": "Student Answers",
     "studentTest": "Student Tests",
     "testQuestion": "Test Questions",
-    "user": "Users"
+    "user": "Users",
+    "hello": "Hello"
   },
   "debugPageTitle": "Debug Page",
   "debugPageMessage": "This page helps you test the translations.",

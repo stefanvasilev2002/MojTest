@@ -41,6 +41,14 @@ public class QuestionController {
         Question createdQuestion = questionService.createAndAddQuestionToTest(testId, questionCreateDTO);
         return new ResponseEntity<>(QuestionMapper.toDTO(createdQuestion), HttpStatus.CREATED);
     }
+    @GetMapping("/not-in-test/{testId}")
+    public ResponseEntity<List<QuestionDTO>> getQuestionsNotInTest(@PathVariable Long testId) {
+        List<Question> questions = questionService.getQuestionsNotInTest(testId);
+        List<QuestionDTO> questionDTOs = questions.stream()
+                .map(QuestionMapper::toDTO)
+                .collect(Collectors.toList());
+        return new ResponseEntity<>(questionDTOs, HttpStatus.OK);
+    }
     // Add question to test's question bank
     @PostMapping("/{testId}/questions/{questionId}")
     public ResponseEntity<TestDTO> addQuestionToTest(
