@@ -27,6 +27,7 @@ public class QuestionMapper {
         dto.setHint(question.getHint());
         dto.setCreatorId(question.getCreator() != null ? question.getCreator().getId() : null);
         dto.setName(question.getCreator() != null ? question.getCreator().getUsername() : null);
+        dto.setIsCopy(question.getIsCopy());
         // Map answers
         if (question.getAnswers() != null) {
             dto.setAnswers(question.getAnswers().stream()
@@ -61,7 +62,7 @@ public class QuestionMapper {
         question.setNegativePointsPerAnswer(dto.getNegativePointsPerAnswer());
         question.setFormula(dto.getFormula());
         question.setHint(dto.getHint());
-
+        question.setIsCopy(dto.getIsCopy());
         // Answers will be set by the service
         return question;
     }
@@ -74,6 +75,7 @@ public class QuestionMapper {
         existingQuestion.setPoints(dto.getPoints());
         existingQuestion.setNegativePointsPerAnswer(dto.getNegativePointsPerAnswer());
         existingQuestion.setFormula(dto.getFormula());
+        existingQuestion.setIsCopy(dto.getIsCopy());
         if (dto.getImage() != null) {
             if (existingQuestion.getImage() == null) {
                 existingQuestion.setImage(FileMapper.toEntityFromDto(dto.getImage(), uploadedAt));

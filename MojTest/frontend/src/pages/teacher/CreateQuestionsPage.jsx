@@ -4,12 +4,13 @@ import { useAuth } from '../../context/authContext';
 import testQuestionService from '../../services/testQuestionService';
 import QuestionForm from "../../components/teacher/QuestionForm.jsx";
 
-const CreateQuestionPage = ({ selectedQuestion }) => {
+const CreateQuestionPage = ({ selectedQuestion, mode }) => {
     const { testId } = useParams();
     const navigate = useNavigate();
     const { user } = useAuth();
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const formMode = mode ?? 'create'; // Uses the Nullish Coalescing Operator
 
     const handleSubmit = async (questionData) => {
         setLoading(true);
@@ -54,6 +55,7 @@ const CreateQuestionPage = ({ selectedQuestion }) => {
                     isEditing={false}
                     loading={loading}
                     initialData={selectedQuestion || { creatorId: user?.id }}
+                    mode={formMode}
                 />
             </div>
         </div>

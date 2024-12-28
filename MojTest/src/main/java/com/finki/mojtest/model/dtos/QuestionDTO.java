@@ -30,5 +30,6 @@ public class QuestionDTO {
     private List<AnswerDTO> answers;
 
     private List<MetadataDTO> metadata;
+    private Boolean isCopy;
 }
 

@@ -19,4 +19,5 @@ public class QuestionFromTeacherDTO {
     private Long creatorId;
     private List<CreateAnswerDTO> answers;
     private List<MetadataDTO> metadata;  // Using the array format with key-value pairs
+    private Boolean isCopy;
 }

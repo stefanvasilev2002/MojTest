@@ -7,10 +7,11 @@ const QuestionManagerPage = () => {
     const { testId } = useParams();
     const [activeTab, setActiveTab] = useState('create'); // Default to Create New Question
     const [selectedQuestion, setSelectedQuestion] = useState(null);
-
+    const [mode,setMode] = useState('create');
     const handleSelectExistingQuestion = (question) => {
         console.log('Selected question:', JSON.stringify(question, null, 2));  // Log when a question is selected in JSON format
         setSelectedQuestion(question);
+        setMode('copy');
         setActiveTab('create'); // Switch to "Create" tab when an existing question is selected
     };
 
@@ -53,7 +54,7 @@ const QuestionManagerPage = () => {
                 <div>
                     {activeTab === 'create' ? (
                         <CreateQuestionPage
-                            selectedQuestion={selectedQuestion} // Pass selected question data to CreateQuestionPage
+                            selectedQuestion={selectedQuestion} mode={mode} // Pass selected question data to CreateQuestionPage
                         />
                     ) : (
                         <AddExistingQuestionPage

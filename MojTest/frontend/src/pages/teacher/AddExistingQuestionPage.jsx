@@ -30,13 +30,20 @@ const AddExistingQuestionPage = ({ onSelectQuestion }) => {
     const filterQuestions = () => {
         // If no filters are selected, return all questions
         if (Object.keys(filterOptions).every((key) => filterOptions[key].length === 0)) {
-            setFilteredQuestions(allQuestions); // Return all questions
+            // Filter out questions that are copies (isCopy = true)
+            const nonCopyQuestions = allQuestions.filter((question) => !question.isCopy);
+            setFilteredQuestions(nonCopyQuestions); // Return only non-copy questions
             return;
         }
 
         // Filter the questions based on selected filters
         const filtered = allQuestions.filter((question) => {
             let matches = true;
+
+            // Ensure question is not a copy (isCopy = true)
+            if (question.isCopy) {
+                matches = false; // Skip this question if it's a copy
+            }
 
             // Iterate over each selected filter
             Object.keys(filterOptions).forEach((key) => {
@@ -61,6 +68,7 @@ const AddExistingQuestionPage = ({ onSelectQuestion }) => {
 
         setFilteredQuestions(filtered); // Update the filtered questions state
     };
+
 
 
 

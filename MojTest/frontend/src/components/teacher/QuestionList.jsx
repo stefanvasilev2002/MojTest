@@ -10,7 +10,7 @@ const QuestionList = ({ questions, onEdit, onRemove, onDelete, onAddToTest }) =>
 
     return (
         <div className="mb-12">
-            <h2 className="text-2xl font-semibold mb-4">Questions in This Test</h2>
+            <h2 className="text-2xl font-semibold mb-4">Available questions from other tests:</h2>
             <div className="grid gap-4">
                 {questions.length === 0 ? (
                     <div className="bg-white rounded-lg shadow p-6 text-center">

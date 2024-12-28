@@ -216,6 +216,7 @@ public class QuestionServiceImpl implements QuestionService {
         question.setFormula(questionCreateDTO.getFormula());
         question.setHint(questionCreateDTO.getHint());
         question.setCreator(creator);
+        question.setIsCopy(questionCreateDTO.getIsCopy());
 
         // Save question first to get its ID
         question = questionRepository.save(question);

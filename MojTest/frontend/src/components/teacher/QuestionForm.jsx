@@ -4,7 +4,7 @@ import { predefinedKeyValues } from "../../constants/metadata.js";
 import FormulaInput from "../FormulaInput.jsx";
 import FormulaDisplay from "../FormulaDisplay.jsx";
 
-const QuestionForm = ({ onSubmit, isEditing = false, initialData = {}, loading = false }) => {
+const QuestionForm = ({ onSubmit, isEditing = false, initialData = {}, mode = 'create', loading = false }) => {
     const { user } = useAuth();
     const [error, setError] = useState(null);
     const [selectedType, setSelectedType] = useState(initialData.type || 'MULTIPLE_CHOICE');
@@ -17,32 +17,23 @@ const QuestionForm = ({ onSubmit, isEditing = false, initialData = {}, loading =
         type: initialData.type || 'MULTIPLE_CHOICE',
         creatorId: initialData.creatorId || user?.id,
         metadata: initialData.metadata || {},
-
-        answers: []
+        answers: [],
     });
-    const [isInitialValuesSet, setIsInitialValuesSet] = useState(false); // Ensure values are set once
+    const [originalData, setOriginalData] = useState(null);
+    const [isInitialValuesSet, setIsInitialValuesSet] = useState(false);
 
     useEffect(() => {
         if (!isInitialValuesSet && initialData) {
-            console.log("Re-Render");
-
-            // Log raw initialData to verify backend output
-            console.log("Initial Data:", JSON.stringify(initialData, null, 2));
-
             const questionType = initialData.type || 'MULTIPLE_CHOICE';
             setSelectedType(questionType);
 
             const processedAnswers = initialData.answers?.length > 0
                 ? initialData.answers.map(answer => ({
                     answerText: answer.answerText || '',
-                    // Map 'correct' to 'isCorrect' for consistency in frontend
                     isCorrect: Boolean(answer.correct),
                     id: answer.id,
                 }))
                 : getInitialAnswers(questionType);
-
-            // Log processed answers for comparison
-            console.log("Processed Answers:", JSON.stringify(processedAnswers, null, 2));
 
             const metadataDTOMap = {};
             if (initialData.metadata) {
@@ -51,7 +42,7 @@ const QuestionForm = ({ onSubmit, isEditing = false, initialData = {}, loading =
                 });
             }
 
-            setFormData({
+            const fullData = {
                 description: initialData.description || '',
                 points: initialData.points || 1,
                 negativePointsPerAnswer: initialData.negativePointsPerAnswer || 0,
@@ -61,10 +52,17 @@ const QuestionForm = ({ onSubmit, isEditing = false, initialData = {}, loading =
                 creatorId: initialData.creatorId || user?.id,
                 metadata: metadataDTOMap,
                 answers: processedAnswers,
-            });
+            };
+
+            setFormData(fullData);
+
+            if (mode === 'copy' || (mode === 'edit' && initialData.isCopy)) {
+                setOriginalData(fullData);
+            }
+
             setIsInitialValuesSet(true);
         }
-    }, [initialData, isInitialValuesSet, user?.id]);
+    }, [initialData, isInitialValuesSet, mode, user?.id]);
 
 
     const getInitialAnswers = useCallback((type) => {
@@ -173,12 +171,94 @@ const QuestionForm = ({ onSubmit, isEditing = false, initialData = {}, loading =
         }
     }, [formData.answers.length]);
 
+    const compareMetadata = (formData, originalData) => {
+        // Convert metadata to key-value pairs if it's an object
+        const metadata1 = Array.isArray(formData.metadata)
+            ? formData.metadata
+            : Object.entries(formData.metadata || {});  // Convert to an array if it's an object
+
+        const metadata2 = Array.isArray(originalData.metadata)
+            ? originalData.metadata
+            : Object.entries(originalData.metadata || {});  // Convert to an array if it's an object
+
+        // Sort both metadata arrays by key for normalization
+        metadata1.sort((a, b) => a[0].localeCompare(b[0]));
+        metadata2.sort((a, b) => a[0].localeCompare(b[0]));
+
+        // Check if lengths are different
+        if (metadata1.length !== metadata2.length) return false;
+
+        // Compare each key-value pair
+        for (let i = 0; i < metadata1.length; i++) {
+            const [key1, value1] = metadata1[i];
+            const [key2, value2] = metadata2[i];
+
+            // Ensure both items have the same key and value
+            if (key1 !== key2 || value1 !== value2) {
+                return false;
+            }
+        }
+
+        // Return true if no differences were found
+        return true;
+    };
+    const compareAnswers = (formData, originalData) => {
+        const answers1 = Array.isArray(formData.answers) ? formData.answers : [];
+        const answers2 = Array.isArray(originalData.answers) ? originalData.answers : [];
+
+        // Sort the answers by their 'id' to ensure consistent ordering
+        answers1.sort((a, b) => a.id - b.id);  // Sorting by 'id' field
+        answers2.sort((a, b) => a.id - b.id);  // Sorting by 'id' field
+
+        // Check if lengths are different
+        if (answers1.length !== answers2.length) return false;
+
+        // Compare each answer
+        for (let i = 0; i < answers1.length; i++) {
+            const a1 = answers1[i];
+            const a2 = answers2[i];
+
+            // Map 'correct' to 'isCorrect' before comparison
+            const isCorrect1 = a1.correct !== undefined ? a1.correct : a1.isCorrect;
+            const isCorrect2 = a2.correct !== undefined ? a2.correct : a2.isCorrect;
+
+            // Ensure both answers have the same text, id, and correctness
+            if (a1.answerText !== a2.answerText || a1.id !== a2.id || isCorrect1 !== isCorrect2) {
+                return false;
+            }
+        }
+
+        // Return true if no differences were found
+        return true;
+    };
+    const compareOtherFields = (formData, originalData) => {
+        const fieldsToCompare = [
+            'description',
+            'points',
+            'negativePointsPerAnswer',
+            'hint',
+            'formula',
+            'type'
+        ];
+
+        // Check if the field values in both formData and originalData are equal
+        for (let field of fieldsToCompare) {
+            if (formData[field] !== originalData[field]) {
+                return false; // If any field does not match, return false
+            }
+        }
+
+        return true; // All fields are the same
+    };
+
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError(null);
 
         try {
             console.log("Form Data at Submit Start:", JSON.stringify(formData, null, 2));
+
             if (!formData.description.trim()) {
                 throw new Error('Question description is required');
             }
@@ -207,23 +287,40 @@ const QuestionForm = ({ onSubmit, isEditing = false, initialData = {}, loading =
                 key,
                 value
             }));
-            console.log("Metadata Array:", JSON.stringify(metadataArray, null, 2));
 
             const questionData = {
                 ...formData,
                 type: selectedType,
                 answers: validAnswers,
                 creatorId: user.id,
-                metadata: metadataArray
+                metadata: metadataArray,
             };
-            console.log("Final Question Data for Submission:", JSON.stringify(questionData, null, 2));
 
+            // Check if copying and detect changes in metadata, answers, and other fields
+            if (mode === 'copy' || (mode === 'edit' && initialData.isCopy)) {
+                const metadataUnchanged = compareMetadata(formData, originalData); // Check metadata
+                const answersUnchanged = compareAnswers(formData, originalData);  // Check answers
+                const otherFieldsUnchanged = compareOtherFields(formData, originalData);  // Check other fields
+                questionData.isCopy = metadataUnchanged && answersUnchanged && otherFieldsUnchanged; // If all are unchanged, mark as copy
+
+                console.log("Metadata Unchanged?", metadataUnchanged);
+                console.log("Answers Unchanged?", answersUnchanged);
+                console.log("Other Fields Unchanged?", otherFieldsUnchanged);
+                console.log("Final isCopy:", questionData.isCopy);
+            } else {
+                questionData.isCopy = false;
+            }
+
+            console.log("Final Data to Submit:", JSON.stringify(questionData, null, 2));
             await onSubmit(questionData);
+
         } catch (err) {
             setError(err.message);
             console.error('Error handling question:', err);
         }
     };
+
+
     const setFormula = (newFormula) => {
         setFormData((prevState) => ({
             ...prevState,

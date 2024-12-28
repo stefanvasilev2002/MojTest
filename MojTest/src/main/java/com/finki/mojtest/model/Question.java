@@ -26,6 +26,8 @@ public class Question {
     private int negativePointsPerAnswer;
     private String formula;
 
+    private Boolean isCopy;
+
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "image_file_id", referencedColumnName = "id") // Foreign key column
     private File image; // Replaces imageUrl
