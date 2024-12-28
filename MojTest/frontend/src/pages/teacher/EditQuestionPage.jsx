@@ -13,20 +13,29 @@ const EditQuestionPage = () => {
     const [question, setQuestion] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [isInitialValuesSet, setIsInitialValuesSet] = useState(false); // Ensure values are set once
+
 
     useEffect(() => {
         const fetchQuestion = async () => {
             try {
                 const data = await getItem(questionId);
+                console.log("Fetched Question Data:", JSON.stringify(data, null, 2)); // Log fetched data
                 setQuestion(data);
-                setLoading(false);
             } catch (err) {
+                console.error('Error fetching question:', err);
                 setError(err.message);
+            } finally {
                 setLoading(false);
             }
         };
-        fetchQuestion();
-    }, [questionId, getItem]);
+
+        if (!isInitialValuesSet) {
+            console.log("Fetching question for the first time...");
+            fetchQuestion();
+            setIsInitialValuesSet(true); // Ensure fetch only runs once
+        }
+    }, [questionId, getItem, isInitialValuesSet]);
 
     const handleSubmit = async (formData) => {
         try {

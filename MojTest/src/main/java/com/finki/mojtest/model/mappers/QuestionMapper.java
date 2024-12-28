@@ -40,11 +40,11 @@ public class QuestionMapper {
                     .collect(Collectors.toList()));
         }
         if(question.getMetadata() != null){
-            dto.setMetadataIds(question.getMetadata()
-                    .stream()
-                    .map(Metadata::getId)
-                    .collect(Collectors.toList()));
-            dto.setMetadataDTOS(question.getMetadata()
+//            dto.setMetadataIds(question.getMetadata()
+//                    .stream()
+//                    .map(Metadata::getId)
+//                    .collect(Collectors.toList()));
+            dto.setMetadata(question.getMetadata()
                     .stream()
                     .map(MetadataMapper::toDTO)
                     .collect(Collectors.toList()));

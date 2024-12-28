@@ -27,10 +27,10 @@ public class QuestionDTO {
     private Long creatorId;  // Store the ID of the teacher (creator)
 
     private List<Long> testIds;  // List of Test IDs associated with this Question
-    private List<Long> metadataIds;  // List of Metadata IDs associated with this Question
+//    private List<Long> metadataIds;  // List of Metadata IDs associated with this Question
     private List<Long> answerIds;  // List of Answer IDs related to the Question
     private List<AnswerDTO> answers;
 
-    private List<MetadataDTO> metadataDTOS;
+    private List<MetadataDTO> metadata;
 }
 

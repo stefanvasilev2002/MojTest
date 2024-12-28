@@ -21,6 +21,7 @@ const QuestionsPage = () => {
             setLoading(true);
             const data = await testQuestionService.getQuestionsByTestId(testId);
             setQuestions(data);
+            console.log("Fetched Questions:", JSON.stringify(questions, null, 2));
             setError(null);
         } catch (err) {
             setError(err.message);
@@ -92,7 +93,7 @@ const QuestionsPage = () => {
                         onClick={handleCreateQuestion}
                         className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors"
                     >
-                        Create New Question
+                        Add New Question
                     </button>
                 </div>
 

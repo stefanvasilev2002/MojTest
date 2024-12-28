@@ -114,8 +114,8 @@ public class QuestionServiceImpl implements QuestionService {
                 Collections.emptyList();
 
         List<Metadata> metadata = new ArrayList<>();
-        if (questionDTO.getMetadataDTOS() != null && !questionDTO.getMetadataDTOS().isEmpty()) {
-            for (MetadataDTO metadataDTO : questionDTO.getMetadataDTOS()) {
+        if (questionDTO.getMetadata() != null && !questionDTO.getMetadata().isEmpty()) {
+            for (MetadataDTO metadataDTO : questionDTO.getMetadata()) {
                 Metadata existingMetadata = metadataRepository.findByKeyAndValue(metadataDTO.getKey(), metadataDTO.getValue())
                         .orElse(null);
 
@@ -143,6 +143,7 @@ public class QuestionServiceImpl implements QuestionService {
                     .map(answerDTO -> {
                         Answer answer = new Answer();
                         answer.setAnswerText(answerDTO.getAnswerText());
+                        answer.setCorrect(answerDTO.isCorrect());
                         answer.setQuestion(existingQuestion);
                         return answer;
                     })

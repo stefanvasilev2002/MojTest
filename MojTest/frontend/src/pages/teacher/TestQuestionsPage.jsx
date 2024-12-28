@@ -4,6 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 import useQuestion from '../../hooks/crud/useQuestion';
 import axios from 'axios';
 import testQuestionService from "../../services/testQuestionService.js";
+import QuestionList from "../../components/teacher/QuestionList.jsx";
 
 const TestQuestionsPage = () => {
     const { testId } = useParams();
@@ -19,6 +20,12 @@ const TestQuestionsPage = () => {
         refreshItems: refreshTestQuestions
     } = useQuestion(testId);
 
+    useEffect(()=>{
+        console.log("Fetched Questions:", JSON.stringify(testQuestions, null, 2));
+    }, [testQuestions, testQuestionsLoading])
+
+    console.log("Fetched Questions:", JSON.stringify(testQuestions, null, 2));
+
     // State for question bank
     const [questionBank, setQuestionBank] = useState([]);
     const [bankLoading, setBankLoading] = useState(true);
@@ -31,11 +38,13 @@ const TestQuestionsPage = () => {
                 setBankLoading(true);
                 const response = await axios.get('/api/questions');
                 const allQuestions = response.data;
+
                 // Filter out questions that are already in the test
                 const bankQuestions = allQuestions.filter(
                     q => !testQuestions.some(tq => tq.id === q.id)
                 );
                 setQuestionBank(bankQuestions);
+
                 setBankError(null);
             } catch (error) {
                 setBankError(error.message);
@@ -131,63 +140,12 @@ const TestQuestionsPage = () => {
                     </button>
                 </div>
 
-                {/* Test Questions Section */}
-                <div className="mb-12">
-                    <h2 className="text-2xl font-semibold mb-4">Questions in This Test</h2>
-                    <div className="grid gap-4">
-                        {testQuestions.length === 0 ? (
-                            <div className="bg-white rounded-lg shadow p-6 text-center">
-                                <p className="text-gray-600">No questions added to this test yet.</p>
-                            </div>
-                        ) : (
-                            testQuestions.map(question => (
-                                <div
-                                    key={question.id}
-                                    className="bg-white rounded-lg shadow p-6"
-                                >
-                                    <div className="flex justify-between items-start">
-                                        <div>
-                                            <div className="flex items-center gap-2 mb-2">
-                                                <h3 className="text-xl font-semibold">{question.description}</h3>
-                                                <span className="bg-blue-100 text-blue-800 text-sm px-2 py-1 rounded">
-                                                    {getQuestionTypeLabel(question.questionType)}
-                                                </span>
-                                            </div>
-                                            <div className="text-sm text-gray-500">
-                                                <span>Points: {question.points}</span>
-                                                {question.negativePointsPerAnswer > 0 && (
-                                                    <span className="ml-4">
-                                                        Negative points: {question.negativePointsPerAnswer}
-                                                    </span>
-                                                )}
-                                            </div>
-                                        </div>
-                                        <div className="flex gap-2">
-                                            <button
-                                                onClick={() => handleEditQuestion(question.id)}
-                                                className="bg-yellow-600 text-white px-4 py-2 rounded hover:bg-yellow-700 transition-colors"
-                                            >
-                                                Edit
-                                            </button>
-                                            <button
-                                                onClick={() => handleRemoveFromTest(question.id)}
-                                                className="bg-orange-600 text-white px-4 py-2 rounded hover:bg-orange-700 transition-colors"
-                                            >
-                                                Remove
-                                            </button>
-                                            <button
-                                                onClick={() => handleDeleteQuestion(question.id)}
-                                                className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition-colors"
-                                            >
-                                                Delete
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            ))
-                        )}
-                    </div>
-                </div>
+                <QuestionList
+                    questions={testQuestions}
+                    onEdit={handleEditQuestion}
+                    onRemove={handleRemoveFromTest}
+                    onDelete={handleDeleteQuestion}
+                />
 
                 {/* Question Bank Section */}
                 <div>

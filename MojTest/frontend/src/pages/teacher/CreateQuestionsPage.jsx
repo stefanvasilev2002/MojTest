@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate, Link } from 'react-router-dom';  // Added Link import here
+import { useAuth } from '../../context/authContext';
 import testQuestionService from '../../services/testQuestionService';
-import QuestionForm from '../../components/teacher/QuestionForm';
+import QuestionForm from "../../components/teacher/QuestionForm.jsx";
 
-const CreateQuestionPage = () => {
+const CreateQuestionPage = ({ selectedQuestion }) => {
     const { testId } = useParams();
     const navigate = useNavigate();
     const { user } = useAuth();
@@ -16,9 +16,9 @@ const CreateQuestionPage = () => {
         setError(null);
 
         try {
-            // Create question
+            // Create the question in the test using the form data
             await testQuestionService.createQuestionInTest(testId, questionData);
-            // Navigate back to questions list
+            // Navigate back to the list of questions in the test
             navigate(`/teacher-dashboard/test/${testId}/questions`);
         } catch (err) {
             setError(err.message);
@@ -48,11 +48,12 @@ const CreateQuestionPage = () => {
                     </div>
                 )}
 
+                {/* Pass the selected question data or use default new question setup */}
                 <QuestionForm
                     onSubmit={handleSubmit}
                     isEditing={false}
                     loading={loading}
-                    initialData={{ creatorId: user?.id }}
+                    initialData={selectedQuestion || { creatorId: user?.id }}
                 />
             </div>
         </div>

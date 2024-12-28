@@ -1,6 +1,8 @@
 import React, {useState, useEffect, useCallback, useRef} from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { predefinedKeyValues } from "../../constants/metadata.js";
+import FormulaInput from "../FormulaInput.jsx";
+import FormulaDisplay from "../FormulaDisplay.jsx";
 
 const QuestionForm = ({ onSubmit, isEditing = false, initialData = {}, loading = false }) => {
     const { user } = useAuth();
@@ -15,36 +17,41 @@ const QuestionForm = ({ onSubmit, isEditing = false, initialData = {}, loading =
         type: initialData.type || 'MULTIPLE_CHOICE',
         creatorId: initialData.creatorId || user?.id,
         metadata: initialData.metadata || {},
-        metadataDTOS: initialData.metadataDTOS || {},
+
         answers: []
     });
     const [isInitialValuesSet, setIsInitialValuesSet] = useState(false); // Ensure values are set once
 
     useEffect(() => {
         if (!isInitialValuesSet && initialData) {
-            console.log('Initial Data:', JSON.stringify(initialData, null, 2)); // Log the raw initialData
+            console.log("Re-Render");
+
+            // Log raw initialData to verify backend output
+            console.log("Initial Data:", JSON.stringify(initialData, null, 2));
 
             const questionType = initialData.type || 'MULTIPLE_CHOICE';
             setSelectedType(questionType);
 
-            const processedAnswers =
-                initialData.answers?.length > 0
-                    ? initialData.answers.map(answer => ({
-                        answerText: answer.answerText || '',
-                        isCorrect: answer.isCorrect !== undefined ? answer.isCorrect : answer.correct || false,
-                        id: answer.id,
-                    }))
-                    : getInitialAnswers(questionType);
+            const processedAnswers = initialData.answers?.length > 0
+                ? initialData.answers.map(answer => ({
+                    answerText: answer.answerText || '',
+                    // Map 'correct' to 'isCorrect' for consistency in frontend
+                    isCorrect: Boolean(answer.correct),
+                    id: answer.id,
+                }))
+                : getInitialAnswers(questionType);
 
-            // Map metadataDTOS into a structure suitable for form state
+            // Log processed answers for comparison
+            console.log("Processed Answers:", JSON.stringify(processedAnswers, null, 2));
+
             const metadataDTOMap = {};
-            if (initialData.metadataDTOS) {
-                initialData.metadataDTOS.forEach(({ key, value }) => {
+            if (initialData.metadata) {
+                initialData.metadata.forEach(({ key, value }) => {
                     metadataDTOMap[key] = value;
                 });
             }
 
-            const newFormData = {
+            setFormData({
                 description: initialData.description || '',
                 points: initialData.points || 1,
                 negativePointsPerAnswer: initialData.negativePointsPerAnswer || 0,
@@ -52,17 +59,13 @@ const QuestionForm = ({ onSubmit, isEditing = false, initialData = {}, loading =
                 formula: initialData.formula || '',
                 type: questionType,
                 creatorId: initialData.creatorId || user?.id,
-                metadata: initialData.metadata || {},
-                metadataDTOS: metadataDTOMap,
+                metadata: metadataDTOMap,
                 answers: processedAnswers,
-            };
-
-            console.log('Processed Form Data:', JSON.stringify(newFormData, null, 2)); // Log the processed formData
-
-            setFormData(newFormData);
-            setIsInitialValuesSet(true); // Mark as initialized
+            });
+            setIsInitialValuesSet(true);
         }
     }, [initialData, isInitialValuesSet, user?.id]);
+
 
     const getInitialAnswers = useCallback((type) => {
         switch (type) {
@@ -118,8 +121,9 @@ const QuestionForm = ({ onSubmit, isEditing = false, initialData = {}, loading =
         setFormData(prev => {
             const newAnswers = prev.answers.map((answer, i) => ({
                 ...answer,
-                isCorrect: i === index ? isChecked : answer.isCorrect
+                isCorrect: i === index ? Boolean(isChecked) : Boolean(answer.isCorrect)
             }));
+            console.log('Updated answers:', newAnswers); // Debug log
             return {
                 ...prev,
                 answers: newAnswers
@@ -131,8 +135,9 @@ const QuestionForm = ({ onSubmit, isEditing = false, initialData = {}, loading =
         setFormData(prev => {
             const newAnswers = prev.answers.map((answer, i) => ({
                 ...answer,
-                isCorrect: i === index
+                isCorrect: Boolean(i === index)
             }));
+            console.log('Updated true/false answers:', newAnswers); // Debug log
             return {
                 ...prev,
                 answers: newAnswers
@@ -143,8 +148,8 @@ const QuestionForm = ({ onSubmit, isEditing = false, initialData = {}, loading =
     const handleMetadataChange = useCallback((key, value) => {
         setFormData(prev => ({
             ...prev,
-            metadataDTOS: {
-                ...prev.metadataDTOS,
+            metadata: {
+                ...prev.metadata,
                 [key]: value
             }
         }));
@@ -173,6 +178,7 @@ const QuestionForm = ({ onSubmit, isEditing = false, initialData = {}, loading =
         setError(null);
 
         try {
+            console.log("Form Data at Submit Start:", JSON.stringify(formData, null, 2));
             if (!formData.description.trim()) {
                 throw new Error('Question description is required');
             }
@@ -181,28 +187,36 @@ const QuestionForm = ({ onSubmit, isEditing = false, initialData = {}, loading =
                 throw new Error('You must be logged in to create questions');
             }
 
-            const validAnswers = formData.answers.filter(a => a.answerText.trim() !== '');
+            const validAnswers = formData.answers
+                .filter(a => a.answerText.trim() !== '')
+                .map(({ isCorrect, ...rest }) => ({
+                    ...rest,
+                    correct: isCorrect
+                }));
+            console.log("Valid Answers After Processing:", JSON.stringify(validAnswers, null, 2));
 
             if (selectedType !== 'ESSAY' && validAnswers.length === 0) {
                 throw new Error('At least one answer is required');
             }
 
-            if (selectedType === 'MULTIPLE_CHOICE' && !validAnswers.some(a => a.isCorrect)) {
+            if (selectedType === 'MULTIPLE_CHOICE' && !validAnswers.some(a => a.correct)) {
                 throw new Error('At least one correct answer must be selected');
             }
 
-            const metadataArray = Object.entries(formData.metadataDTOS).map(([key, value]) => ({
+            const metadataArray = Object.entries(formData.metadata).map(([key, value]) => ({
                 key,
                 value
             }));
+            console.log("Metadata Array:", JSON.stringify(metadataArray, null, 2));
 
             const questionData = {
                 ...formData,
                 type: selectedType,
                 answers: validAnswers,
                 creatorId: user.id,
-                metadataDTOS: metadataArray
+                metadata: metadataArray
             };
+            console.log("Final Question Data for Submission:", JSON.stringify(questionData, null, 2));
 
             await onSubmit(questionData);
         } catch (err) {
@@ -210,7 +224,12 @@ const QuestionForm = ({ onSubmit, isEditing = false, initialData = {}, loading =
             console.error('Error handling question:', err);
         }
     };
-
+    const setFormula = (newFormula) => {
+        setFormData((prevState) => ({
+            ...prevState,
+            formula: newFormula
+        }));
+    };
     return (
         <form onSubmit={handleSubmit} className="space-y-6">
             {error && (
@@ -295,25 +314,26 @@ const QuestionForm = ({ onSubmit, isEditing = false, initialData = {}, loading =
                 />
             </div>
 
-            {selectedType === 'NUMERIC' && (
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Formula (Optional)
-                    </label>
-                    <input
-                        type="text"
-                        name="formula"
-                        value={formData.formula}
-                        onChange={handleInputChange}
-                        className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                        placeholder="Enter a mathematical formula..."
-                    />
-                </div>
-            )}
+            <div>
+                {selectedType === 'NUMERIC' && (
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Formula (Optional)
+                        </label>
+                        {/* Render FormulaDisplay component above the input field */}
+                        <FormulaDisplay formula={formData.formula} isBlock={false}/>
+
+                        <FormulaInput
+                            formula={formData.formula}
+                            setFormula={setFormula}  // Update formula in state
+                        />
+                    </div>
+                )}
+            </div>
 
             {selectedType === 'ESSAY' ? (
                 <div className="space-y-4">
-                    <h3 className="text-lg font-medium text-gray-900">Answer Template (Optional)</h3>
+                <h3 className="text-lg font-medium text-gray-900">Answer Template (Optional)</h3>
                     <textarea
                         value={formData.answers[0]?.answerText || ''}
                         onChange={(e) => handleAnswerChange(0, 'answerText', e.target.value)}
@@ -353,7 +373,7 @@ const QuestionForm = ({ onSubmit, isEditing = false, initialData = {}, loading =
                                     <label className="flex items-center">
                                         <input
                                             type="checkbox"
-                                            checked={answer.isCorrect}
+                                            checked={Boolean(answer.isCorrect)}
                                             onChange={(e) => handleMultipleChoiceChange(index, e.target.checked)}
                                             className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                                         />
@@ -376,7 +396,7 @@ const QuestionForm = ({ onSubmit, isEditing = false, initialData = {}, loading =
                                     <input
                                         type="radio"
                                         name="correctAnswer"
-                                        checked={answer.isCorrect}
+                                        checked={Boolean(answer.isCorrect)}
                                         onChange={() => handleTrueFalseChange(index)}
                                         className="border-gray-300 text-blue-600 focus:ring-blue-500"
                                     />
@@ -397,7 +417,7 @@ const QuestionForm = ({ onSubmit, isEditing = false, initialData = {}, loading =
                         </label>
                         <select
                             id={key}
-                            value={formData.metadataDTOS[key] || ''}
+                            value={formData.metadata[key] || ''}
                             onChange={(e) => handleMetadataChange(key, e.target.value)}
                             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                         >
