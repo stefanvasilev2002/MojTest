@@ -12,7 +12,6 @@ const TeacherDashboard = () => {
     const myTests = tests.filter(test => test.creatorId === user.id);
     const allTests = tests;
 
-    console.log('user:', user);
     const handleCreateTest = () => {
         navigate('/teacher-dashboard/create-test', {
             state: { userId: user.id }
@@ -71,25 +70,39 @@ const TeacherDashboard = () => {
                         <h2 className="text-xl font-semibold">{test.title}</h2>
                         {!isOwner && (
                             <span className="text-sm bg-gray-100 text-gray-600 px-2 py-1 rounded">
-                                Created by: Teacher {test.name}
+                                Created by: Teacher {test.creatorId}
                             </span>
                         )}
                     </div>
                     <p className="text-gray-600 mb-4">{test.description}</p>
-                    <div className="flex items-center gap-4 text-sm text-gray-500">
-                        <span className="flex items-center">
-                            <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                            </svg>
-                            {test.numQuestions} questions
-                        </span>
-                        {test.timeLimit && (
+                    <div className="space-y-2">
+                        <div className="flex items-center gap-4 text-sm text-gray-500">
                             <span className="flex items-center">
                                 <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                                 </svg>
-                                Time limit: {test.timeLimit} minutes
+                                {test.numQuestions} questions
                             </span>
+                            {test.timeLimit && (
+                                <span className="flex items-center">
+                                    <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    Time limit: {test.timeLimit} minutes
+                                </span>
+                            )}
+                        </div>
+                        {test.metadata && test.metadata.length > 0 && (
+                            <div className="flex flex-wrap gap-2">
+                                {test.metadata.map((meta, index) => (
+                                    <span
+                                        key={index}
+                                        className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
+                                    >
+                                        {meta.key}: {meta.value}
+                                    </span>
+                                ))}
+                            </div>
                         )}
                     </div>
                 </div>
