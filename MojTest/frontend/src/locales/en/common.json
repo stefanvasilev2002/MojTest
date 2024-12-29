@@ -37,6 +37,44 @@
       "fetchQuestions": "Error fetching questions:"
     }
   },
+  "testResults": {
+    "title": "Test Results",
+    "noFeedback": "No feedback available.",
+    "score": "Score: {{score}}/{{maxScore}} ({{percentage}}%)",
+    "questionNumber": "Question {{number}}",
+    "questionPoints": "{{earned}}/{{total}} points",
+    "yourAnswer": "Your Answer:",
+    "correctAnswer": "Correct Answer:",
+    "noAnswer": "No answer provided",
+    "buttons": {
+      "returnDashboard": "Return to Dashboard"
+    }
+  },
+
+  "takeTest": {
+    "loading": "Loading test...",
+    "timeLimit": "Time limit: {{minutes}} minutes",
+    "questionCounter": "Question {{current}} of {{total}}",
+    "points": "Points: {{points}}",
+    "questionImage": "Question illustration",
+    "navigation": {
+      "previous": "Previous",
+      "next": "Next"
+    },
+    "buttons": {
+      "submit": "Submit Test",
+      "exit": "Exit Test"
+    },
+    "error": {
+      "generic": "Error loading test: {{error}}",
+      "fetchTest": "Failed to fetch test data",
+      "submitTest": "Failed to submit test",
+      "cancelTest": "Failed to cancel test",
+      "cancelTestAlert": "Failed to cancel test: {{error}}",
+      "imageLoad": "Error loading image",
+      "apiError": "API Error: {{error}}"
+    }
+  },
   "testDetails": {
     "loading": "Loading test results...",
     "score": "Score:",
@@ -109,63 +147,40 @@
     }
   },
   "questionForm": {
-    "error": {
-      "descriptionRequired": "Question description is required",
-      "loginRequired": "You must be logged in to create questions",
-      "answerRequired": "At least one answer is required",
-      "correctAnswerRequired": "At least one correct answer must be selected"
-    },
-    "questionType": {
-      "label": "Question Type",
-      "options": {
-        "multipleChoice": "Multiple Choice",
-        "trueFalse": "True/False",
-        "fillInBlank": "Fill in the Blank",
-        "essay": "Essay",
-        "numeric": "Numeric"
-      }
-    },
-    "question": {
-      "label": "Question",
-      "placeholder": "Enter your question here..."
-    },
-    "points": {
-      "label": "Points",
-      "negative": "Negative Points per Wrong Answer"
-    },
-    "hint": {
-      "label": "Hint (Optional)",
-      "placeholder": "Provide a hint for students..."
-    },
-    "formula": {
-      "label": "Formula (Optional)"
-    },
-    "answers": {
-      "label": "Answers",
-      "addOption": "+ Add Answer Option",
-      "placeholder": "Enter answer",
+    "labels": {
+      "type": "Question Type",
+      "question": "Question",
+      "points": "Points",
+      "negativePoints": "Negative Points per Wrong Answer",
+      "hint": "Hint (Optional)",
+      "formula": "Formula (Optional)",
+      "answers": "Answers",
+      "answerTemplate": "Answer Template (Optional)",
       "correct": "Correct",
-      "remove": "Remove",
-      "template": {
-        "label": "Answer Template (Optional)",
-        "placeholder": "Enter answer template..."
-      }
+      "metadata": "Question Metadata"
     },
-    "metadata": {
-      "label": "Question Metadata",
-      "select": "Select"
+    "types": {
+      "multipleChoice": "Multiple Choice",
+      "trueFalse": "True/False",
+      "fillBlank": "Fill in the Blank",
+      "essay": "Essay",
+      "numeric": "Numeric"
+    },
+    "placeholders": {
+      "question": "Enter your question here...",
+      "hint": "Provide a hint for students...",
+      "answer": "Enter answer",
+      "answerTemplate": "Enter answer template...",
+      "selectMetadata": "Select {{field}}"
     },
     "buttons": {
+      "addAnswer": "+ Add Answer Option",
+      "remove": "Remove",
       "cancel": "Cancel",
       "create": "Create Question",
       "update": "Update Question"
-    },
-    "trueFalse": {
-      "true": "True",
-      "false": "False"
     }
-  },
-  "questionManager": {
+  },  "questionManager": {
     "backToQuestions": "← Back to Questions",
     "pageTitle": "Manage Questions",
     "tabs": {

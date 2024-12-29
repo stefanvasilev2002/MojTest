@@ -12,9 +12,10 @@ import FillInTheBlankAnswer from "../../components/answers/FillInTheBlankAnswer.
 import ExitConfirmationModal from "../../components/student/ExitConfirmationModal.jsx";
 import QuestionNavigation from "../../components/student/QuestionNavigation.jsx";
 import SubmitConfirmationModal from "../../components/student/SubmitConfirmationModal.jsx";
-
+import { useTranslation } from 'react-i18next';
 const TakeTestPage = () => {
     const { studentTestId } = useParams();
+    const { t } = useTranslation("common");
     const { state: initialState } = useLocation();
     const { user } = useAuth();
     const navigate = useNavigate();
@@ -270,7 +271,7 @@ const TakeTestPage = () => {
             <SubmitConfirmationModal
                 isOpen={showSubmitModal}
                 onClose={() => setShowSubmitModal(false)}
-                onConfirm={handleConfirmSubmit}
+                onConfirm={handleSubmitTest}
                 questions={testData.questions}
                 answers={answers}
             />
@@ -283,7 +284,9 @@ const TakeTestPage = () => {
             )}
             <div className="max-w-7xl mx-auto">
                 <h1 className="text-3xl font-bold text-blue-600 mb-6">{testData.testTitle}</h1>
-                <p className="text-lg text-gray-600 mb-4">Time limit: {testData.timeLimit} minutes</p>
+                <p className="text-lg text-gray-600 mb-4">
+                    {t('takeTest.timeLimit', { minutes: testData.timeLimit })}
+                </p>
 
                 <div className="flex gap-6">
                     {/* Question Navigation Sidebar */}
@@ -299,24 +302,27 @@ const TakeTestPage = () => {
                         <div className="bg-white p-6 rounded-lg shadow">
                             <div className="flex justify-between items-center mb-4">
                                 <h2 className="text-xl font-semibold">
-                                    Question {currentQuestionIndex + 1} of {testData.questions.length}
+                                    {t('takeTest.questionCounter', {
+                                        current: currentQuestionIndex + 1,
+                                        total: testData.questions.length
+                                    })}
                                 </h2>
                                 <span className="text-gray-500">
-                                    Points: {currentQuestion.points}
-                                </span>
+                                {t('takeTest.points', { points: currentQuestion.points })}
+                            </span>
                             </div>
 
                             <div className="mb-6">
                                 <p className="text-lg mb-4">{currentQuestion.description}</p>
                                 {currentQuestion.imageId && (
-                                    console.log('Image URL:', `http://localhost:8080/api/files/download/${currentQuestion.imageId}/inline`),
-                                        <img
-                                            src={`http://localhost:8080/api/files/download/${currentQuestion.imageId}/inline`}
-                                            alt="Question illustration"
-                                            className="mb-4 max-w-full h-auto"
-                                            onError={(e) => console.error('Image load error:', e)}
-                                        />
+                                    <img
+                                        src={`http://localhost:8080/api/files/download/${currentQuestion.imageId}/inline`}
+                                        alt={t('takeTest.questionImage')}
+                                        className="mb-4 max-w-full h-auto"
+                                        onError={(e) => console.error(t('takeTest.error.imageLoad'), e)}
+                                    />
                                 )}
+
                                 <div className="space-y-4">
                                     {currentQuestion.questionType === 'TRUE_FALSE' && (
                                         <RadioAnswer
@@ -378,7 +384,7 @@ const TakeTestPage = () => {
                                                 : 'bg-blue-600 text-white hover:bg-blue-700'
                                         }`}
                                     >
-                                        Previous
+                                        {t('takeTest.navigation.previous')}
                                     </button>
                                     <button
                                         onClick={handleNextQuestion}
@@ -389,7 +395,7 @@ const TakeTestPage = () => {
                                                 : 'bg-blue-600 text-white hover:bg-blue-700'
                                         }`}
                                     >
-                                        Next
+                                        {t('takeTest.navigation.next')}
                                     </button>
                                 </div>
                             </div>
@@ -399,15 +405,15 @@ const TakeTestPage = () => {
                         <div className="flex gap-4 mt-6">
                             <button
                                 className="bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors"
-                                onClick={handleOpenSubmitModal}
+                                onClick={() => setShowSubmitModal(true)}
                             >
-                                Submit Test
+                                {t('takeTest.buttons.submit')}
                             </button>
                             <button
                                 className="bg-gray-600 text-white py-2 px-4 rounded-lg hover:bg-gray-700 transition-colors"
                                 onClick={() => setShowExitModal(true)}
                             >
-                                Exit Test
+                                {t('takeTest.buttons.exit')}
                             </button>
                         </div>
                     </div>

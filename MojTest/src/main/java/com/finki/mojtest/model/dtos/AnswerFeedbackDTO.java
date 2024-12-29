@@ -12,4 +12,8 @@ public class AnswerFeedbackDTO {
     private String questionText;
     private List<String> correctAnswerText;
     private List<String> submittedAnswerText;
+    private double earnedPoints;
+    private double points;
+    private Long imageId;
+
 }

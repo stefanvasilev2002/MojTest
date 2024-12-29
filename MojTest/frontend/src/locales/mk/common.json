@@ -59,63 +59,40 @@
     }
   },
   "questionForm": {
-    "error": {
-      "descriptionRequired": "Потребен е опис на прашањето",
-      "loginRequired": "Мора да сте најавени за да креирате прашања",
-      "answerRequired": "Потребен е најмалку еден одговор",
-      "correctAnswerRequired": "Мора да биде избран најмалку еден точен одговор"
-    },
-    "questionType": {
-      "label": "Тип на Прашање",
-      "options": {
-        "multipleChoice": "Повеќекратен Избор",
-        "trueFalse": "Точно/Неточно",
-        "fillInBlank": "Пополни го Празното",
-        "essay": "Есеј",
-        "numeric": "Нумеричко"
-      }
-    },
-    "question": {
-      "label": "Прашање",
-      "placeholder": "Внесете го вашето прашање тука..."
-    },
-    "points": {
-      "label": "Поени",
-      "negative": "Негативни Поени за Погрешен Одговор"
-    },
-    "hint": {
-      "label": "Совет (Опционално)",
-      "placeholder": "Дајте совет за учениците..."
-    },
-    "formula": {
-      "label": "Формула (Опционално)"
-    },
-    "answers": {
-      "label": "Одговори",
-      "addOption": "+ Додади Опција за Одговор",
-      "placeholder": "Внеси одговор",
+    "labels": {
+      "type": "Тип на прашање",
+      "question": "Прашање",
+      "points": "Поени",
+      "negativePoints": "Негативни поени за погрешен одговор",
+      "hint": "Помош (Опционално)",
+      "formula": "Формула (Опционално)",
+      "answers": "Одговори",
+      "answerTemplate": "Шаблон за одговор (Опционално)",
       "correct": "Точно",
-      "remove": "Отстрани",
-      "template": {
-        "label": "Шаблон за Одговор (Опционално)",
-        "placeholder": "Внесете шаблон за одговор..."
-      }
+      "metadata": "Метаподатоци за прашањето"
     },
-    "metadata": {
-      "label": "Метаподатоци на Прашање",
-      "select": "Избери"
+    "types": {
+      "multipleChoice": "Повеќекратен избор",
+      "trueFalse": "Точно/Неточно",
+      "fillBlank": "Пополни го празното место",
+      "essay": "Есеј",
+      "numeric": "Нумеричко"
+    },
+    "placeholders": {
+      "question": "Внесете го вашето прашање овде...",
+      "hint": "Внесете помош за студентите...",
+      "answer": "Внесете одговор",
+      "answerTemplate": "Внесете шаблон за одговор...",
+      "selectMetadata": "Изберете {{field}}"
     },
     "buttons": {
+      "addAnswer": "+ Додади опција за одговор",
+      "remove": "Отстрани",
       "cancel": "Откажи",
-      "create": "Креирај Прашање",
-      "update": "Ажурирај Прашање"
-    },
-    "trueFalse": {
-      "true": "Точно",
-      "false": "Неточно"
+      "create": "Креирај прашање",
+      "update": "Ажурирај прашање"
     }
-  },
-  "createQuestion": {
+  },  "createQuestion": {
     "backToQuestions": "← Назад кон Прашања",
     "pageTitle": "Креирај Ново Прашање",
     "error": {
@@ -144,6 +121,44 @@
       "fillintheblank": "Пополни го Празното",
       "essay": "Есеј",
       "numeric": "Нумеричко"
+    }
+  },
+
+  "testResults": {
+    "title": "Резултати од тестот",
+    "noFeedback": "Нема достапни резултати.",
+    "score": "Резултат: {{score}}/{{maxScore}} ({{percentage}}%)",
+    "questionNumber": "Прашање {{number}}",
+    "questionPoints": "{{earned}}/{{total}} поени",
+    "yourAnswer": "Вашиот одговор:",
+    "correctAnswer": "Точен одговор:",
+    "noAnswer": "Не е даден одговор",
+    "buttons": {
+      "returnDashboard": "Врати се на таблата"
+    }
+  },
+  "takeTest": {
+    "loading": "Се вчитува тестот...",
+    "timeLimit": "Временско ограничување: {{minutes}} минути",
+    "questionCounter": "Прашање {{current}} од {{total}}",
+    "points": "Поени: {{points}}",
+    "questionImage": "Илустрација на прашањето",
+    "navigation": {
+      "previous": "Претходно",
+      "next": "Следно"
+    },
+    "buttons": {
+      "submit": "Поднеси тест",
+      "exit": "Излез"
+    },
+    "error": {
+      "generic": "Грешка при вчитување на тестот: {{error}}",
+      "fetchTest": "Неуспешно преземање на податоците за тестот",
+      "submitTest": "Неуспешно поднесување на тестот",
+      "cancelTest": "Неуспешно откажување на тестот",
+      "cancelTestAlert": "Неуспешно откажување на тестот: {{error}}",
+      "imageLoad": "Грешка при вчитување на сликата",
+      "apiError": "API грешка: {{error}}"
     }
   },
   "testDetails": {

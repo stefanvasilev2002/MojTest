@@ -66,63 +66,40 @@
     }
   },
   "questionForm": {
-    "error": {
-      "descriptionRequired": "Përshkrimi i pyetjes është i detyrueshëm",
-      "loginRequired": "Duhet të jeni të kyçur për të krijuar pyetje",
-      "answerRequired": "Të paktën një përgjigje është e nevojshme",
-      "correctAnswerRequired": "Të paktën një përgjigje e saktë duhet të zgjidhet"
+    "labels": {
+      "type": "Lloji i pyetjes",
+      "question": "Pyetje",
+      "points": "Pikë",
+      "negativePoints": "Pikë negative për përgjigje të gabuar",
+      "hint": "Ndihmë (Opsionale)",
+      "formula": "Formula (Opsionale)",
+      "answers": "Përgjigjet",
+      "answerTemplate": "Shabllon i përgjigjes (Opsionale)",
+      "correct": "Saktë",
+      "metadata": "Metadata e pyetjes"
     },
-    "questionType": {
-      "label": "Lloji i Pyetjes",
-      "options": {
-        "multipleChoice": "Zgjedhje të Shumëfishta",
-        "trueFalse": "E Vërtetë/E Gabuar",
-        "fillInBlank": "Plotëso Hapësirën",
-        "essay": "Ese",
-        "numeric": "Numerike"
-      }
+    "types": {
+      "multipleChoice": "Zgjedhje e shumëfishtë",
+      "trueFalse": "E vërtetë/E gabuar",
+      "fillBlank": "Plotëso hapësirën",
+      "essay": "Ese",
+      "numeric": "Numerike"
     },
-    "question": {
-      "label": "Pyetja",
-      "placeholder": "Shkruani pyetjen tuaj këtu..."
-    },
-    "points": {
-      "label": "Pikët",
-      "negative": "Pikë Negative për Përgjigje të Gabuar"
-    },
-    "hint": {
-      "label": "Ndihmë (Opsionale)",
-      "placeholder": "Jepni një ndihmë për studentët..."
-    },
-    "formula": {
-      "label": "Formula (Opsionale)"
-    },
-    "answers": {
-      "label": "Përgjigjet",
-      "addOption": "+ Shto Opsion Përgjigjeje",
-      "placeholder": "Shkruaj përgjigjen",
-      "correct": "E Saktë",
-      "remove": "Fshi",
-      "template": {
-        "label": "Shablloni i Përgjigjes (Opsional)",
-        "placeholder": "Shkruani shabllonin e përgjigjes..."
-      }
-    },
-    "metadata": {
-      "label": "Metadata e Pyetjes",
-      "select": "Zgjidhni"
+    "placeholders": {
+      "question": "Shkruani pyetjen tuaj këtu...",
+      "hint": "Jepni një ndihmë për studentët...",
+      "answer": "Shkruani përgjigjen",
+      "answerTemplate": "Shkruani shabllonin e përgjigjes...",
+      "selectMetadata": "Zgjidhni {{field}}"
     },
     "buttons": {
+      "addAnswer": "+ Shto opsion përgjigje",
+      "remove": "Fshij",
       "cancel": "Anulo",
-      "create": "Krijo Pyetje",
-      "update": "Përditëso Pyetje"
-    },
-    "trueFalse": {
-      "true": "E Vërtetë",
-      "false": "E Gabuar"
+      "create": "Krijo pyetje",
+      "update": "Përditëso pyetje"
     }
-  },
-  "createQuestion": {
+  },  "createQuestion": {
     "backToQuestions": "← Kthehu tek Pyetjet",
     "pageTitle": "Krijo Pyetje të Re",
     "error": {
@@ -151,6 +128,43 @@
     },
     "select": {
       "placeholder": "Zgjidhni"
+    }
+  },
+  "testResults": {
+    "title": "Rezultatet e testit",
+    "noFeedback": "Nuk ka rezultate në dispozicion.",
+    "score": "Rezultati: {{score}}/{{maxScore}} ({{percentage}}%)",
+    "questionNumber": "Pyetja {{number}}",
+    "questionPoints": "{{earned}}/{{total}} pikë",
+    "yourAnswer": "Përgjigja juaj:",
+    "correctAnswer": "Përgjigja e saktë:",
+    "noAnswer": "Nuk është dhënë përgjigje",
+    "buttons": {
+      "returnDashboard": "Kthehu në tabelë"
+    }
+  },
+  "takeTest": {
+    "loading": "Duke ngarkuar testin...",
+    "timeLimit": "Kufiri kohor: {{minutes}} minuta",
+    "questionCounter": "Pyetja {{current}} nga {{total}}",
+    "points": "Pikët: {{points}}",
+    "questionImage": "Ilustrimi i pyetjes",
+    "navigation": {
+      "previous": "Paraprake",
+      "next": "Tjetër"
+    },
+    "buttons": {
+      "submit": "Dorëzo testin",
+      "exit": "Dil"
+    },
+    "error": {
+      "generic": "Gabim në ngarkimin e testit: {{error}}",
+      "fetchTest": "Dështoi në marrjen e të dhënave të testit",
+      "submitTest": "Dështoi në dorëzimin e testit",
+      "cancelTest": "Dështoi në anulimin e testit",
+      "cancelTestAlert": "Dështoi në anulimin e testit: {{error}}",
+      "imageLoad": "Gabim në ngarkimin e imazhit",
+      "apiError": "Gabim API: {{error}}"
     }
   },
   "testDetails": {

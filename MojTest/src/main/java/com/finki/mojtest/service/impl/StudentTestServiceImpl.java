@@ -2,11 +2,11 @@ package com.finki.mojtest.service.impl;
 
 import com.finki.mojtest.model.*;
 import com.finki.mojtest.model.dtos.*;
-import com.finki.mojtest.model.enumerations.QuestionType;
 import com.finki.mojtest.repository.*;
 import com.finki.mojtest.service.StudentTestService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -20,20 +20,11 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional
+@AllArgsConstructor
 public class StudentTestServiceImpl implements StudentTestService {
     private final StudentTestRepository studentTestRepository;
     private final StudentAnswerRepository studentAnswerRepository;
     private final AnswerRepository answerRepository;
-    private final QuestionRepository questionRepository;
-    private final TestQuestionRepository testQuestionRepository;
-
-    public StudentTestServiceImpl(StudentTestRepository studentTestRepository, StudentAnswerRepository studentAnswerRepository, AnswerRepository answerRepository, QuestionRepository questionRepository, TestQuestionRepository testQuestionRepository) {
-        this.studentTestRepository = studentTestRepository;
-        this.studentAnswerRepository = studentAnswerRepository;
-        this.answerRepository = answerRepository;
-        this.questionRepository = questionRepository;
-        this.testQuestionRepository = testQuestionRepository;
-    }
 
     @Override
     public StudentTest createStudentTest(StudentTest studentTest) {
@@ -174,11 +165,16 @@ public class StudentTestServiceImpl implements StudentTestService {
         TestFeedbackDTO feedback = new TestFeedbackDTO();
         feedback.setStudentTestId(studentTestId);
         List<AnswerFeedbackDTO> feedbackList = new ArrayList<>();
-        int totalScore = 0;
-        int maxPossibleScore = 0;
+        double totalScore = 0;
+        double maxPossibleScore = 0;
 
         // 2. Process all questions from the student test
-        for (StudentAnswer studentAnswer : studentTest.getAnswers()) {
+        Map<Long, List<StudentAnswer>> answersByQuestion = studentTest.getAnswers().stream()
+                .collect(Collectors.groupingBy(sa -> sa.getTestQuestion().getQuestion().getId()));
+
+        for (Map.Entry<Long, List<StudentAnswer>> entry : answersByQuestion.entrySet()) {
+            List<StudentAnswer> questionAnswers = entry.getValue();
+            StudentAnswer studentAnswer = questionAnswers.getFirst();
             Question question = studentAnswer.getTestQuestion().getQuestion();
             TestQuestion testQuestion = studentAnswer.getTestQuestion();
             maxPossibleScore += question.getPoints();
@@ -186,17 +182,19 @@ public class StudentTestServiceImpl implements StudentTestService {
             AnswerFeedbackDTO answerFeedback = new AnswerFeedbackDTO();
             answerFeedback.setQuestionId(question.getId());
             answerFeedback.setQuestionText(question.getDescription());
+            answerFeedback.setPoints(question.getPoints());
 
             // Get the submission for this question if it exists
             AnswerSubmissionDTO submission = submissionMap.get(question.getId());
 
             // 3. Evaluate based on question type
             boolean isCorrect = false;
-            int questionScore = 0;
+            double earnedPoints = 0;
 
             if (submission == null) {
                 // Question was not answered
                 answerFeedback.setSubmittedAnswerText(Collections.singletonList("No answer provided"));
+                answerFeedback.setEarnedPoints(0);
                 switch (question.getQuestionType()) {
                     case MULTIPLE_CHOICE, TRUE_FALSE, NUMERIC, FILL_IN_THE_BLANK -> {
                         List<String> correctAnswer = question.getAnswers().stream()
@@ -232,9 +230,9 @@ public class StudentTestServiceImpl implements StudentTestService {
                             for (Long answerId : submittedAnswerIds) {
                                 if (correctAnswerIds.contains(answerId)) {
                                     correctSelections++;
-                                    questionScore += (int) Math.round(pointsPerAnswer);
+                                    earnedPoints += pointsPerAnswer;
                                 } else {
-                                    questionScore -= (int) negativePointsPerAnswer;
+                                    earnedPoints -= negativePointsPerAnswer;
                                 }
                             }
 
@@ -257,11 +255,11 @@ public class StudentTestServiceImpl implements StudentTestService {
 
                             // Store the submitted answers for later processing
                             studentAnswer.setChosenAnswer(
-                                    answerRepository.findById(submittedAnswerIds.get(0)).orElse(null)
+                                    answerRepository.findById(submittedAnswerIds.getFirst()).orElse(null)
                             );
                             studentAnswerRepository.save(studentAnswer);
 
-                            // Store additional answers separately after the main loop
+                            // Store additional answers separately
                             if (submittedAnswerIds.size() > 1) {
                                 for (int i = 1; i < submittedAnswerIds.size(); i++) {
                                     StudentAnswer additionalAnswer = new StudentAnswer();
@@ -273,11 +271,11 @@ public class StudentTestServiceImpl implements StudentTestService {
                                 }
                             }
                         }
-                        }
+                    }
                     case TRUE_FALSE -> {
                         List<Long> trueFalseAnswerIds = submission.getAnswerIds();
                         if (trueFalseAnswerIds != null && !trueFalseAnswerIds.isEmpty()) {
-                            Long trueFalseAnswerId = trueFalseAnswerIds.get(0);
+                            Long trueFalseAnswerId = trueFalseAnswerIds.getFirst();
                             Answer chosenTrueFalseAnswer = question.getAnswers().stream()
                                     .filter(a -> a.getId().equals(trueFalseAnswerId))
                                     .findFirst()
@@ -285,7 +283,7 @@ public class StudentTestServiceImpl implements StudentTestService {
 
                             if (chosenTrueFalseAnswer != null) {
                                 isCorrect = chosenTrueFalseAnswer.isCorrect();
-                                questionScore = isCorrect ? question.getPoints() : -question.getNegativePointsPerAnswer();
+                                earnedPoints = isCorrect ? question.getPoints() : -question.getNegativePointsPerAnswer();
 
                                 Answer correctAnswer = question.getAnswers().stream()
                                         .filter(Answer::isCorrect)
@@ -313,7 +311,7 @@ public class StudentTestServiceImpl implements StudentTestService {
                             double tolerance = 0.001;
 
                             isCorrect = Math.abs(submittedNumber - correctNumber) <= tolerance;
-                            questionScore = isCorrect ? question.getPoints() : -question.getNegativePointsPerAnswer();
+                            earnedPoints = isCorrect ? question.getPoints() : -question.getNegativePointsPerAnswer();
 
                             answerFeedback.setSubmittedAnswerText(Collections.singletonList(submittedValue));
                             answerFeedback.setCorrectAnswerText(Collections.singletonList(numericAnswer.getAnswerText()));
@@ -323,7 +321,7 @@ public class StudentTestServiceImpl implements StudentTestService {
                             studentAnswerRepository.save(studentAnswer);
                         } catch (NumberFormatException e) {
                             isCorrect = false;
-                            questionScore = 0;
+                            earnedPoints = -question.getNegativePointsPerAnswer();
                             answerFeedback.setSubmittedAnswerText(Collections.singletonList("Invalid number format"));
                             answerFeedback.setCorrectAnswerText(Collections.singletonList(numericAnswer.getAnswerText()));
                         }
@@ -337,8 +335,9 @@ public class StudentTestServiceImpl implements StudentTestService {
                                         .map(Answer::getAnswerText)
                                         .collect(Collectors.toList())
                         );
-                        questionScore = question.getPoints();
-                        isCorrect = true;
+                        earnedPoints = essayAnswer != null && !essayAnswer.trim().isEmpty() ?
+                                question.getPoints() : 0;
+                        isCorrect = earnedPoints > 0;
 
                         studentAnswer.setSubmittedValue(essayAnswer);
                         studentAnswer.setChosenAnswer(question.getAnswers().stream()
@@ -360,7 +359,7 @@ public class StudentTestServiceImpl implements StudentTestService {
                                 .collect(Collectors.toList());
 
                         isCorrect = validAnswers.contains(submittedText);
-                        questionScore = isCorrect ? question.getPoints() : -question.getNegativePointsPerAnswer();
+                        earnedPoints = isCorrect ? question.getPoints() : -question.getNegativePointsPerAnswer();
 
                         answerFeedback.setSubmittedAnswerText(Collections.singletonList(submission.getTextAnswer()));
                         answerFeedback.setCorrectAnswerText(validAnswers);
@@ -374,17 +373,18 @@ public class StudentTestServiceImpl implements StudentTestService {
 
             // 4. Update feedback
             answerFeedback.setCorrectAnswer(isCorrect);
+            answerFeedback.setEarnedPoints(earnedPoints);
             feedbackList.add(answerFeedback);
-            totalScore += questionScore;
+            totalScore += earnedPoints;
         }
 
         // 5. Update and save final score
-        studentTest.setScore(Math.max(totalScore, 0));
+        studentTest.setScore((int) Math.max(totalScore, 0));
         studentTestRepository.save(studentTest);
 
         // 6. Set final feedback
-        feedback.setTotalScore(Math.max(totalScore, 0));
-        feedback.setMaxScore(maxPossibleScore);
+        feedback.setTotalScore((int) Math.max(totalScore, 0));
+        feedback.setMaxScore((int) maxPossibleScore);
         feedback.setAnswerFeedbackList(feedbackList);
 
         return feedback;
@@ -437,7 +437,7 @@ public class StudentTestServiceImpl implements StudentTestService {
         // Process each question once
         for (Map.Entry<Long, List<StudentAnswer>> entry : answersByQuestion.entrySet()) {
             List<StudentAnswer> questionAnswers = entry.getValue();
-            StudentAnswer firstAnswer = questionAnswers.get(0);
+            StudentAnswer firstAnswer = questionAnswers.getFirst();
             Question question = firstAnswer.getTestQuestion().getQuestion();
             totalPoints += question.getPoints();
 
@@ -455,7 +455,7 @@ public class StudentTestServiceImpl implements StudentTestService {
                     List<Answer> chosenAnswers = questionAnswers.stream()
                             .map(StudentAnswer::getChosenAnswer)
                             .filter(Objects::nonNull)
-                            .collect(Collectors.toList());
+                            .toList();
 
                     if (!chosenAnswers.isEmpty()) {
                         List<String> submittedAnswerTextList = chosenAnswers.stream()
@@ -538,7 +538,7 @@ public class StudentTestServiceImpl implements StudentTestService {
                     List<String> validAnswers = Arrays.stream(correctAnswer.getAnswerText().split(","))
                             .map(String::trim)
                             .map(String::toLowerCase)
-                            .collect(Collectors.toList());
+                            .toList();
 
                     correctAnswerText = correctAnswer.getAnswerText();
 
@@ -571,6 +571,10 @@ public class StudentTestServiceImpl implements StudentTestService {
 
             // Ensure points don't go below 0 for individual questions
 
+            if (earnedPoints < 0 && Math.abs(earnedPoints) > question.getPoints()) {
+                earnedPoints = -question.getPoints();
+            }
+
             QuestionResultDTO questionResult = QuestionResultDTO.builder()
                     .questionId(question.getId())
                     .description(question.getDescription())
@@ -591,6 +595,12 @@ public class StudentTestServiceImpl implements StudentTestService {
 
         double scorePercentage = totalPoints > 0 ? (score * 100.0) / totalPoints : 0;
 
+        if (scorePercentage < 0) {
+            scorePercentage = 0;
+        }
+        if(score < 0) {
+            score = 0;
+        }
         return TestResultsDTO.builder()
                 .studentTestId(studentTestId)
                 .testTitle(studentTest.getTest().getTitle())
