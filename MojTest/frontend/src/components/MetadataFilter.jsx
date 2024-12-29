@@ -1,11 +1,12 @@
 import React, { useState } from "react";
+import { useTranslation } from 'react-i18next';
 import Select from "react-select";
-import { predefinedKeyValues } from "../constants/metadata.js"; // Make sure the path is correct
+import { predefinedKeyValues } from "../constants/metadata.js";
 
 const MetadataFilter = ({ filterOptions, setFilterOptions }) => {
-    const [showFilters, setShowFilters] = useState(false); // State to toggle filter visibility
+    const { t } = useTranslation("common");
+    const [showFilters, setShowFilters] = useState(false);
 
-    // Handle filter change
     const handleFilterChange = (selectedOption, key) => {
         setFilterOptions((prevState) => ({
             ...prevState,
@@ -13,19 +14,19 @@ const MetadataFilter = ({ filterOptions, setFilterOptions }) => {
         }));
     };
 
-    // Create an array of Select components dynamically for each metadata key
     const filterKeys = Object.keys(predefinedKeyValues);
 
     return (
         <div className="space-y-4">
             <button
-                onClick={() => setShowFilters((prev) => !prev)} // Toggle visibility
+                onClick={() => setShowFilters((prev) => !prev)}
                 className="bg-blue-600 text-white p-2 rounded mb-4"
             >
-                {showFilters ? "Hide Filters" : "Show Filters"} {/* Button Text */}
+                {showFilters
+                    ? t('metadataFilter.buttons.hideFilters')
+                    : t('metadataFilter.buttons.showFilters')}
             </button>
 
-            {/* Show filters only if showFilters is true */}
             {showFilters && (
                 <div>
                     {filterKeys.map((key) => (
@@ -41,7 +42,7 @@ const MetadataFilter = ({ filterOptions, setFilterOptions }) => {
                                     handleFilterChange(selectedOption, key)
                                 }
                                 value={filterOptions[key]}
-                                placeholder={`Select ${key}`}
+                                placeholder={`${t('metadataFilter.select.placeholder')} ${key}`}
                                 className="react-select-container"
                             />
                         </div>

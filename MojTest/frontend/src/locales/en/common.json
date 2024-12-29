@@ -9,6 +9,227 @@
     "dashboard": "Dashboard",
     "manageQuizzes": "Manage Quizzes"
   },
+  "dashboard": {
+    "myTests": "My Tests",
+    "allTests": "All Tests",
+    "createNewTest": "Create New Test",
+    "loading": "Loading...",
+    "error": "Error: ",
+    "noTestsAvailable": "No tests available.",
+    "noMyTestsAvailable": "No tests available. Create your first test!",
+    "testDetails": {
+      "createdBy": "Created by: Teacher",
+      "questions": "questions",
+      "timeLimit": "Time limit: ",
+      "minutes": "minutes",
+      "actions": {
+        "viewQuestions": "View Questions",
+        "addQuestion": "Add Question",
+        "editTest": "Edit Test",
+        "delete": "Delete",
+        "deleteConfirm": "Are you sure you want to delete this test? This will also delete all associated questions."
+      }
+    }
+  },
+  "addExistingQuestion": {
+    "title": "Add Existing Question",
+    "error": {
+      "fetchQuestions": "Error fetching questions:"
+    }
+  },
+  "testDetails": {
+    "loading": "Loading test results...",
+    "score": "Score:",
+    "points": "points",
+    "question": "Question",
+    "answers": {
+      "your": "Your Answer:",
+      "correct": "Correct Answer:",
+      "noAnswer": "No answer provided"
+    },
+    "buttons": {
+      "backToDashboard": "Back to Dashboard"
+    },
+    "error": {
+      "fetchResults": "Error fetching results:"
+    }
+  },
+  "studentDashboard": {
+    "title": "Available Tests",
+    "grade": "Grade:",
+    "loading": "Loading tests...",
+    "error": "Error loading tests:",
+    "noTests": "No tests available matching your criteria.",
+    "testCard": {
+      "questions": "questions",
+      "buttons": {
+        "startTest": "Start Test",
+        "viewAttempts": "View Attempts"
+      }
+    },
+    "activeTest": {
+      "continuePrompt": "You have an ongoing test. Would you like to continue that test? Clicking Cancel will abandon the previous test and start a new one.",
+      "errors": {
+        "startFailed": "Failed to start test:",
+        "noQuestions": "This test has no questions. Please try another test.",
+        "genericError": "Failed to start test: Please try again"
+      }
+    }
+  },
+    "metadataFilter": {
+      "buttons": {
+        "showFilters": "Show Filters",
+        "hideFilters": "Hide Filters"
+      },
+      "select": {
+        "placeholder": "Select"
+      }
+    },
+  "questionList": {
+    "title": "Available questions from other tests:",
+    "noQuestions": "No questions added to this test yet.",
+    "questionDetails": {
+      "points": "Points:",
+      "negativePoints": "Negative points:",
+      "hint": "Hint:",
+      "answers": "Answers:"
+    },
+    "buttons": {
+      "addToTest": "Add to Test",
+      "edit": "Edit",
+      "remove": "Remove",
+      "delete": "Delete"
+    },
+    "questionTypes": {
+      "multiplechoice": "Multiple Choice",
+      "truefalse": "True False",
+      "fillintheblank": "Fill in the Blank",
+      "essay": "Essay",
+      "numeric": "Numeric"
+    }
+  },
+  "questionForm": {
+    "error": {
+      "descriptionRequired": "Question description is required",
+      "loginRequired": "You must be logged in to create questions",
+      "answerRequired": "At least one answer is required",
+      "correctAnswerRequired": "At least one correct answer must be selected"
+    },
+    "questionType": {
+      "label": "Question Type",
+      "options": {
+        "multipleChoice": "Multiple Choice",
+        "trueFalse": "True/False",
+        "fillInBlank": "Fill in the Blank",
+        "essay": "Essay",
+        "numeric": "Numeric"
+      }
+    },
+    "question": {
+      "label": "Question",
+      "placeholder": "Enter your question here..."
+    },
+    "points": {
+      "label": "Points",
+      "negative": "Negative Points per Wrong Answer"
+    },
+    "hint": {
+      "label": "Hint (Optional)",
+      "placeholder": "Provide a hint for students..."
+    },
+    "formula": {
+      "label": "Formula (Optional)"
+    },
+    "answers": {
+      "label": "Answers",
+      "addOption": "+ Add Answer Option",
+      "placeholder": "Enter answer",
+      "correct": "Correct",
+      "remove": "Remove",
+      "template": {
+        "label": "Answer Template (Optional)",
+        "placeholder": "Enter answer template..."
+      }
+    },
+    "metadata": {
+      "label": "Question Metadata",
+      "select": "Select"
+    },
+    "buttons": {
+      "cancel": "Cancel",
+      "create": "Create Question",
+      "update": "Update Question"
+    },
+    "trueFalse": {
+      "true": "True",
+      "false": "False"
+    }
+  },
+  "questionManager": {
+    "backToQuestions": "← Back to Questions",
+    "pageTitle": "Manage Questions",
+    "tabs": {
+      "createNew": "Create New Question",
+      "addExisting": "Add Existing Question"
+    }
+  },
+  "createQuestion": {
+    "backToQuestions": "← Back to Questions",
+    "pageTitle": "Create New Question",
+    "error": {
+      "title": "Error",
+      "creationFailed": "Error creating question:"
+    }
+  },
+  "questionsPage": {
+    "loading": "Loading questions...",
+    "error": "Error: ",
+    "backToDashboard": "← Back to Dashboard",
+    "title": "Test Questions",
+    "viewingQuestionsBy": "Viewing questions for test created by Teacher",
+    "addNewQuestion": "Add New Question",
+    "noQuestionsCreator": "No questions available. Create your first question!",
+    "noQuestionsViewer": "No questions available for this test.",
+    "questionDetails": {
+      "points": "Points: ",
+      "negativePoints": "Negative points: ",
+      "hint": "Hint: ",
+      "answers": "Answers:",
+      "actions": {
+        "edit": "Edit",
+        "delete": "Delete",
+        "deleteConfirm": "Are you sure you want to delete this question?"
+      }
+    }
+  },
+  "testForm": {
+    "pageTitle": "Create New Test",
+    "title": {
+      "label": "Title",
+      "error": "Title is required"
+    },
+    "description": "Description",
+    "numQuestions": {
+      "label": "Number of questions in the test",
+      "error": "Test must have at least 1 question"
+    },
+    "timeLimit": {
+      "label": "Time Limit (minutes)",
+      "error": "Time limit must be at least 1 minute"
+    },
+    "metadata": {
+      "title": "Test Metadata",
+      "select": "Select"
+    },
+    "buttons": {
+      "cancel": "Cancel",
+      "create": "Create Test",
+      "update": "Update Test"
+    },
+    "validation": {
+      "creatorRequired": "Creator ID is required"
+    }
+  },
   "nav": {
     "forTeachers": "For Teachers",
     "forStudents": "For Students",
@@ -28,6 +249,13 @@
     "testQuestion": "Test Questions",
     "user": "Users",
     "hello": "Hello"
+  },
+  "editTest": {
+    "title": "Edit Test",
+    "loading": "Loading...",
+    "error": "Error: ",
+    "fetchError": "Failed to fetch test",
+    "updateError": "Failed to update test"
   },
   "debugPageTitle": "Debug Page",
   "debugPageMessage": "This page helps you test the translations.",

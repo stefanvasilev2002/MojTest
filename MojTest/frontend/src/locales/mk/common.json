@@ -9,6 +9,212 @@
     "dashboard": "Табла",
     "manageQuizzes": "Управувај со Квизови"
   },
+    "testForm": {
+      "title": {
+        "label": "Наслов",
+        "error": "Насловот е задолжителен"
+      },
+      "pageTitle": "Креирај Нов Тест",
+      "description": "Опис",
+      "numQuestions": {
+        "label": "Број на прашања во тестот",
+        "error": "Тестот мора да има најмалку 1 прашање"
+      },
+      "timeLimit": {
+        "label": "Временско ограничување (минути)",
+        "error": "Временското ограничување мора да биде најмалку 1 минута"
+      },
+      "metadata": {
+        "title": "Метаподатоци за тестот",
+        "select": "Избери"
+      },
+      "buttons": {
+        "cancel": "Откажи",
+        "create": "Креирај Тест",
+        "update": "Ажурирај Тест"
+      },
+      "validation": {
+        "creatorRequired": "Креаторот е задолжителен"
+      }
+    },
+  "questionsPage": {
+    "loading": "Вчитување прашања...",
+    "error": "Грешка: ",
+    "backToDashboard": "← Назад кон Таблата",
+    "title": "Прашања од Тестот",
+    "viewingQuestionsBy": "Преглед на прашања за тест креиран од Наставник",
+    "addNewQuestion": "Додади Ново Прашање",
+    "noQuestionsCreator": "Нема достапни прашања. Креирајте го вашето прво прашање!",
+    "noQuestionsViewer": "Нема достапни прашања за овој тест.",
+    "questionDetails": {
+      "points": "Поени: ",
+      "negativePoints": "Негативни поени: ",
+      "hint": "Совет: ",
+      "answers": "Одговори:",
+      "actions": {
+        "edit": "Измени",
+        "delete": "Избриши",
+        "deleteConfirm": "Дали сте сигурни дека сакате да го избришете ова прашање?"
+      }
+    }
+  },
+  "questionForm": {
+    "error": {
+      "descriptionRequired": "Потребен е опис на прашањето",
+      "loginRequired": "Мора да сте најавени за да креирате прашања",
+      "answerRequired": "Потребен е најмалку еден одговор",
+      "correctAnswerRequired": "Мора да биде избран најмалку еден точен одговор"
+    },
+    "questionType": {
+      "label": "Тип на Прашање",
+      "options": {
+        "multipleChoice": "Повеќекратен Избор",
+        "trueFalse": "Точно/Неточно",
+        "fillInBlank": "Пополни го Празното",
+        "essay": "Есеј",
+        "numeric": "Нумеричко"
+      }
+    },
+    "question": {
+      "label": "Прашање",
+      "placeholder": "Внесете го вашето прашање тука..."
+    },
+    "points": {
+      "label": "Поени",
+      "negative": "Негативни Поени за Погрешен Одговор"
+    },
+    "hint": {
+      "label": "Совет (Опционално)",
+      "placeholder": "Дајте совет за учениците..."
+    },
+    "formula": {
+      "label": "Формула (Опционално)"
+    },
+    "answers": {
+      "label": "Одговори",
+      "addOption": "+ Додади Опција за Одговор",
+      "placeholder": "Внеси одговор",
+      "correct": "Точно",
+      "remove": "Отстрани",
+      "template": {
+        "label": "Шаблон за Одговор (Опционално)",
+        "placeholder": "Внесете шаблон за одговор..."
+      }
+    },
+    "metadata": {
+      "label": "Метаподатоци на Прашање",
+      "select": "Избери"
+    },
+    "buttons": {
+      "cancel": "Откажи",
+      "create": "Креирај Прашање",
+      "update": "Ажурирај Прашање"
+    },
+    "trueFalse": {
+      "true": "Точно",
+      "false": "Неточно"
+    }
+  },
+  "createQuestion": {
+    "backToQuestions": "← Назад кон Прашања",
+    "pageTitle": "Креирај Ново Прашање",
+    "error": {
+      "title": "Грешка",
+      "creationFailed": "Грешка при креирање на прашање:"
+    }
+  },
+  "questionList": {
+    "title": "Достапни прашања од други тестови:",
+    "noQuestions": "Сè уште нема додадено прашања во овој тест.",
+    "questionDetails": {
+      "points": "Поени:",
+      "negativePoints": "Негативни поени:",
+      "hint": "Совет:",
+      "answers": "Одговори:"
+    },
+    "buttons": {
+      "addToTest": "Додади во Тест",
+      "edit": "Измени",
+      "remove": "Отстрани",
+      "delete": "Избриши"
+    },
+    "questionTypes": {
+      "multiplechoice": "Повеќекратен Избор",
+      "truefalse": "Точно Неточно",
+      "fillintheblank": "Пополни го Празното",
+      "essay": "Есеј",
+      "numeric": "Нумеричко"
+    }
+  },
+  "testDetails": {
+    "loading": "Вчитување на резултати од тестот...",
+    "score": "Резултат:",
+    "points": "поени",
+    "question": "Прашање",
+    "answers": {
+      "your": "Вашиот одговор:",
+      "correct": "Точен одговор:",
+      "noAnswer": "Не е даден одговор"
+    },
+    "buttons": {
+      "backToDashboard": "Назад кон Таблата"
+    },
+    "error": {
+      "fetchResults": "Грешка при превземање на резултатите:"
+    }
+  },
+  "studentDashboard": {
+    "title": "Достапни Тестови",
+    "grade": "Одделение:",
+    "loading": "Вчитување тестови...",
+    "error": "Грешка при вчитување на тестови:",
+    "noTests": "Нема достапни тестови што одговараат на вашите критериуми.",
+    "testCard": {
+      "questions": "прашања",
+      "buttons": {
+        "startTest": "Започни Тест",
+        "viewAttempts": "Прегледај Обиди"
+      }
+    },
+    "activeTest": {
+      "continuePrompt": "Имате тест во тек. Дали сакате да продолжите со тој тест? Со кликнување на Откажи ќе го напуштите претходниот тест и ќе започнете нов.",
+      "errors": {
+        "startFailed": "Неуспешно започнување на тестот:",
+        "noQuestions": "Овој тест нема прашања. Ве молиме обидете се со друг тест.",
+        "genericError": "Неуспешно започнување на тестот: Ве молиме обидете се повторно"
+      }
+    }
+  },
+  "metadataFilter": {
+    "buttons": {
+      "showFilters": "Прикажи Филтри",
+      "hideFilters": "Сокриј Филтри"
+    },
+    "select": {
+      "placeholder": "Избери"
+    }
+  },
+  "editTest": {
+    "title": "Измени Тест",
+    "loading": "Вчитување...",
+    "error": "Грешка: ",
+    "fetchError": "Неуспешно преземање на тестот",
+    "updateError": "Неуспешно ажурирање на тестот"
+  },
+  "addExistingQuestion": {
+    "title": "Додади Постоечко Прашање",
+    "error": {
+      "fetchQuestions": "Грешка при преземање на прашања:"
+    }
+  },
+  "questionManager": {
+    "backToQuestions": "← Назад кон Прашања",
+    "pageTitle": "Управување со Прашања",
+    "tabs": {
+      "createNew": "Креирај Ново Прашање",
+      "addExisting": "Додади Постоечко Прашање"
+    }
+  },
   "nav": {
     "forTeachers": "За Наставници",
     "forStudents": "За Студенти",
@@ -29,6 +235,29 @@
     "user": "Корисници",
     "hello": "Добредојде"
   },
+  "dashboard": {
+    "myTests": "Мои Тестови",
+    "allTests": "Сите Тестови",
+    "createNewTest": "Креирај Нов Тест",
+    "loading": "Вчитување...",
+    "error": "Грешка: ",
+    "noTestsAvailable": "Нема достапни тестови.",
+    "noMyTestsAvailable": "Нема достапни тестови. Креирајте го вашиот прв тест!",
+    "testDetails": {
+      "createdBy": "Креирано од: Наставник",
+      "questions": "прашања",
+      "timeLimit": "Временско ограничување: ",
+      "minutes": "минути",
+      "actions": {
+        "viewQuestions": "Погледни Прашања",
+        "addQuestion": "Додади Прашање",
+        "editTest": "Измени Тест",
+        "delete": "Избриши",
+        "deleteConfirm": "Дали сте сигурни дека сакате да го избришете овој тест? Ова ќе ги избрише и сите поврзани прашања."
+      }
+    }
+  },
+
   "debugPageTitle": "Страница за дебагирање",
   "debugPageMessage": "Оваа страница ви помага да тестираате преводи.",
   "currentLanguageDescription": "Macedonian stuff",

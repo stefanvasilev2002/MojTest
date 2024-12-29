@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { useTranslation } from 'react-i18next';
 import testQuestionService from '../../services/testQuestionService';
 
 const QuestionsPage = () => {
+    const { t } = useTranslation("common");
     const { testId } = useParams();
     const navigate = useNavigate();
     const { user } = useAuth();
@@ -19,7 +21,6 @@ const QuestionsPage = () => {
     const fetchTestAndQuestions = async () => {
         try {
             setLoading(true);
-            // Fetch test details to check ownership
             const testData = await fetch(`http://localhost:8080/api/tests/${testId}`, {
                 method: 'GET',
                 headers: {
@@ -28,7 +29,6 @@ const QuestionsPage = () => {
                 },
             });
             setTest(await testData.json());
-            console.log('testData:', test);
 
             const questionsData = await testQuestionService.getQuestionsByTestId(testId);
             setQuestions(questionsData);
@@ -52,10 +52,10 @@ const QuestionsPage = () => {
     };
 
     const handleDeleteQuestion = async (questionId) => {
-        if (window.confirm('Are you sure you want to delete this question?')) {
+        if (window.confirm(t('questionsPage.questionDetails.actions.deleteConfirm'))) {
             try {
                 await testQuestionService.deleteQuestion(questionId);
-                fetchTestAndQuestions(); // Refresh the list after deletion
+                fetchTestAndQuestions();
             } catch (error) {
                 setError(error.message);
                 console.error('Error deleting question:', error);
@@ -72,7 +72,7 @@ const QuestionsPage = () => {
     if (loading) {
         return (
             <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-                <p className="text-lg">Loading questions...</p>
+                <p className="text-lg">{t('questionsPage.loading')}</p>
             </div>
         );
     }
@@ -81,7 +81,7 @@ const QuestionsPage = () => {
         return (
             <div className="min-h-screen bg-gray-50 p-4">
                 <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-                    Error: {error}
+                    {t('questionsPage.error')}{error}
                 </div>
             </div>
         );
@@ -95,16 +95,16 @@ const QuestionsPage = () => {
                         to="/teacher-dashboard"
                         className="text-blue-600 hover:text-blue-800 flex items-center"
                     >
-                        ← Back to Dashboard
+                        {t('questionsPage.backToDashboard')}
                     </Link>
                 </div>
 
                 <div className="flex justify-between items-center mb-8">
                     <div>
-                        <h1 className="text-4xl font-bold text-blue-600">Test Questions</h1>
+                        <h1 className="text-4xl font-bold text-blue-600">{t('questionsPage.title')}</h1>
                         {!isCreator && (
                             <p className="text-gray-600 mt-2">
-                                Viewing questions for test created by Teacher {test?.name}
+                                {t('questionsPage.viewingQuestionsBy')} {test?.name}
                             </p>
                         )}
                     </div>
@@ -113,7 +113,7 @@ const QuestionsPage = () => {
                             onClick={handleCreateQuestion}
                             className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors"
                         >
-                            Add New Question
+                            {t('questionsPage.addNewQuestion')}
                         </button>
                     )}
                 </div>
@@ -123,8 +123,8 @@ const QuestionsPage = () => {
                         <div className="bg-white rounded-lg shadow p-6 text-center">
                             <p className="text-gray-600">
                                 {isCreator
-                                    ? "No questions available. Create your first question!"
-                                    : "No questions available for this test."}
+                                    ? t('questionsPage.noQuestionsCreator')
+                                    : t('questionsPage.noQuestionsViewer')}
                             </p>
                         </div>
                     ) : (
@@ -142,20 +142,21 @@ const QuestionsPage = () => {
                                             </span>
                                         </div>
                                         <div className="text-sm text-gray-500">
-                                            <span>Points: {question.points}</span>
+                                            <span>{t('questionsPage.questionDetails.points')}{question.points}</span>
                                             {question.negativePointsPerAnswer > 0 && (
                                                 <span className="ml-4">
-                                                    Negative points: {question.negativePointsPerAnswer}
+                                                    {t('questionsPage.questionDetails.negativePoints')}
+                                                    {question.negativePointsPerAnswer}
                                                 </span>
                                             )}
                                         </div>
                                         {question.hint && (
                                             <div className="mt-2 text-sm text-gray-600">
-                                                <strong>Hint:</strong> {question.hint}
+                                                <strong>{t('questionsPage.questionDetails.hint')}</strong>{question.hint}
                                             </div>
                                         )}
                                         <div className="mt-4">
-                                            <h3 className="font-medium mb-2">Answers:</h3>
+                                            <h3 className="font-medium mb-2">{t('questionsPage.questionDetails.answers')}</h3>
                                             <ul className="list-disc list-inside space-y-1">
                                                 {question.answers?.map((answer, index) => (
                                                     <li
@@ -175,13 +176,13 @@ const QuestionsPage = () => {
                                                 onClick={() => handleEditQuestion(question.id)}
                                                 className="bg-yellow-600 text-white px-4 py-2 rounded hover:bg-yellow-700 transition-colors"
                                             >
-                                                Edit
+                                                {t('questionsPage.questionDetails.actions.edit')}
                                             </button>
                                             <button
                                                 onClick={() => handleDeleteQuestion(question.id)}
                                                 className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition-colors"
                                             >
-                                                Delete
+                                                {t('questionsPage.questionDetails.actions.delete')}
                                             </button>
                                         </div>
                                     )}

@@ -22,6 +22,234 @@
     "roleAdmin": "Administrator",
     "login": "Identifikimi"
   },
+  "dashboard": {
+    "myTests": "Testet e Mia",
+    "allTests": "Të Gjitha Testet",
+    "createNewTest": "Krijo Test të Ri",
+    "loading": "Duke ngarkuar...",
+    "error": "Gabim: ",
+    "noTestsAvailable": "Nuk ka teste në dispozicion.",
+    "noMyTestsAvailable": "Nuk ka teste në dispozicion. Krijoni testin tuaj të parë!",
+    "testDetails": {
+      "createdBy": "Krijuar nga: Mësuesi",
+      "questions": "pyetje",
+      "timeLimit": "Kufiri kohor: ",
+      "minutes": "minuta",
+      "actions": {
+        "viewQuestions": "Shiko Pyetjet",
+        "addQuestion": "Shto Pyetje",
+        "editTest": "Ndrysho Testin",
+        "delete": "Fshi",
+        "deleteConfirm": "A jeni i sigurt që dëshironi ta fshini këtë test? Kjo do të fshijë edhe të gjitha pyetjet e lidhura."
+      }
+    }
+  },
+  "questionsPage": {
+    "loading": "Duke ngarkuar pyetjet...",
+    "error": "Gabim: ",
+    "backToDashboard": "← Kthehu në Panel",
+    "title": "Pyetjet e Testit",
+    "viewingQuestionsBy": "Duke shikuar pyetjet për testin e krijuar nga Mësuesi",
+    "addNewQuestion": "Shto Pyetje të Re",
+    "noQuestionsCreator": "Nuk ka pyetje në dispozicion. Krijoni pyetjen tuaj të parë!",
+    "noQuestionsViewer": "Nuk ka pyetje në dispozicion për këtë test.",
+    "questionDetails": {
+      "points": "Pikët: ",
+      "negativePoints": "Pikë negative: ",
+      "hint": "Ndihmë: ",
+      "answers": "Përgjigjet:",
+      "actions": {
+        "edit": "Ndrysho",
+        "delete": "Fshi",
+        "deleteConfirm": "Jeni i sigurt që dëshironi ta fshini këtë pyetje?"
+      }
+    }
+  },
+  "questionForm": {
+    "error": {
+      "descriptionRequired": "Përshkrimi i pyetjes është i detyrueshëm",
+      "loginRequired": "Duhet të jeni të kyçur për të krijuar pyetje",
+      "answerRequired": "Të paktën një përgjigje është e nevojshme",
+      "correctAnswerRequired": "Të paktën një përgjigje e saktë duhet të zgjidhet"
+    },
+    "questionType": {
+      "label": "Lloji i Pyetjes",
+      "options": {
+        "multipleChoice": "Zgjedhje të Shumëfishta",
+        "trueFalse": "E Vërtetë/E Gabuar",
+        "fillInBlank": "Plotëso Hapësirën",
+        "essay": "Ese",
+        "numeric": "Numerike"
+      }
+    },
+    "question": {
+      "label": "Pyetja",
+      "placeholder": "Shkruani pyetjen tuaj këtu..."
+    },
+    "points": {
+      "label": "Pikët",
+      "negative": "Pikë Negative për Përgjigje të Gabuar"
+    },
+    "hint": {
+      "label": "Ndihmë (Opsionale)",
+      "placeholder": "Jepni një ndihmë për studentët..."
+    },
+    "formula": {
+      "label": "Formula (Opsionale)"
+    },
+    "answers": {
+      "label": "Përgjigjet",
+      "addOption": "+ Shto Opsion Përgjigjeje",
+      "placeholder": "Shkruaj përgjigjen",
+      "correct": "E Saktë",
+      "remove": "Fshi",
+      "template": {
+        "label": "Shablloni i Përgjigjes (Opsional)",
+        "placeholder": "Shkruani shabllonin e përgjigjes..."
+      }
+    },
+    "metadata": {
+      "label": "Metadata e Pyetjes",
+      "select": "Zgjidhni"
+    },
+    "buttons": {
+      "cancel": "Anulo",
+      "create": "Krijo Pyetje",
+      "update": "Përditëso Pyetje"
+    },
+    "trueFalse": {
+      "true": "E Vërtetë",
+      "false": "E Gabuar"
+    }
+  },
+  "createQuestion": {
+    "backToQuestions": "← Kthehu tek Pyetjet",
+    "pageTitle": "Krijo Pyetje të Re",
+    "error": {
+      "title": "Gabim",
+      "creationFailed": "Gabim gjatë krijimit të pyetjes:"
+    }
+  },
+  "questionManager": {
+    "backToQuestions": "← Kthehu tek Pyetjet",
+    "pageTitle": "Menaxho Pyetjet",
+    "tabs": {
+      "createNew": "Krijo Pyetje të Re",
+      "addExisting": "Shto Pyetje Ekzistuese"
+    }
+  },
+  "addExistingQuestion": {
+    "title": "Shto Pyetje Ekzistuese",
+    "error": {
+      "fetchQuestions": "Gabim gjatë marrjes së pyetjeve:"
+    }
+  },
+  "metadataFilter": {
+    "buttons": {
+      "showFilters": "Shfaq Filtrat",
+      "hideFilters": "Fshih Filtrat"
+    },
+    "select": {
+      "placeholder": "Zgjidhni"
+    }
+  },
+  "testDetails": {
+    "loading": "Duke ngarkuar rezultatet e testit...",
+    "score": "Rezultati:",
+    "points": "pikë",
+    "question": "Pyetja",
+    "answers": {
+      "your": "Përgjigjja juaj:",
+      "correct": "Përgjigjja e saktë:",
+      "noAnswer": "Nuk është dhënë përgjigje"
+    },
+    "buttons": {
+      "backToDashboard": "Kthehu në Panel"
+    },
+    "error": {
+      "fetchResults": "Gabim gjatë marrjes së rezultateve:"
+    }
+  },
+  "studentDashboard": {
+    "title": "Testet në Dispozicion",
+    "grade": "Klasa:",
+    "loading": "Duke ngarkuar testet...",
+    "error": "Gabim gjatë ngarkimit të testeve:",
+    "noTests": "Nuk ka teste në dispozicion që përputhen me kriteret tuaja.",
+    "testCard": {
+      "questions": "pyetje",
+      "buttons": {
+        "startTest": "Fillo Testin",
+        "viewAttempts": "Shiko Përpjekjet"
+      }
+    },
+    "activeTest": {
+      "continuePrompt": "Keni një test në vazhdim. Dëshironi të vazhdoni atë test? Duke klikuar Anulo do të braktisni testin e mëparshëm dhe do të filloni një të ri.",
+      "errors": {
+        "startFailed": "Dështoi në fillimin e testit:",
+        "noQuestions": "Ky test nuk ka pyetje. Ju lutemi provoni një test tjetër.",
+        "genericError": "Dështoi në fillimin e testit: Ju lutemi provoni përsëri"
+      }
+    }
+  },
+  "questionList": {
+    "title": "Pyetje të disponueshme nga testet e tjera:",
+    "noQuestions": "Ende nuk ka pyetje të shtuara në këtë test.",
+    "questionDetails": {
+      "points": "Pikët:",
+      "negativePoints": "Pikë negative:",
+      "hint": "Ndihmë:",
+      "answers": "Përgjigjet:"
+    },
+    "buttons": {
+      "addToTest": "Shto në Test",
+      "edit": "Ndrysho",
+      "remove": "Hiq",
+      "delete": "Fshi"
+    },
+    "questionTypes": {
+      "multiplechoice": "Zgjedhje të Shumëfishta",
+      "truefalse": "E Vërtetë E Gabuar",
+      "fillintheblank": "Plotëso Hapësirën",
+      "essay": "Ese",
+      "numeric": "Numerike"
+    }
+  },
+  "editTest": {
+    "title": "Ndrysho Testin",
+    "loading": "Duke ngarkuar...",
+    "error": "Gabim: ",
+    "fetchError": "Dështoi në marrjen e testit",
+    "updateError": "Dështoi në përditësimin e testit"
+  },
+  "testForm": {
+    "pageTitle": "Krijo Test të Ri",
+    "title": {
+      "label": "Titulli",
+      "error": "Titulli është i detyrueshëm"
+    },
+    "description": "Përshkrimi",
+    "numQuestions": {
+      "label": "Numri i pyetjeve në test",
+      "error": "Testi duhet të ketë të paktën 1 pyetje"
+    },
+    "timeLimit": {
+      "label": "Kufiri kohor (minuta)",
+      "error": "Kufiri kohor duhet të jetë të paktën 1 minutë"
+    },
+    "metadata": {
+      "title": "Metadata e Testit",
+      "select": "Zgjidhni"
+    },
+    "buttons": {
+      "cancel": "Anulo",
+      "create": "Krijo Test",
+      "update": "Përditëso Test"
+    },
+    "validation": {
+      "creatorRequired": "Krijuesi është i detyrueshëm"
+    }
+  },
   "nav": {
     "forTeachers": "Për Mësuesit",
     "forStudents": "Për Studentët",

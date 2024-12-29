@@ -1,20 +1,22 @@
 import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import CreateQuestionPage from './CreateQuestionsPage.jsx';
 import AddExistingQuestionPage from './AddExistingQuestionPage.jsx';
 
 const QuestionManagerPage = () => {
+    const { t } = useTranslation("common");
     const { testId } = useParams();
-    const [activeTab, setActiveTab] = useState('create'); // Default to Create New Question
+    const [activeTab, setActiveTab] = useState('create');
     const [selectedQuestion, setSelectedQuestion] = useState(null);
-    const [mode,setMode] = useState('create');
+    const [mode, setMode] = useState('create');
+
     const handleSelectExistingQuestion = (question) => {
-        console.log('Selected question:', JSON.stringify(question, null, 2));  // Log when a question is selected in JSON format
+        console.log('Selected question:', JSON.stringify(question, null, 2));
         setSelectedQuestion(question);
         setMode('copy');
-        setActiveTab('create'); // Switch to "Create" tab when an existing question is selected
+        setActiveTab('create');
     };
-
 
     return (
         <div className="p-6">
@@ -24,11 +26,13 @@ const QuestionManagerPage = () => {
                         to={`/teacher-dashboard/test/${testId}/questions`}
                         className="text-blue-600 hover:text-blue-800 flex items-center"
                     >
-                        ← Back to Questions
+                        {t('questionManager.backToQuestions')}
                     </Link>
                 </div>
 
-                <h1 className="text-3xl font-bold text-blue-600 mb-8">Manage Questions</h1>
+                <h1 className="text-3xl font-bold text-blue-600 mb-8">
+                    {t('questionManager.pageTitle')}
+                </h1>
 
                 {/* Tabs */}
                 <div className="flex border-b mb-6">
@@ -38,7 +42,7 @@ const QuestionManagerPage = () => {
                         }`}
                         onClick={() => setActiveTab('create')}
                     >
-                        Create New Question
+                        {t('questionManager.tabs.createNew')}
                     </button>
                     <button
                         className={`p-4 w-1/2 text-center ${
@@ -46,7 +50,7 @@ const QuestionManagerPage = () => {
                         }`}
                         onClick={() => setActiveTab('existing')}
                     >
-                        Add Existing Question
+                        {t('questionManager.tabs.addExisting')}
                     </button>
                 </div>
 
@@ -54,11 +58,12 @@ const QuestionManagerPage = () => {
                 <div>
                     {activeTab === 'create' ? (
                         <CreateQuestionPage
-                            selectedQuestion={selectedQuestion} mode={mode} // Pass selected question data to CreateQuestionPage
+                            selectedQuestion={selectedQuestion}
+                            mode={mode}
                         />
                     ) : (
                         <AddExistingQuestionPage
-                            onSelectQuestion={handleSelectExistingQuestion} // Pass handler to add question to the test
+                            onSelectQuestion={handleSelectExistingQuestion}
                         />
                     )}
                 </div>

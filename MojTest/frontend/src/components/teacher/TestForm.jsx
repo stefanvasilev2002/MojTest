@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import {predefinedKeyValues} from "../../constants/metadata.js";
+import { useTranslation } from 'react-i18next';
+import { predefinedKeyValues } from "../../constants/metadata.js";
 
 const TestForm = ({ initialData, onSubmit, isEditing, userId }) => {
+    const { t } = useTranslation('common');
+
     const [formData, setFormData] = useState({
         title: '',
         description: '',
@@ -13,6 +16,7 @@ const TestForm = ({ initialData, onSubmit, isEditing, userId }) => {
     });
 
     const [errors, setErrors] = useState({});
+
     useEffect(() => {
         if (initialData) {
             setFormData({
@@ -25,6 +29,7 @@ const TestForm = ({ initialData, onSubmit, isEditing, userId }) => {
             });
         }
     }, [initialData, userId]);
+
     const handleMetadataChange = (key, value) => {
         setFormData(prev => ({
             ...prev,
@@ -34,19 +39,20 @@ const TestForm = ({ initialData, onSubmit, isEditing, userId }) => {
             }
         }));
     };
+
     const validateForm = () => {
         const newErrors = {};
         if (!formData.title.trim()) {
-            newErrors.title = 'Title is required';
+            newErrors.title = t('testForm.title.error');
         }
         if (formData.timeLimit < 1) {
-            newErrors.timeLimit = 'Time limit must be at least 1 minute';
+            newErrors.timeLimit = t('testForm.timeLimit.error');
         }
         if (!formData.creatorId) {
-            newErrors.creatorId = 'Creator ID is required';
+            newErrors.creatorId = t('testForm.validation.creatorRequired');
         }
         if (formData.numQuestions < 1) {
-            newErrors.numQuestions = 'Test must have at least 1 question';
+            newErrors.numQuestions = t('testForm.numQuestions.error');
         }
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
@@ -55,7 +61,6 @@ const TestForm = ({ initialData, onSubmit, isEditing, userId }) => {
     const handleSubmit = (e) => {
         e.preventDefault();
         if (validateForm()) {
-            // Convert metadata to array format for backend
             const metadataArray = Object.entries(formData.metadata).map(([key, value]) => ({
                 key,
                 value
@@ -82,9 +87,10 @@ const TestForm = ({ initialData, onSubmit, isEditing, userId }) => {
     return (
         <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl mx-auto">
             <input type="hidden" name="creatorId" value={formData.creatorId}/>
+
             <div>
                 <label htmlFor="title" className="block text-sm font-medium text-gray-700">
-                    Title
+                    {t('testForm.title.label')}
                 </label>
                 <input
                     id="title"
@@ -106,7 +112,7 @@ const TestForm = ({ initialData, onSubmit, isEditing, userId }) => {
 
             <div>
                 <label htmlFor="description" className="block text-sm font-medium text-gray-700">
-                    Description
+                    {t('testForm.description')}
                 </label>
                 <textarea
                     id="description"
@@ -118,9 +124,10 @@ const TestForm = ({ initialData, onSubmit, isEditing, userId }) => {
                     rows="3"
                 />
             </div>
+
             <div>
                 <label htmlFor="numQuestions" className="block text-sm font-medium text-gray-700">
-                    Number of questions in the test
+                    {t('testForm.numQuestions.label')}
                 </label>
                 <input
                     id="numQuestions"
@@ -140,9 +147,10 @@ const TestForm = ({ initialData, onSubmit, isEditing, userId }) => {
                     <p className="mt-1 text-sm text-red-600">{errors.numQuestions}</p>
                 )}
             </div>
+
             <div>
                 <label htmlFor="timeLimit" className="block text-sm font-medium text-gray-700">
-                    Time Limit (minutes)
+                    {t('testForm.timeLimit.label')}
                 </label>
                 <input
                     id="timeLimit"
@@ -162,8 +170,9 @@ const TestForm = ({ initialData, onSubmit, isEditing, userId }) => {
                     <p className="mt-1 text-sm text-red-600">{errors.timeLimit}</p>
                 )}
             </div>
+
             <div className="space-y-4">
-                <h3 className="text-lg font-medium text-gray-900">Test Metadata</h3>
+                <h3 className="text-lg font-medium text-gray-900">{t('testForm.metadata.title')}</h3>
                 {Object.entries(predefinedKeyValues).map(([key, values]) => (
                     <div key={key}>
                         <label htmlFor={key} className="block text-sm font-medium text-gray-700">
@@ -176,7 +185,7 @@ const TestForm = ({ initialData, onSubmit, isEditing, userId }) => {
                             className="mt-1 block w-full rounded-md border border-gray-300 p-2
                                 focus:border-transparent focus:ring-2 focus:ring-blue-500 transition-colors"
                         >
-                            <option value="">Select {key}</option>
+                            <option value="">{t('testForm.metadata.select')} {key}</option>
                             {values.map(value => (
                                 <option key={value} value={value}>
                                     {value}
@@ -186,6 +195,7 @@ const TestForm = ({ initialData, onSubmit, isEditing, userId }) => {
                     </div>
                 ))}
             </div>
+
             <div className="flex gap-4 justify-end">
                 <button
                     type="button"
@@ -194,7 +204,7 @@ const TestForm = ({ initialData, onSubmit, isEditing, userId }) => {
                         rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2
                         focus:ring-blue-500 transition-colors"
                 >
-                    Cancel
+                    {t('testForm.buttons.cancel')}
                 </button>
                 <button
                     type="submit"
@@ -202,7 +212,7 @@ const TestForm = ({ initialData, onSubmit, isEditing, userId }) => {
                         rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2
                         focus:ring-offset-2 focus:ring-blue-500 transition-colors"
                 >
-                    {isEditing ? 'Update Test' : 'Create Test'}
+                    {isEditing ? t('testForm.buttons.update') : t('testForm.buttons.create')}
                 </button>
             </div>
         </form>

@@ -1,20 +1,21 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 const QuestionList = ({ questions, onEdit, onRemove, onDelete, onAddToTest }) => {
-    // Function to get formatted question type label
+    const { t } = useTranslation("common");
+
     const getQuestionTypeLabel = (type) => {
-        return type?.split('_')
-            .map(word => word.charAt(0).toUpperCase() + word.toLowerCase().slice(1))
-            .join(' ') || 'Multiple Choice';
+        const typeKey = type?.toLowerCase().replace(/_/g, '') || 'multiplechoice';
+        return t(`questionList.questionTypes.${typeKey}`);
     };
 
     return (
         <div className="mb-12">
-            <h2 className="text-2xl font-semibold mb-4">Available questions from other tests:</h2>
+            <h2 className="text-2xl font-semibold mb-4">{t('questionList.title')}</h2>
             <div className="grid gap-4">
                 {questions.length === 0 ? (
                     <div className="bg-white rounded-lg shadow p-6 text-center">
-                        <p className="text-gray-600">No questions added to this test yet.</p>
+                        <p className="text-gray-600">{t('questionList.noQuestions')}</p>
                     </div>
                 ) : (
                     questions.map(question => (
@@ -24,28 +25,27 @@ const QuestionList = ({ questions, onEdit, onRemove, onDelete, onAddToTest }) =>
                                     <div className="flex items-center gap-2 mb-2">
                                         <h3 className="text-xl font-semibold">{question.description}</h3>
                                         <span className="bg-blue-100 text-blue-800 text-sm px-2 py-1 rounded">
-                                            {getQuestionTypeLabel(question.type)} {/* Format question type */}
+                                            {getQuestionTypeLabel(question.type)}
                                         </span>
                                     </div>
 
                                     <div className="text-sm text-gray-500">
-                                        <span>Points: {question.points}</span>
+                                        <span>{t('questionList.questionDetails.points')} {question.points}</span>
                                         {question.negativePointsPerAnswer > 0 && (
                                             <span className="ml-4">
-                                                Negative points: {question.negativePointsPerAnswer}
+                                                {t('questionList.questionDetails.negativePoints')} {question.negativePointsPerAnswer}
                                             </span>
                                         )}
                                     </div>
 
-                                    {/* Show hint if available */}
                                     {question.hint && (
                                         <div className="mt-2 text-sm text-gray-600">
-                                            <strong>Hint:</strong> {question.hint}
+                                            <strong>{t('questionList.questionDetails.hint')}</strong> {question.hint}
                                         </div>
                                     )}
 
                                     <div className="mt-4">
-                                        <h3 className="font-medium mb-2">Answers:</h3>
+                                        <h3 className="font-medium mb-2">{t('questionList.questionDetails.answers')}</h3>
                                         <ul className="list-disc list-inside space-y-1">
                                             {question.answers?.map((answer, index) => (
                                                 <li
@@ -61,13 +61,12 @@ const QuestionList = ({ questions, onEdit, onRemove, onDelete, onAddToTest }) =>
                                 </div>
 
                                 <div className="flex gap-2">
-                                    {/* Conditionally Render Action Buttons */}
                                     {onAddToTest && (
                                         <button
-                                            onClick={() => onAddToTest(question)} // Pass the whole question object
+                                            onClick={() => onAddToTest(question)}
                                             className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors"
                                         >
-                                            Add to Test
+                                            {t('questionList.buttons.addToTest')}
                                         </button>
                                     )}
 
@@ -76,7 +75,7 @@ const QuestionList = ({ questions, onEdit, onRemove, onDelete, onAddToTest }) =>
                                             onClick={() => onEdit(question.id)}
                                             className="bg-yellow-600 text-white px-4 py-2 rounded hover:bg-yellow-700 transition-colors"
                                         >
-                                            Edit
+                                            {t('questionList.buttons.edit')}
                                         </button>
                                     )}
 
@@ -85,7 +84,7 @@ const QuestionList = ({ questions, onEdit, onRemove, onDelete, onAddToTest }) =>
                                             onClick={() => onRemove(question.id)}
                                             className="bg-orange-600 text-white px-4 py-2 rounded hover:bg-orange-700 transition-colors"
                                         >
-                                            Remove
+                                            {t('questionList.buttons.remove')}
                                         </button>
                                     )}
 
@@ -94,7 +93,7 @@ const QuestionList = ({ questions, onEdit, onRemove, onDelete, onAddToTest }) =>
                                             onClick={() => onDelete(question.id)}
                                             className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition-colors"
                                         >
-                                            Delete
+                                            {t('questionList.buttons.delete')}
                                         </button>
                                     )}
                                 </div>

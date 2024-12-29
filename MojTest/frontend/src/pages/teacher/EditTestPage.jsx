@@ -2,8 +2,10 @@ import TestForm from "../../components/teacher/TestForm.jsx";
 import {useNavigate, useParams} from "react-router-dom";
 import {useEffect, useState} from "react";
 import {useAuth} from "../../context/AuthContext.jsx";
+import { useTranslation } from 'react-i18next';
 
 const EditTestPage = () => {
+    const { t } = useTranslation("common");
     const { id } = useParams();
     const navigate = useNavigate();
     const [test, setTest] = useState(null);
@@ -22,7 +24,7 @@ const EditTestPage = () => {
                     }
                 });
 
-                if (!response.ok) throw new Error('Failed to fetch test');
+                if (!response.ok) throw new Error(t('editTest.fetchError'));
                 const data = await response.json();
 
                 const metadataMap = {};
@@ -41,7 +43,7 @@ const EditTestPage = () => {
             }
         };
         fetchTest();
-    }, [id, user.token]);
+    }, [id, user.token, t]);
 
     const handleSubmit = async (formData) => {
         try {
@@ -54,21 +56,22 @@ const EditTestPage = () => {
                 body: JSON.stringify(formData)
             });
 
-            if (!response.ok) throw new Error('Failed to update test');
+            if (!response.ok) throw new Error(t('editTest.updateError'));
             navigate('/teacher-dashboard');
         } catch (err) {
             setError(err.message);
         }
     };
 
-    if (loading) return <div className="p-4">Loading...</div>;
-    if (error) return <div className="p-4 text-red-600">Error: {error}</div>;
+    if (loading) return <div className="p-4">{t('editTest.loading')}</div>;
+    if (error) return <div className="p-4 text-red-600">{t('editTest.error')}{error}</div>;
 
     return (
         <div className="p-6">
             <div className="max-w-4xl mx-auto">
-
-                <h1 className="text-3xl font-bold text-blue-600 mb-8">Edit Test</h1>
+                <h1 className="text-3xl font-bold text-blue-600 mb-8">
+                    {t('editTest.title')}
+                </h1>
                 <TestForm
                     initialData={test}
                     onSubmit={handleSubmit}
@@ -80,4 +83,5 @@ const EditTestPage = () => {
         </div>
     );
 };
+
 export default EditTestPage;
