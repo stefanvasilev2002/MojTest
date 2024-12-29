@@ -74,6 +74,7 @@ const EditTestPage = () => {
                     onSubmit={handleSubmit}
                     isEditing={true}
                     userId={user.id}
+                    mode='edit'
                 />
             </div>
         </div>
