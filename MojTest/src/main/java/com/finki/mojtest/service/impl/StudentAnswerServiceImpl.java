@@ -7,7 +7,6 @@ import com.finki.mojtest.repository.StudentAnswerRepository;
 import com.finki.mojtest.service.StudentAnswerService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
-import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -73,7 +72,6 @@ public class StudentAnswerServiceImpl implements StudentAnswerService {
         Answer chosenAnswer = answerRepository.findById(chosenAnswerId)
                 .orElseThrow(() -> new EntityNotFoundException("Answer not found"));
 
-        // Verify the chosen answer belongs to the correct question
         if (!chosenAnswer.getQuestion().getId().equals(studentAnswer.getTestQuestion().getQuestion().getId())) {
             throw new IllegalArgumentException("Invalid answer for this question");
         }

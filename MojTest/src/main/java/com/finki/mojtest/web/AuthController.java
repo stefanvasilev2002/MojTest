@@ -33,7 +33,6 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody UserDTO user) {
         try {
-            // Validate input
             if (user.getUsername() == null || user.getPassword() == null) {
                 return ResponseEntity
                         .status(HttpStatus.BAD_REQUEST)
@@ -52,7 +51,6 @@ public class AuthController {
             return ResponseEntity.ok(new AuthenticationResponse(jwt, newUser.getDtype().toLowerCase(), user.getFullName()));
 
         } catch (DuplicateFieldException e) {
-            // Return specific error message for duplicate fields
             return ResponseEntity
                     .status(HttpStatus.CONFLICT)
                     .body(Map.of("message", e.getMessage()));

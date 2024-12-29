@@ -31,7 +31,7 @@ public class QuestionController {
 
     @PostMapping
     public ResponseEntity<QuestionDTO> createQuestion(@RequestBody QuestionDTO questionDTO) {
-        Question createdQuestion = questionService.createQuestionByDTO(questionDTO);  // Delegate to the service
+        Question createdQuestion = questionService.createQuestionByDTO(questionDTO);
         return new ResponseEntity<>(QuestionMapper.toDTO(createdQuestion), HttpStatus.CREATED);
     }
     @PostMapping("/test/{testId}/create")
@@ -49,7 +49,6 @@ public class QuestionController {
                 .collect(Collectors.toList());
         return new ResponseEntity<>(questionDTOs, HttpStatus.OK);
     }
-    // Add question to test's question bank
     @PostMapping("/{testId}/questions/{questionId}")
     public ResponseEntity<TestDTO> addQuestionToTest(
             @PathVariable Long testId,
@@ -58,7 +57,6 @@ public class QuestionController {
         return new ResponseEntity<>(TestMapper.toDTO(updatedTest), HttpStatus.OK);
     }
 
-    // Remove question from test's question bank
     @DeleteMapping("/{testId}/questions/{questionId}")
     public ResponseEntity<TestDTO> removeQuestionFromTest(
             @PathVariable Long testId,
@@ -83,10 +81,8 @@ public class QuestionController {
 
     @PutMapping("/{id}")
     public ResponseEntity<QuestionDTO> updateQuestion(@PathVariable Long id, @RequestBody QuestionDTO questionDTO) {
-        // Call the service method to update the question
         Question updatedQuestion = questionService.updateQuestion(id, questionDTO);
 
-        // Return the updated question as a DTO
         return new ResponseEntity<>(QuestionMapper.toDTO(updatedQuestion), HttpStatus.OK);
     }
 

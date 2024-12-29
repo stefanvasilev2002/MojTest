@@ -2,7 +2,6 @@ package com.finki.mojtest.web;
 
 import com.finki.mojtest.model.users.Teacher;
 import com.finki.mojtest.service.TeacherService;
-import com.finki.mojtest.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,9 +12,7 @@ import java.util.List;
 @RequestMapping("/api/teachers")
 @RequiredArgsConstructor
 public class TeacherController {
-
     private final TeacherService teacherService;
-
 
     @PostMapping
     public ResponseEntity<Teacher> createTeacher(@RequestBody Teacher teacher) {

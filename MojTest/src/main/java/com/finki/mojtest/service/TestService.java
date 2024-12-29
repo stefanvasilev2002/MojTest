@@ -4,6 +4,7 @@ import com.finki.mojtest.model.StudentTest;
 import com.finki.mojtest.model.Test;
 import com.finki.mojtest.model.dtos.TestDTO;
 import com.finki.mojtest.model.dtos.TestFromTeacherDTO;
+import com.finki.mojtest.model.dtos.TestTakingViewDTO;
 
 import java.util.List;
 
@@ -29,5 +30,7 @@ public interface TestService {
     Test removeQuestionFromTest(Long testId, Long questionId);
 
     Test updateTestFromTeacher(Long id, TestFromTeacherDTO testDTO);
+
+    TestTakingViewDTO convertToTestTakingView(StudentTest startedTest);
 }
 

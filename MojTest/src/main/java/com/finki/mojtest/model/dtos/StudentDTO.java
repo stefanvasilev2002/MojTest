@@ -12,5 +12,5 @@ import java.util.List;
 public class StudentDTO extends UserDTO {
 
     private String grade;
-    private List<Long> takenTestsIds; // Instead of full StudentTest objects, just store the IDs
+    private List<Long> takenTestsIds;
 }

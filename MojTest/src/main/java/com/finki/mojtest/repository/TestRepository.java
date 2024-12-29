@@ -8,6 +8,6 @@ import java.util.List;
 
 @Repository
 public interface TestRepository extends JpaRepository<Test, Long> {
-    List<Test> findByCreatorId(Long teacherId); // Find tests created by a specific teacher
-    List<Test> findByTitleContaining(String title); // Search tests by partial title
+    List<Test> findByCreatorId(Long teacherId);
+    List<Test> findByTitleContaining(String title);
 }

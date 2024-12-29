@@ -1,7 +1,6 @@
 package com.finki.mojtest.service.impl;
 
 import com.finki.mojtest.model.users.Admin;
-import com.finki.mojtest.model.users.User;
 import com.finki.mojtest.repository.users.AdminRepository;
 import com.finki.mojtest.service.AdminService;
 import com.finki.mojtest.service.UserService;
@@ -35,22 +34,17 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     public Admin updateAdmin(Long id, Admin updatedAdmin) {
-        User updatedUser = (User) updatedAdmin;
-        updatedUser = userService.updateUser(id, updatedUser);
+        userService.updateUser(id, updatedAdmin);
 
-        // After updating common fields, update admin-specific fields (if any)
         Admin admin = getAdminById(id);
 
-        // No specific fields for Admin entity here, but you can add any if needed
-        // We don't have any right now however we will have them in future
-
-        return adminRepository.save(admin); // Save the updated admin
+        return adminRepository.save(admin);
     }
 
 
     @Override
     public void deleteAdmin(Long id) {
-        getAdminById(id); // Validate existence
+        getAdminById(id);
         adminRepository.deleteById(id);
     }
 }

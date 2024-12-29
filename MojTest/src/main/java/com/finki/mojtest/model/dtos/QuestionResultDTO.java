@@ -14,5 +14,4 @@ public class QuestionResultDTO {
     private String studentAnswer;
     private String correctAnswer;
     private Long imageId;
-
 }

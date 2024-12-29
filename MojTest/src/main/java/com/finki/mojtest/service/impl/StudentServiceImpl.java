@@ -1,7 +1,6 @@
 package com.finki.mojtest.service.impl;
 
 import com.finki.mojtest.model.users.Student;
-import com.finki.mojtest.model.users.User;
 import com.finki.mojtest.repository.users.StudentRepository;
 import com.finki.mojtest.service.StudentService;
 import com.finki.mojtest.service.UserService;
@@ -36,8 +35,7 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public Student updateStudent(Long id, Student updatedStudent) {
-        User updatedUser = (User) updatedStudent;
-        updatedUser = userService.updateUser(id, updatedUser);
+        userService.updateUser(id, updatedStudent);
 
         Student student = getStudentById(id);
 
@@ -45,12 +43,12 @@ public class StudentServiceImpl implements StudentService {
             student.setGrade(updatedStudent.getGrade());
         }
 
-        return studentRepository.save(student); // Save the updated student
+        return studentRepository.save(student);
     }
 
     @Override
     public void deleteStudent(Long id) {
-        getStudentById(id); // Validate existence
+        getStudentById(id);
         studentRepository.deleteById(id);
     }
 

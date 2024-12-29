@@ -1,6 +1,5 @@
 package com.finki.mojtest.web;
 
-import com.finki.mojtest.model.Test;
 import com.finki.mojtest.model.dtos.UserDTO;
 import com.finki.mojtest.model.exceptions.DuplicateFieldException;
 import com.finki.mojtest.model.users.Student;

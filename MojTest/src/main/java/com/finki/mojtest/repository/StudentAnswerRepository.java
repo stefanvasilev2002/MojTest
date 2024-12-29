@@ -10,8 +10,8 @@ import java.util.List;
 
 @Repository
 public interface StudentAnswerRepository extends JpaRepository<StudentAnswer, Long> {
-    List<StudentAnswer> findByStudentTestId(Long studentTestId); // Answers for a specific student's test
-    List<StudentAnswer> findByTestQuestionId(Long testQuestionId); // Answers for a specific test question
+    List<StudentAnswer> findByStudentTestId(Long studentTestId);
+    List<StudentAnswer> findByTestQuestionId(Long testQuestionId);
 
     void deleteAllByStudentTestId(Long studentTestId);
 

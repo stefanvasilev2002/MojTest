@@ -14,5 +14,4 @@ public class TestResultsDTO {
     private double score;
     private double totalPoints;
     private double scorePercentage;
-
 }

@@ -14,8 +14,6 @@ import java.util.List;
 public class StudentController {
     private final StudentService studentService;
 
-
-
     @PostMapping
     public ResponseEntity<Student> createStudent(@RequestBody Student student) {
         return ResponseEntity.ok(studentService.createStudent(student));

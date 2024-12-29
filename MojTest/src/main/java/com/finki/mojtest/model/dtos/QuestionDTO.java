@@ -6,8 +6,6 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 
-import java.util.List;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -22,11 +20,10 @@ public class QuestionDTO {
     private FileDTO image;
     private String hint;
 
-    private Long creatorId;  // Store the ID of the teacher (creator)
+    private Long creatorId;
     private String name;
-    private List<Long> testIds;  // List of Test IDs associated with this Question
-//    private List<Long> metadataIds;  // List of Metadata IDs associated with this Question
-    private List<Long> answerIds;  // List of Answer IDs related to the Question
+    private List<Long> testIds;
+    private List<Long> answerIds;
     private List<AnswerDTO> answers;
 
     private List<MetadataDTO> metadata;

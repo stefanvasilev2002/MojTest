@@ -1,15 +1,12 @@
 package com.finki.mojtest.service.impl;
 
 import com.finki.mojtest.model.*;
-import com.finki.mojtest.model.dtos.MetadataDTO;
-import com.finki.mojtest.model.dtos.TestDTO;
-import com.finki.mojtest.model.dtos.TestFromTeacherDTO;
+import com.finki.mojtest.model.dtos.*;
 import com.finki.mojtest.model.mappers.TestMapper;
 import com.finki.mojtest.model.users.Student;
 import com.finki.mojtest.model.users.Teacher;
 import com.finki.mojtest.model.users.User;
 import com.finki.mojtest.repository.*;
-import com.finki.mojtest.repository.users.StudentRepository;
 import com.finki.mojtest.repository.users.TeacherRepository;
 import com.finki.mojtest.repository.users.UserRepository;
 import com.finki.mojtest.service.TestService;
@@ -35,9 +32,9 @@ public class TestServiceImpl implements TestService {
     private final MetadataRepository metadataRepository;
     private final StudentTestRepository studentTestRepository;
     private final TestQuestionRepository testQuestionRepository;
-    private final StudentRepository studentRepository;
     private final StudentAnswerRepository studentAnswerRepository;
     private final UserRepository userRepository;
+
     @Transactional
     public Test addQuestionToTest(Long testId, Long questionId) {
         Test test = testRepository.findById(testId)
@@ -46,12 +43,10 @@ public class TestServiceImpl implements TestService {
         Question question = questionRepository.findById(questionId)
                 .orElseThrow(() -> new EntityNotFoundException("Question not found with id: " + questionId));
 
-        // Check if question is already in the test
         if (test.getQuestionBank().contains(question)) {
             throw new IllegalStateException("Question is already in the test");
         }
 
-        // Add question to test's question bank
         test.getQuestionBank().add(question);
 
         return testRepository.save(test);
@@ -65,12 +60,10 @@ public class TestServiceImpl implements TestService {
         Question question = questionRepository.findById(questionId)
                 .orElseThrow(() -> new EntityNotFoundException("Question not found with id: " + questionId));
 
-        // Check if question is in the test
         if (!test.getQuestionBank().contains(question)) {
             throw new IllegalStateException("Question is not in the test");
         }
 
-        // Remove question from test's question bank
         test.getQuestionBank().remove(question);
 
 
@@ -107,8 +100,51 @@ public class TestServiceImpl implements TestService {
     }
 
     @Override
+    public TestTakingViewDTO convertToTestTakingView(StudentTest studentTest) {
+        TestTakingViewDTO dto = new TestTakingViewDTO();
+        dto.setStudentTestId(studentTest.getId());
+        dto.setTestTitle(studentTest.getTest().getTitle());
+        dto.setTimeLimit(studentTest.getTest().getTimeLimit());
+
+        List<TestQuestionViewDTO> questions = new ArrayList<>();
+
+        for (StudentAnswer studentAnswer : studentTest.getAnswers()) {
+            TestQuestionViewDTO questionDTO = new TestQuestionViewDTO();
+            Question question = studentAnswer.getTestQuestion().getQuestion();
+
+            if(question.getImage() != null) {
+                questionDTO.setImageId(question.getImage().getId());
+            }
+            questionDTO.setQuestionId(question.getId());
+            questionDTO.setTestQuestionId(studentAnswer.getTestQuestion().getId());
+            questionDTO.setDescription(question.getDescription());
+            questionDTO.setPoints(question.getPoints());
+            questionDTO.setStudentAnswerId(studentAnswer.getId());
+            questionDTO.setQuestionType(question.getQuestionType().toString());
+            questionDTO.setHint(question.getHint());
+            List<AnswerViewDTO> answers = question.getAnswers().stream()
+                    .map(answer -> {
+                        AnswerViewDTO answerDTO = new AnswerViewDTO();
+                        answerDTO.setId(answer.getId());
+                        answerDTO.setAnswerText(answer.getAnswerText());
+                        return answerDTO;
+                    })
+                    .collect(Collectors.toList());
+
+            Collections.shuffle(answers);
+            questionDTO.setPossibleAnswers(answers);
+
+            questions.add(questionDTO);
+        }
+
+        Collections.shuffle(questions);
+        dto.setQuestions(questions);
+
+        return dto;
+    }
+
+    @Override
     public Test createTest(TestDTO testDTO) {
-        // Resolve relationships based on the DTO data
         Teacher creator = teacherRepository.findById(testDTO.getCreatorId())
                 .orElseThrow(() -> new EntityNotFoundException("Teacher not found"));
 
@@ -121,7 +157,6 @@ public class TestServiceImpl implements TestService {
         // Now use the mapper to create a Test entity from the DTO
         Test test = TestMapper.fromDTO(testDTO, creator, questions, metadata, null, null);
 
-        // Save the test entity to the repository
         return testRepository.save(test);
     }
     @Override
@@ -133,7 +168,7 @@ public class TestServiceImpl implements TestService {
         test.setTimeLimit(testDTO.getTimeLimit());
         test.setCreator(teacherRepository.findById(testDTO.getCreatorId())
                 .orElseThrow(() -> new EntityNotFoundException("Teacher not found")));
-        // Handle metadata
+
         if (testDTO.getMetadata() != null) {
             List<Metadata> metadataList = testDTO.getMetadata().stream()
                     .map(metaDTO -> metadataRepository.findByKeyAndValue(metaDTO.getKey(), metaDTO.getValue())
@@ -163,10 +198,8 @@ public class TestServiceImpl implements TestService {
 
     @Override
     public Test updateTest(Long id, TestDTO testDTO) {
-        // Fetch the existing test entity
         Test existingTest = getTestById(id);
 
-        // Resolve relationships based on the DTO data
         Teacher creator = teacherRepository.findById(testDTO.getCreatorId())
                 .orElseThrow(() -> new EntityNotFoundException("Teacher not found"));
 
@@ -176,17 +209,14 @@ public class TestServiceImpl implements TestService {
         List<Metadata> metadata = (testDTO.getMetadataIds() != null && !testDTO.getMetadataIds().isEmpty()) ?
                 metadataRepository.findAllById(testDTO.getMetadataIds()) : Collections.emptyList();
 
-        // Resolve other relationships (TestQuestion and StudentTest)
         List<TestQuestion> testQuestions = (testDTO.getTestQuestionIds() != null && !testDTO.getTestQuestionIds().isEmpty()) ?
                 testQuestionRepository.findAllById(testDTO.getTestQuestionIds()) : Collections.emptyList();
 
         List<StudentTest> studentTests = (testDTO.getStudentTestIds() != null && !testDTO.getStudentTestIds().isEmpty()) ?
                 studentTestRepository.findAllById(testDTO.getStudentTestIds()) : Collections.emptyList();
 
-        // Now use the updateFromDTO method to update the existing test with new data
         TestMapper.updateFromDTO(existingTest, testDTO, creator, questions, metadata, testQuestions, studentTests);
 
-        // Save and return the updated test
         return testRepository.save(existingTest);
     }
 
@@ -196,20 +226,17 @@ public class TestServiceImpl implements TestService {
         Test test = testRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Test with id " + id + " not found"));
 
-        // Remove references to the test from related entities before deletion
         for (StudentTest studentTest : test.getStudentTests()) {
-            studentTest.setTest(null);  // Remove reference from StudentTest
+            studentTest.setTest(null);
         }
         for(TestQuestion testQuestion : testQuestionRepository.findByTestId(id)){
             studentAnswerRepository.deleteAllByTestQuestion(testQuestion);
             testQuestionRepository.delete(testQuestion);
         }
-        // Remove the test from the question bank (Many-to-Many relation)
         for (Question question : test.getQuestionBank()) {
-            question.getTests().remove(test);  // Remove the test from the list of tests in Question
+            question.getTests().remove(test);
         }
 
-        // Delete the test entity
         testRepository.deleteById(id);
     }
 
@@ -226,10 +253,8 @@ public class TestServiceImpl implements TestService {
     @Override
     @Transactional
     public StudentTest startTest(Long testId, Long userId) {
-        // 1. Get the test
         Test test = getTestById(testId);
 
-        // 2. Get the user and verify it's a Student
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
@@ -239,17 +264,14 @@ public class TestServiceImpl implements TestService {
 
         Student student = (Student) user;  // Cast to Student after verifying the type
 
-        // 3. Get all questions from the test's question bank
         List<Question> allQuestions = new ArrayList<>(test.getQuestionBank());
 
-        // 4. Randomly select numQuestions questions
         Collections.shuffle(allQuestions);
         List<Question> selectedQuestions = allQuestions.subList(
                 0,
                 Math.min(test.getNumQuestions(), allQuestions.size())
         );
 
-        // 5. Create a new StudentTest
         StudentTest studentTest = new StudentTest();
         studentTest.setTest(test);
         studentTest.setStudent(student);
@@ -257,10 +279,8 @@ public class TestServiceImpl implements TestService {
         studentTest.setDateTaken(LocalDate.now());
         studentTest.setTimeTaken(LocalTime.now());
 
-        // Save the StudentTest to get an ID
         studentTest = studentTestRepository.save(studentTest);
 
-        // 6. Create TestQuestions and StudentAnswers for each selected question
         List<StudentAnswer> studentAnswers = new ArrayList<>();
 
         for (Question question : selectedQuestions) {
@@ -270,7 +290,6 @@ public class TestServiceImpl implements TestService {
             testQuestion.setQuestion(question);
             testQuestion = testQuestionRepository.save(testQuestion);
 
-            // Create empty StudentAnswer
             StudentAnswer studentAnswer = new StudentAnswer();
             studentAnswer.setStudentTest(studentTest);
             studentAnswer.setTestQuestion(testQuestion);
@@ -279,7 +298,6 @@ public class TestServiceImpl implements TestService {
             studentAnswers.add(studentAnswer);
         }
 
-        // 7. Set the answers and save the final StudentTest
         studentTest.setAnswers(studentAnswers);
         return studentTestRepository.save(studentTest);
     }

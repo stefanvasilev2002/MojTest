@@ -18,6 +18,6 @@ public class QuestionFromTeacherDTO {
     private String hint;
     private Long creatorId;
     private List<CreateAnswerDTO> answers;
-    private List<MetadataDTO> metadata;  // Using the array format with key-value pairs
+    private List<MetadataDTO> metadata;
     private Boolean isCopy;
 }

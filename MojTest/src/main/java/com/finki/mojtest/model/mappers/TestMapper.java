@@ -26,7 +26,7 @@ public class TestMapper {
         dto.setNumQuestions(test.getNumQuestions());
         dto.setCreatorId(test.getCreator() != null ? test.getCreator().getId() : null);
         dto.setName(test.getCreator().getFullName());
-        // Map related entities (using helper methods with null checks)
+
         dto.setQuestionIds(test.getQuestionBank() != null ?
                 test.getQuestionBank().stream().map(Question::getId).collect(Collectors.toList()) :
                 Collections.emptyList());
@@ -66,7 +66,7 @@ public class TestMapper {
         test.setTitle(dto.getTitle());
         test.setDescription(dto.getDescription());
         test.setNumQuestions(dto.getNumQuestions());
-        test.setCreator(creator);  // Set the creator (Teacher) using the creatorId field from the DTO
+        test.setCreator(creator);
 
         // Set relationships, these could be null
         test.setQuestionBank(questions != null ? questions : Collections.emptyList());
@@ -80,12 +80,10 @@ public class TestMapper {
     public static void updateFromDTO(Test existingTest, TestDTO dto, Teacher creator, List<Question> questions, List<Metadata> metadata, List<TestQuestion> testQuestions, List<StudentTest> studentTests) {
         if (existingTest == null || dto == null) return;
 
-        // Update simple fields
         existingTest.setTitle(dto.getTitle());
         existingTest.setDescription(dto.getDescription());
         existingTest.setNumQuestions(dto.getNumQuestions());
 
-        // Update relationships
         existingTest.setCreator(creator);  // Update creator
         existingTest.setQuestionBank(questions != null ? questions : Collections.emptyList());
         existingTest.setMetadata(metadata != null ? metadata : Collections.emptyList());

@@ -23,8 +23,7 @@ public class StudentAnswerController {
     @PutMapping("/{id}/choose-answer")
     public ResponseEntity<StudentAnswer> chooseAnswer(
             @PathVariable Long id,
-            @RequestBody Map<String, Long> request
-    ) {
+            @RequestBody Map<String, Long> request) {
         try {
             Long chosenAnswerId = request.get("chosenAnswerId");
             if (chosenAnswerId == null) {
@@ -41,28 +40,24 @@ public class StudentAnswerController {
             return ResponseEntity.internalServerError().build();
         }
     }
-    // Create a new StudentAnswer
     @PostMapping
     public ResponseEntity<StudentAnswer> createStudentAnswer(@RequestBody StudentAnswer studentAnswer) {
         StudentAnswer createdStudentAnswer = studentAnswerService.createStudentAnswer(studentAnswer);
         return new ResponseEntity<>(createdStudentAnswer, HttpStatus.CREATED);
     }
 
-    // Get all StudentAnswers
     @GetMapping
     public ResponseEntity<List<StudentAnswer>> getAllStudentAnswers() {
         List<StudentAnswer> studentAnswers = studentAnswerService.getAllStudentAnswers();
         return new ResponseEntity<>(studentAnswers, HttpStatus.OK);
     }
 
-    // Get a specific StudentAnswer by ID
     @GetMapping("/{id}")
     public ResponseEntity<StudentAnswer> getStudentAnswerById(@PathVariable Long id) {
         StudentAnswer studentAnswer = studentAnswerService.getStudentAnswerById(id);
         return new ResponseEntity<>(studentAnswer, HttpStatus.OK);
     }
 
-    // Update an existing StudentAnswer
     @PutMapping("/{id}")
     public ResponseEntity<StudentAnswer> updateStudentAnswer(
             @PathVariable Long id,
@@ -71,21 +66,18 @@ public class StudentAnswerController {
         return new ResponseEntity<>(studentAnswer, HttpStatus.OK);
     }
 
-    // Delete a StudentAnswer by ID
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteStudentAnswer(@PathVariable Long id) {
         studentAnswerService.deleteStudentAnswer(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    // Get StudentAnswers by studentTestId
     @GetMapping("/by-student-test/{studentTestId}")
     public ResponseEntity<List<StudentAnswer>> getStudentAnswersByStudentTestId(@PathVariable Long studentTestId) {
         List<StudentAnswer> studentAnswers = studentAnswerService.getStudentAnswersByStudentId(studentTestId);
         return new ResponseEntity<>(studentAnswers, HttpStatus.OK);
     }
 
-    // Get StudentAnswers by testQuestionId
     @GetMapping("/by-test-question/{testQuestionId}")
     public ResponseEntity<List<StudentAnswer>> getStudentAnswersByTestQuestionId(@PathVariable Long testQuestionId) {
         List<StudentAnswer> studentAnswers = studentAnswerService.getStudentAnswersByQuestionId(testQuestionId);

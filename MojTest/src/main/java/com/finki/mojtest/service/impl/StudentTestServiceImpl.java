@@ -114,7 +114,7 @@ public class StudentTestServiceImpl implements StudentTestService {
                     return answerDTO;
                 })
                 .collect(Collectors.toList());
-        Collections.shuffle(answers); // Shuffle answers
+        Collections.shuffle(answers);
         questionDTO.setAnswers(answers);
 
         testQuestionDTO.setQuestion(questionDTO);
@@ -137,7 +137,6 @@ public class StudentTestServiceImpl implements StudentTestService {
         StudentTest studentTest = studentTestRepository.findById(studentTestId)
                 .orElseThrow(() -> new EntityNotFoundException("Student Test not found"));
 
-        // Calculate score
         int score = calculateScore(studentTest.getAnswers());
         studentTest.setScore(score);
 
@@ -147,7 +146,6 @@ public class StudentTestServiceImpl implements StudentTestService {
     @Override
     @Transactional
     public TestFeedbackDTO evaluateTest(Long studentTestId, List<AnswerSubmissionDTO> answers) {
-        // 1. Retrieve the StudentTest and validate
         StudentTest studentTest = studentTestRepository.findById(studentTestId)
                 .orElseThrow(() -> new EntityNotFoundException("Student test not found"));
 
@@ -155,7 +153,6 @@ public class StudentTestServiceImpl implements StudentTestService {
             throw new IllegalStateException("Test hasn't been started");
         }
 
-        // Create a map of questionId to submission for quick lookup
         Map<Long, AnswerSubmissionDTO> submissionMap = answers.stream()
                 .collect(Collectors.toMap(
                         AnswerSubmissionDTO::getQuestionId,
@@ -168,7 +165,6 @@ public class StudentTestServiceImpl implements StudentTestService {
         double totalScore = 0;
         double maxPossibleScore = 0;
 
-        // 2. Process all questions from the student test
         Map<Long, List<StudentAnswer>> answersByQuestion = studentTest.getAnswers().stream()
                 .collect(Collectors.groupingBy(sa -> sa.getTestQuestion().getQuestion().getId()));
 
@@ -184,15 +180,12 @@ public class StudentTestServiceImpl implements StudentTestService {
             answerFeedback.setQuestionText(question.getDescription());
             answerFeedback.setPoints(question.getPoints());
 
-            // Get the submission for this question if it exists
             AnswerSubmissionDTO submission = submissionMap.get(question.getId());
 
-            // 3. Evaluate based on question type
             boolean isCorrect = false;
             double earnedPoints = 0;
 
             if (submission == null) {
-                // Question was not answered
                 answerFeedback.setSubmittedAnswerText(Collections.singletonList("No answer provided"));
                 answerFeedback.setEarnedPoints(0);
                 switch (question.getQuestionType()) {
@@ -239,7 +232,6 @@ public class StudentTestServiceImpl implements StudentTestService {
                             isCorrect = correctSelections == correctAnswerIds.size() &&
                                     submittedAnswerIds.size() == correctAnswerIds.size();
 
-                            // Get answer texts for feedback
                             List<String> submittedAnswerTexts = question.getAnswers().stream()
                                     .filter(a -> submittedAnswerIds.contains(a.getId()))
                                     .map(Answer::getAnswerText)
@@ -253,13 +245,11 @@ public class StudentTestServiceImpl implements StudentTestService {
                             answerFeedback.setSubmittedAnswerText(submittedAnswerTexts);
                             answerFeedback.setCorrectAnswerText(correctAnswerTexts);
 
-                            // Store the submitted answers for later processing
                             studentAnswer.setChosenAnswer(
                                     answerRepository.findById(submittedAnswerIds.getFirst()).orElse(null)
                             );
                             studentAnswerRepository.save(studentAnswer);
 
-                            // Store additional answers separately
                             if (submittedAnswerIds.size() > 1) {
                                 for (int i = 1; i < submittedAnswerIds.size(); i++) {
                                     StudentAnswer additionalAnswer = new StudentAnswer();
@@ -371,18 +361,15 @@ public class StudentTestServiceImpl implements StudentTestService {
                 }
             }
 
-            // 4. Update feedback
             answerFeedback.setCorrectAnswer(isCorrect);
             answerFeedback.setEarnedPoints(earnedPoints);
             feedbackList.add(answerFeedback);
             totalScore += earnedPoints;
         }
 
-        // 5. Update and save final score
         studentTest.setScore((int) Math.max(totalScore, 0));
         studentTestRepository.save(studentTest);
 
-        // 6. Set final feedback
         feedback.setTotalScore((int) Math.max(totalScore, 0));
         feedback.setMaxScore((int) maxPossibleScore);
         feedback.setAnswerFeedbackList(feedbackList);
@@ -394,12 +381,9 @@ public class StudentTestServiceImpl implements StudentTestService {
         Pageable pageable = PageRequest.of(page, size, Sort.by("dateTaken").descending()
                 .and(Sort.by("timeTaken").descending()));
 
-        // Get paginated student tests
         Page<StudentTest> studentTests = studentTestRepository.findByTestIdAndStudentId(testId, studentId, pageable);
 
-        // Transform to DTOs
         return studentTests.map(studentTest -> {
-            // Group answers by question to avoid counting duplicates
             Map<Long, Question> questionMap = studentTest.getAnswers().stream()
                     .collect(Collectors.toMap(
                             sa -> sa.getTestQuestion().getQuestion().getId(),
@@ -430,11 +414,9 @@ public class StudentTestServiceImpl implements StudentTestService {
         List<QuestionResultDTO> questionResults = new ArrayList<>();
         double totalPoints = 0;
 
-        // Group answers by question
         Map<Long, List<StudentAnswer>> answersByQuestion = studentTest.getAnswers().stream()
                 .collect(Collectors.groupingBy(sa -> sa.getTestQuestion().getQuestion().getId()));
 
-        // Process each question once
         for (Map.Entry<Long, List<StudentAnswer>> entry : answersByQuestion.entrySet()) {
             List<StudentAnswer> questionAnswers = entry.getValue();
             StudentAnswer firstAnswer = questionAnswers.getFirst();
@@ -568,8 +550,6 @@ public class StudentTestServiceImpl implements StudentTestService {
                     correctAnswerText = "Unsupported question type";
                 }
             }
-
-            // Ensure points don't go below 0 for individual questions
 
             if (earnedPoints < 0 && Math.abs(earnedPoints) > question.getPoints()) {
                 earnedPoints = -question.getPoints();

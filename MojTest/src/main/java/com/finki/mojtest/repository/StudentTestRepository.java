@@ -10,8 +10,8 @@ import java.util.List;
 
 @Repository
 public interface StudentTestRepository extends JpaRepository<StudentTest, Long> {
-    List<StudentTest> findAllByStudentId(Long studentId); // Find tests taken by a specific student
-    List<StudentTest> findAllByTestId(Long testId); // Find all submissions for a specific test
+    List<StudentTest> findAllByStudentId(Long studentId);
+    List<StudentTest> findAllByTestId(Long testId);
     List<StudentTest> findByTestIdAndStudentIdOrderByDateTakenDescTimeTakenDesc(
             Long testId,
             Long studentId

@@ -8,7 +8,7 @@ import java.util.List;
 @Data
 public class AnswerSubmissionDTO {
     private Long questionId;
-    private List<Long> answerIds;  // Changed from Long answerId to List<Long> answerIds
+    private List<Long> answerIds;
     private String textAnswer;
-    private QuestionType questionType; // Add this field
+    private QuestionType questionType;
 }

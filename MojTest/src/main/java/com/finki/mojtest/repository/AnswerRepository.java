@@ -8,6 +8,6 @@ import java.util.List;
 
 @Repository
 public interface AnswerRepository extends JpaRepository<Answer, Long> {
-    List<Answer> findByQuestionId(Long questionId); // Answers for a specific question
-    List<Answer> findByIsCorrect(boolean isCorrect); // Filter correct or incorrect answers
+    List<Answer> findByQuestionId(Long questionId);
+    List<Answer> findByCorrect(boolean isCorrect);
 }

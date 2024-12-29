@@ -11,7 +11,7 @@ import java.util.List;
 @NoArgsConstructor
 public class TeacherDTO extends UserDTO {
 
-    private List<Long> createdTestsIds; // Instead of full Test objects, we can just store their IDs for simplicity
-    private List<Long> createdQuestionsIds; // Same approach for Questions
+    private List<Long> createdTestsIds;
+    private List<Long> createdQuestionsIds;
 }
 

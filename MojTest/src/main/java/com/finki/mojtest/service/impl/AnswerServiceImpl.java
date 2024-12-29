@@ -17,7 +17,6 @@ public class AnswerServiceImpl implements AnswerService {
 
     @Override
     public Answer createAnswer(Answer answer) {
-        // Check if the question associated with the answer exists (optional)
         if (answer.getQuestion() == null || answer.getQuestion().getId() == null) {
             throw new IllegalArgumentException("Answer must be associated with a valid question.");
         }
@@ -39,7 +38,6 @@ public class AnswerServiceImpl implements AnswerService {
     public Answer updateAnswer(Long id, Answer updatedAnswer) {
         Answer existingAnswer = getAnswerById(id);
 
-        // Update fields only if they are not null
         if (updatedAnswer.getAnswerText() != null) {
             existingAnswer.setAnswerText(updatedAnswer.getAnswerText());
         }
@@ -52,7 +50,6 @@ public class AnswerServiceImpl implements AnswerService {
     public void deleteAnswer(Long id) {
         Answer answer = getAnswerById(id);
 
-        // Prevent deleting answer if it's already chosen by any student
         if (!answer.getChosenBy().isEmpty()) {
             throw new RuntimeException("Answer cannot be deleted because it has been chosen by students.");
         }

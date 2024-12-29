@@ -4,7 +4,6 @@ import com.finki.mojtest.model.Metadata;
 import com.finki.mojtest.model.dtos.MetadataDTO;
 import com.finki.mojtest.model.mappers.MetadataMapper;
 import com.finki.mojtest.service.MetadataService;
-import org.springframework.data.jpa.repository.Meta;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

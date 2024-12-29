@@ -42,7 +42,7 @@ public class TestQuestionServiceImpl implements TestQuestionService {
 
     @Override
     public void deleteTestQuestion(Long id) {
-        TestQuestion testQuestion = testQuestionRepository.findById(id)
+        testQuestionRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("TestQuestion not found"));
 
         testQuestionRepository.deleteById(id);

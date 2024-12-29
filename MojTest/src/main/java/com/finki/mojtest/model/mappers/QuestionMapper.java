@@ -2,7 +2,6 @@ package com.finki.mojtest.model.mappers;
 
 import com.finki.mojtest.model.Metadata;
 import com.finki.mojtest.model.Question;
-import com.finki.mojtest.model.Answer;
 import com.finki.mojtest.model.Test;
 import com.finki.mojtest.model.dtos.QuestionDTO;
 import com.finki.mojtest.model.enumerations.QuestionType;
@@ -19,7 +18,7 @@ public class QuestionMapper {
     public static QuestionDTO toDTO(Question question) {
         QuestionDTO dto = new QuestionDTO();
         dto.setId(question.getId());
-        dto.setType(String.valueOf(question.getQuestionType()));  // Note: using type instead of questionType
+        dto.setType(String.valueOf(question.getQuestionType()));
         dto.setDescription(question.getDescription());
         dto.setPoints(question.getPoints());
         dto.setNegativePointsPerAnswer(question.getNegativePointsPerAnswer());
@@ -28,7 +27,7 @@ public class QuestionMapper {
         dto.setCreatorId(question.getCreator() != null ? question.getCreator().getId() : null);
         dto.setName(question.getCreator() != null ? question.getCreator().getUsername() : null);
         dto.setIsCopy(question.getIsCopy());
-        // Map answers
+
         if (question.getAnswers() != null) {
             dto.setAnswers(question.getAnswers().stream()
                     .map(answer -> {
@@ -41,10 +40,6 @@ public class QuestionMapper {
                     .collect(Collectors.toList()));
         }
         if(question.getMetadata() != null){
-//            dto.setMetadataIds(question.getMetadata()
-//                    .stream()
-//                    .map(Metadata::getId)
-//                    .collect(Collectors.toList()));
             dto.setMetadata(question.getMetadata()
                     .stream()
                     .map(MetadataMapper::toDTO)
@@ -63,13 +58,12 @@ public class QuestionMapper {
         question.setFormula(dto.getFormula());
         question.setHint(dto.getHint());
         question.setIsCopy(dto.getIsCopy());
-        // Answers will be set by the service
+
         return question;
     }
     public static Question updateFromDTO(Question existingQuestion, QuestionDTO dto, Teacher creator, List<Test> tests, List<Metadata> metadata, Date uploadedAt) {
         if (existingQuestion == null || dto == null) return null;
 
-        // Update simple fields
         existingQuestion.setQuestionType(dto.getType() != null ? QuestionType.valueOf(dto.getType().toUpperCase()) : null); // Convert string to enum
         existingQuestion.setDescription(dto.getDescription());
         existingQuestion.setPoints(dto.getPoints());
@@ -85,8 +79,7 @@ public class QuestionMapper {
         }
         existingQuestion.setHint(dto.getHint());
 
-        // Update relationships
-        existingQuestion.setCreator(creator);  // Update creator
+        existingQuestion.setCreator(creator);
         existingQuestion.setTests(tests != null ? tests : Collections.emptyList());
         existingQuestion.setMetadata(metadata != null ? metadata : Collections.emptyList());
         existingQuestion.setDescription(dto.getDescription());

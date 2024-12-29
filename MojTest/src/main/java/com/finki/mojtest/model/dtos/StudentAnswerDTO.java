@@ -11,8 +11,8 @@ public class StudentAnswerDTO {
 
     private Long id;
     private String submittedValue;
-    private Long studentTestId;  // ID of the related StudentTest
-    private Long testQuestionId; // ID of the related TestQuestion
-    private Long chosenAnswerId; // ID of the related Answer
+    private Long studentTestId;
+    private Long testQuestionId;
+    private Long chosenAnswerId;
 }
 

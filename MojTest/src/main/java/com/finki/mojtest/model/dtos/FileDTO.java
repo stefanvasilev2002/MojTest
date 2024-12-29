@@ -15,7 +15,7 @@ public class FileDTO {
     private MultipartFile file;
     private String filePath;
     private Date uploadedAt;
-    private String fileName;               // File name (if needed separately)
-    private String fileType;               // MIME type
-    private Long relatedEntityId;          // ID of the related entity, e.g., Product ID
+    private String fileName;
+    private String fileType;
+    private Long relatedEntityId;
 }

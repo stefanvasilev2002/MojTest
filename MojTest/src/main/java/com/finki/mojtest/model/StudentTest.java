@@ -31,7 +31,7 @@ public class StudentTest {
 
     @JsonIgnore
     @ManyToOne
-    @JoinColumn(name = "test_id", nullable =true)
+    @JoinColumn(name = "test_id")
     private Test test;
 
     @JsonIgnore

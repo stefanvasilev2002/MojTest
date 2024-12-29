@@ -9,12 +9,11 @@ import java.time.LocalTime;
 public class TestAttemptDTO {
     private Long id;
     private int score;
-    private double scorePercentage; // Added field
+    private double scorePercentage;
     private LocalDate dateTaken;
     private LocalTime timeTaken;
-    private int totalPoints; // Added field for total possible points
+    private int totalPoints;
 
-    // Update constructor and add getters/setters
     public TestAttemptDTO(Long id, int score, int totalPoints, LocalDate dateTaken, LocalTime timeTaken) {
         this.id = id;
         this.score = score;
