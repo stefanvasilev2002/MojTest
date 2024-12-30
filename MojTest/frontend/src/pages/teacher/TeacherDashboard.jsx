@@ -19,7 +19,11 @@ const TeacherDashboard = () => {
             state: { userId: user.id }
         });
     };
-
+    const handleCreateNewQuestion = () => {
+        navigate('/teacher-dashboard/create-question', {
+            state: { userId: user.id }
+        });
+    };
     const handleEditTest = (testId) => {
         navigate(`/teacher-dashboard/edit-test/${testId}`);
     };
@@ -184,12 +188,20 @@ const TeacherDashboard = () => {
                             {t('dashboard.allTests')}
                         </button>
                     </div>
-                    <button
-                        onClick={handleCreateTest}
-                        className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors"
-                    >
-                        {t('dashboard.createNewTest')}
-                    </button>
+                    <div className="flex items-center gap-4">
+                        <button
+                            onClick={handleCreateTest}
+                            className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors"
+                        >
+                            {t('dashboard.createNewTest')}
+                        </button>
+                        <button
+                            onClick={handleCreateNewQuestion}
+                            className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                        >
+                            {t('dashboard.createNewQuestion')}
+                        </button>
+                    </div>
                 </div>
 
                 <div className="grid gap-6">

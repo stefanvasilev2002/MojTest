@@ -4,14 +4,15 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.finki.mojtest.model.enumerations.QuestionType;
 import com.finki.mojtest.model.users.Teacher;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.util.Objects;
 
-@Data
-@AllArgsConstructor
+@Getter
+@Setter
 @NoArgsConstructor
 @Entity
 public class Question {
@@ -25,16 +26,15 @@ public class Question {
     private int points;
     private int negativePointsPerAnswer;
     private String formula;
-
     private Boolean isCopy;
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "image_file_id", referencedColumnName = "id") // Foreign key column
-    private File image; // Replaces imageUrl
+    @JoinColumn(name = "image_file_id", referencedColumnName = "id")
+    private File image;
     private String hint;
 
     @ManyToMany(mappedBy = "questionBank")
-    @JsonIgnore  // Prevents recursion when serializing Test
+    @JsonIgnore
     private List<Test> tests;
 
     @ManyToMany
@@ -43,17 +43,30 @@ public class Question {
             joinColumns = @JoinColumn(name = "question_id"),
             inverseJoinColumns = @JoinColumn(name = "metadata_id")
     )
-    @JsonIgnore  // Prevents recursion when serializing Metadata
+    @JsonIgnore
     private List<Metadata> metadata;
 
     @OneToMany(mappedBy = "question")
-    @JsonIgnore  // Prevents recursion when serializing Answer
+    @JsonIgnore
     private List<Answer> answers;
 
     @ManyToOne
     @JoinColumn(name = "teacher_id", nullable = false)
-    @JsonIgnore  // Prevents recursion when serializing Question's creator (Teacher)
+    @JsonIgnore
     private Teacher creator;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Question)) return false;
+        Question question = (Question) o;
+        return Objects.equals(id, question.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 
     @Override
     public String toString() {

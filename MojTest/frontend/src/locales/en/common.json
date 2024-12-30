@@ -9,7 +9,15 @@
     "dashboard": "Dashboard",
     "manageQuizzes": "Manage Quizzes"
   },
+  "questionCreation": {
+    "title": "Create Question Bank Entry",
+    "description": "Create a new question that can be used in future tests",
+    "backToDashboard": "Back to Dashboard",
+    "success": "Question successfully created",
+    "error": "Failed to create question"
+  },
   "dashboard": {
+    "createNewQuestion": "Create New Question",
     "myTests": "My Tests",
     "allTests": "All Tests",
     "createNewTest": "Create New Test",

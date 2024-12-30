@@ -1,3 +1,4 @@
+/*
 package com.finki.mojtest.model.mappers;
 
 import com.finki.mojtest.model.StudentTest;
@@ -20,4 +21,4 @@ public interface StudentTestMapper {
     @Mapping(target = "test", ignore = true)
     @Mapping(target = "answers", ignore = true)  // Ignore the answers list as well
     StudentTest studentTestDTOToStudentTest(StudentTestDTO studentTestDTO);
-}
+}*/

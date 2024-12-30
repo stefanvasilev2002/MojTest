@@ -45,6 +45,7 @@ import QuestionsPage from "../pages/teacher/QuestionsPage.jsx";
 import QuestionDetails from "../components/crud/QuestionDetails.jsx";
 import TestDetailsPage from "../pages/student/TestDetailsPage.jsx";
 import QuestionManagerPage from "../pages/teacher/QuestionManagerPage.jsx";
+import CreateFutureQuestion from "../pages/teacher/CreateFutureQuestion.jsx";
 const AppRoutes = () => {
     return (
         <AuthProvider>
@@ -73,6 +74,7 @@ const AppRoutes = () => {
                         <Route path="test/:testId/questions" element={<QuestionsPage />} />
                         <Route path="test/:testId/questions/create" element={<QuestionManagerPage  />} />
                         <Route path="test/:testId/questions/:questionId/edit" element={<EditQuestionPage />} />
+                        <Route path="create-question" element={<CreateFutureQuestion/>} />
                     </Route>
 
 

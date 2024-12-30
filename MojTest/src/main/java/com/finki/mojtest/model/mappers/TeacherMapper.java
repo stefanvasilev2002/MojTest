@@ -1,3 +1,4 @@
+/*
 package com.finki.mojtest.model.mappers;
 
 import com.finki.mojtest.model.dtos.TeacherDTO;
@@ -20,3 +21,4 @@ public interface TeacherMapper {
     Teacher teacherDTOToTeacher(TeacherDTO teacherDTO);
 }
 
+*/

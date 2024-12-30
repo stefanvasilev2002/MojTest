@@ -18,4 +18,6 @@ public interface QuestionService {
     Question createAndAddQuestionToTest(Long testId, QuestionFromTeacherDTO questionCreateDTO);
 
     List<Question> getQuestionsNotInTest(Long testId);
+
+    Question createQuestionByDTOForFutureUse(QuestionFromTeacherDTO questionDTO);
 }

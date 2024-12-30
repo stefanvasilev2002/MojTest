@@ -1,3 +1,4 @@
+/*
 package com.finki.mojtest.model.mappers;
 
 import com.finki.mojtest.model.Answer;
@@ -22,3 +23,4 @@ public interface AnswerMapper {
     Answer answerDTOToAnswer(AnswerDTO answerDTO);
 }
 
+*/

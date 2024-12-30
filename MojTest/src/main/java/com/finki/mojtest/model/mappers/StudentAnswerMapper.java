@@ -1,3 +1,4 @@
+/*
 package com.finki.mojtest.model.mappers;
 
 import com.finki.mojtest.model.StudentAnswer;
@@ -23,3 +24,4 @@ public interface StudentAnswerMapper {
 }
 
 
+*/

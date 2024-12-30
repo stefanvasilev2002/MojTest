@@ -1,3 +1,4 @@
+/*
 package com.finki.mojtest.model.mappers;
 
 import com.finki.mojtest.model.dtos.StudentDTO;
@@ -18,3 +19,4 @@ public interface StudentMapper {
 
     Student studentDTOToStudent(StudentDTO studentDTO);
 }
+*/

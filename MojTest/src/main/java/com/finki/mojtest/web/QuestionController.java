@@ -34,6 +34,11 @@ public class QuestionController {
         Question createdQuestion = questionService.createQuestionByDTO(questionDTO);
         return new ResponseEntity<>(QuestionMapper.toDTO(createdQuestion), HttpStatus.CREATED);
     }
+    @PostMapping("/create")
+    public ResponseEntity<QuestionDTO> createQuestionForFutureUser(@RequestBody QuestionFromTeacherDTO questionDTO) {
+        Question createdQuestion = questionService.createQuestionByDTOForFutureUse(questionDTO);
+        return new ResponseEntity<>(QuestionMapper.toDTO(createdQuestion), HttpStatus.CREATED);
+    }
     @PostMapping("/test/{testId}/create")
     public ResponseEntity<QuestionDTO> createAndAddQuestionToTest(
             @PathVariable Long testId,

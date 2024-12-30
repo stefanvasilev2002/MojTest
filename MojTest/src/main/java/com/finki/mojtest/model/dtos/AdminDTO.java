@@ -1,3 +1,4 @@
+/*
 package com.finki.mojtest.model.dtos;
 
 import lombok.AllArgsConstructor;
@@ -8,4 +9,4 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AdminDTO extends UserDTO {
-}
+}*/

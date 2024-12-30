@@ -251,6 +251,7 @@
     "hello": "Добредојде"
   },
   "dashboard": {
+    "createNewQuestion": "Креирај Ново Прашање",
     "myTests": "Мои Тестови",
     "allTests": "Сите Тестови",
     "createNewTest": "Креирај Нов Тест",

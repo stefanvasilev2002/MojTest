@@ -253,4 +253,65 @@ public class QuestionServiceImpl implements QuestionService {
 
         return questionRepository.findAllByTestsNotContaining(test);
     }
+
+    @Override
+    public Question createQuestionByDTOForFutureUse(QuestionFromTeacherDTO questionCreateDTO) {
+        if (questionCreateDTO.getCreatorId() == null) {
+            throw new IllegalArgumentException("Creator ID must not be null");
+        }
+
+        Teacher creator = (Teacher) userRepository.findById(questionCreateDTO.getCreatorId())
+                .orElseThrow(() -> new EntityNotFoundException("Teacher not found with ID: " + questionCreateDTO.getCreatorId()));
+
+        Question question = new Question();
+        question.setQuestionType(questionCreateDTO.getType() != null ?
+                QuestionType.valueOf(questionCreateDTO.getType()) :
+                QuestionType.MULTIPLE_CHOICE);
+
+        question.setDescription(questionCreateDTO.getDescription());
+        question.setPoints(questionCreateDTO.getPoints());
+        question.setNegativePointsPerAnswer(questionCreateDTO.getNegativePointsPerAnswer());
+        question.setFormula(questionCreateDTO.getFormula());
+        question.setHint(questionCreateDTO.getHint());
+        question.setCreator(creator);
+        question.setIsCopy(questionCreateDTO.getIsCopy());
+
+        question = questionRepository.save(question);
+
+        if (questionCreateDTO.getMetadata() != null) {
+            Question finalQuestion = question;
+            List<Metadata> metadataList = questionCreateDTO.getMetadata().stream()
+                    .map(metadataDTO -> {
+                        Metadata metadata = metadataRepository.findByKeyAndValue(metadataDTO.getKey(), metadataDTO.getValue())
+                                .orElseGet(() -> {
+                                    Metadata newMetadata = new Metadata();
+                                    newMetadata.setKey(metadataDTO.getKey());
+                                    newMetadata.setValue(metadataDTO.getValue());
+                                    return metadataRepository.save(newMetadata);
+                                });
+                        metadata.getQuestions().add(finalQuestion);
+                        return metadata;
+                    })
+                    .collect(Collectors.toList());
+
+            question.setMetadata(metadataList);
+        }
+
+        if (questionCreateDTO.getAnswers() != null) {
+            Question finalQuestion1 = question;
+            List<Answer> answers = questionCreateDTO.getAnswers().stream()
+                    .map(answerDTO -> {
+                        Answer answer = new Answer();
+                        answer.setAnswerText(answerDTO.getAnswerText());
+                        answer.setCorrect(answerDTO.isCorrect());
+                        answer.setQuestion(finalQuestion1);
+                        answer.setCorrect(answerDTO.isCorrect());
+                        return answerRepository.save(answer);
+                    })
+                    .collect(Collectors.toList());
+
+            question.setAnswers(answers);
+        }
+
+        return questionRepository.save(question);    }
 }
