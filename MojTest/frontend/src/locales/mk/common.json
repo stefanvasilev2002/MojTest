@@ -250,6 +250,10 @@
     "user": "Корисници",
     "hello": "Добредојде"
   },
+  "pagination": {
+    "previous": "Претходно",
+    "next": "Следно"
+  },
   "dashboard": {
     "createNewQuestion": "Креирај Ново Прашање",
     "myTests": "Мои Тестови",

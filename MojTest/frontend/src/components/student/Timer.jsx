@@ -106,7 +106,7 @@ const Timer = ({ timeLimit, testId, onTimeUp }) => {
     };
 
     return (
-        <div className={`fixed top-4 right-4 px-4 py-2 rounded-lg border ${getTimerStyles()} font-medium shadow-md`}>
+        <div className={`fixed top-20 right-4 px-4 py-2 rounded-lg border ${getTimerStyles()} font-medium shadow-md`}>
             <div className="flex items-center gap-2">
                 <svg
                     xmlns="http://www.w3.org/2000/svg"

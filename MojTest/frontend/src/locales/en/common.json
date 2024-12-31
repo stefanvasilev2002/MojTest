@@ -16,6 +16,10 @@
     "success": "Question successfully created",
     "error": "Failed to create question"
   },
+  "pagination": {
+    "previous": "Previous",
+    "next": "Next"
+  },
   "dashboard": {
     "createNewQuestion": "Create New Question",
     "myTests": "My Tests",

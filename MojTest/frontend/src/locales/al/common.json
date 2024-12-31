@@ -9,6 +9,10 @@
     "dashboard": "Paneli",
     "manageQuizzes": "Menaxho Kuizet"
   },
+  "pagination": {
+    "previous": "Mbrapa",
+    "next": "Para"
+  },
   "loginPage": {
     "title": "Hyni",
     "username": "Emri i përdoruesit",

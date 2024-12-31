@@ -2,28 +2,56 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useTest from '../../hooks/crud/useTest.js';
 import { useAuth } from '../../context/AuthContext.jsx';
-import { useTranslation } from 'react-i18next'; // Add this import
+import { useTranslation } from 'react-i18next';
 
 const TeacherDashboard = () => {
     const { items: tests, loading: testsLoading, error: testsError, deleteItem: deleteTest } = useTest();
     const { user } = useAuth();
     const navigate = useNavigate();
     const [activeTab, setActiveTab] = useState('myTests');
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 4;
+    const { t } = useTranslation("common");
 
     const myTests = tests.filter(test => test.creatorId === user.id);
     const allTests = tests;
-    const { t } = useTranslation("common");
+
+    // Get current tests based on pagination
+    const getCurrentTests = () => {
+        const currentTests = activeTab === 'myTests' ? myTests : allTests;
+        const indexOfLastItem = currentPage * itemsPerPage;
+        const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+        return currentTests.slice(indexOfFirstItem, indexOfLastItem);
+    };
+
+    // Calculate total pages
+    const totalPages = Math.ceil(
+        (activeTab === 'myTests' ? myTests.length : allTests.length) / itemsPerPage
+    );
+
+    // Handle page changes
+    const handlePageChange = (pageNumber) => {
+        setCurrentPage(pageNumber);
+    };
+
+    // Reset to first page when switching tabs
+    const handleTabChange = (tab) => {
+        setActiveTab(tab);
+        setCurrentPage(1);
+    };
 
     const handleCreateTest = () => {
         navigate('/teacher-dashboard/create-test', {
             state: { userId: user.id }
         });
     };
+
     const handleCreateNewQuestion = () => {
         navigate('/teacher-dashboard/create-question', {
             state: { userId: user.id }
         });
     };
+
     const handleEditTest = (testId) => {
         navigate(`/teacher-dashboard/edit-test/${testId}`);
     };
@@ -47,23 +75,52 @@ const TeacherDashboard = () => {
         navigate(`/teacher-dashboard/test/${testId}/questions/create`);
     };
 
-    if (testsLoading) {
-        return (
-            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-                <p className="text-lg">{t('dashboard.loading')}</p>
-            </div>
-        );
-    }
+    const renderPagination = () => {
+        const pages = [];
+        for (let i = 1; i <= totalPages; i++) {
+            pages.push(
+                <button
+                    key={i}
+                    onClick={() => handlePageChange(i)}
+                    className={`px-3 py-1 mx-1 rounded ${
+                        currentPage === i
+                            ? 'bg-blue-600 text-white'
+                            : 'bg-white text-blue-600 hover:bg-blue-50'
+                    }`}
+                >
+                    {i}
+                </button>
+            );
+        }
 
-    if (testsError) {
         return (
-            <div className="min-h-screen bg-gray-50 p-4">
-                <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-                    {t('dashboard.error')} {testsError}
-                </div>
+            <div className="flex justify-center items-center mt-6 space-x-2">
+                <button
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    disabled={currentPage === 1}
+                    className={`px-4 py-2 rounded ${
+                        currentPage === 1
+                            ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                            : 'bg-white text-blue-600 hover:bg-blue-50'
+                    }`}
+                >
+                    {t('pagination.previous')}
+                </button>
+                {pages}
+                <button
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                    className={`px-4 py-2 rounded ${
+                        currentPage === totalPages
+                            ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                            : 'bg-white text-blue-600 hover:bg-blue-50'
+                    }`}
+                >
+                    {t('pagination.next')}
+                </button>
             </div>
         );
-    }
+    };
 
     const renderTest = (test, isOwner) => (
         <div
@@ -162,13 +219,31 @@ const TeacherDashboard = () => {
         </div>
     );
 
+    if (testsLoading) {
+        return (
+            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+                <p className="text-lg">{t('dashboard.loading')}</p>
+            </div>
+        );
+    }
+
+    if (testsError) {
+        return (
+            <div className="min-h-screen bg-gray-50 p-4">
+                <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+                    {t('dashboard.error')} {testsError}
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className="p-6">
             <div className="max-w-6xl mx-auto">
                 <div className="flex justify-between items-center mb-8">
                     <div className="flex items-center gap-4">
                         <button
-                            onClick={() => setActiveTab('myTests')}
+                            onClick={() => handleTabChange('myTests')}
                             className={`text-lg font-semibold px-4 py-2 rounded-lg transition-colors ${
                                 activeTab === 'myTests'
                                     ? 'bg-blue-600 text-white'
@@ -178,7 +253,7 @@ const TeacherDashboard = () => {
                             {t('dashboard.myTests')}
                         </button>
                         <button
-                            onClick={() => setActiveTab('allTests')}
+                            onClick={() => handleTabChange('allTests')}
                             className={`text-lg font-semibold px-4 py-2 rounded-lg transition-colors ${
                                 activeTab === 'allTests'
                                     ? 'bg-blue-600 text-white'
@@ -205,24 +280,22 @@ const TeacherDashboard = () => {
                 </div>
 
                 <div className="grid gap-6">
-                    {activeTab === 'myTests' ? (
-                        myTests.length === 0 ? (
-                            <div className="bg-white rounded-lg shadow p-6 text-center">
-                                <p className="text-gray-600">{t('dashboard.noMyTestsAvailable')}</p>
-                            </div>
-                        ) : (
-                            myTests.map(test => renderTest(test, true))
-                        )
+                    {getCurrentTests().length === 0 ? (
+                        <div className="bg-white rounded-lg shadow p-6 text-center">
+                            <p className="text-gray-600">
+                                {activeTab === 'myTests'
+                                    ? t('dashboard.noMyTestsAvailable')
+                                    : t('dashboard.noTestsAvailable')}
+                            </p>
+                        </div>
                     ) : (
-                        allTests.length === 0 ? (
-                            <div className="bg-white rounded-lg shadow p-6 text-center">
-                                <p className="text-gray-600">{t('dashboard.noTestsAvailable')}</p>
-                            </div>
-                        ) : (
-                            allTests.map(test => renderTest(test, test.creatorId === user.id))
+                        getCurrentTests().map(test =>
+                            renderTest(test, test.creatorId === user.id)
                         )
                     )}
                 </div>
+
+                {(activeTab === 'myTests' ? myTests : allTests).length > itemsPerPage && renderPagination()}
             </div>
         </div>
     );

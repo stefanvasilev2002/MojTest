@@ -26,6 +26,7 @@ public class TestMapper {
         dto.setNumQuestions(test.getNumQuestions());
         dto.setCreatorId(test.getCreator() != null ? test.getCreator().getId() : null);
         dto.setName(test.getCreator().getFullName());
+        dto.setTimeLimit(test.getTimeLimit());
 
         dto.setQuestionIds(test.getQuestionBank() != null ?
                 test.getQuestionBank().stream().map(Question::getId).collect(Collectors.toList()) :

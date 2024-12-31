@@ -22,5 +22,5 @@ public class TestDTO {
     private List<Long> testQuestionIds;
     private List<Long> studentTestIds;
     private List<MetadataDTO> metadata;
-
+    private int timeLimit;
 }
