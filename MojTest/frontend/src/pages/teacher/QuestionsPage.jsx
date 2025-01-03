@@ -3,6 +3,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useTranslation } from 'react-i18next';
 import testQuestionService from '../../services/testQuestionService';
+import DeleteQuestionModal from "../../components/teacher/DeleteQuestionModal.jsx";
 
 const QuestionsPage = () => {
     const { t } = useTranslation("common");
@@ -27,7 +28,25 @@ const QuestionsPage = () => {
 
     // Calculate total pages
     const totalPages = Math.ceil(questions.length / itemsPerPage);
+    const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+    const [questionToDelete, setQuestionToDelete] = useState(null);
 
+    const handleDeleteClick = (question) => {
+        setQuestionToDelete(question);
+        setDeleteModalOpen(true);
+    };
+    const handleDeleteConfirm = async () => {
+        if (questionToDelete) {
+            try {
+                await testQuestionService.deleteQuestion(questionToDelete.id);
+                setDeleteModalOpen(false);
+                setQuestionToDelete(null);
+                fetchTestAndQuestions();
+            } catch (error) {
+                setError(error.message);
+            }
+        }
+    };
     const handlePageChange = (pageNumber) => {
         setCurrentPage(pageNumber);
     };
@@ -125,9 +144,7 @@ const QuestionsPage = () => {
     };
 
     const getQuestionTypeLabel = (type) => {
-        return type?.split('_')
-            .map(word => word.charAt(0).toUpperCase() + word.toLowerCase().slice(1))
-            .join(' ') || 'Multiple Choice';
+        return t(`questionTypes.${type}`) || t('questionTypes.MULTIPLE_CHOICE');
     };
 
     if (loading) {
@@ -240,11 +257,18 @@ const QuestionsPage = () => {
                                                 {t('questionsPage.questionDetails.actions.edit')}
                                             </button>
                                             <button
-                                                onClick={() => handleDeleteQuestion(question.id)}
+                                                onClick={() => handleDeleteClick(question)}
                                                 className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition-colors"
                                             >
                                                 {t('questionsPage.questionDetails.actions.delete')}
                                             </button>
+
+                                            <DeleteQuestionModal
+                                                isOpen={deleteModalOpen}
+                                                onClose={() => setDeleteModalOpen(false)}
+                                                onConfirm={handleDeleteConfirm}
+                                                questionText={questionToDelete?.description}
+                                            />
                                         </div>
                                     )}
                                 </div>

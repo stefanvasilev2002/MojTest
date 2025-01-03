@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import { useTranslation } from 'react-i18next';
 import Select from "react-select";
-import { predefinedKeyValues } from "../constants/metadata.js";
+import { predefinedKeyValues } from "../config/predefinedKeyValues.js";
+import {getTranslatedMetadata} from "../config/translatedMetadata.js";
 
 const MetadataFilter = ({ filterOptions, setFilterOptions }) => {
-    const { t } = useTranslation("common");
+    const { t , i18n} = useTranslation("common");
     const [showFilters, setShowFilters] = useState(false);
 
     const handleFilterChange = (selectedOption, key) => {
@@ -31,18 +32,18 @@ const MetadataFilter = ({ filterOptions, setFilterOptions }) => {
                 <div>
                     {filterKeys.map((key) => (
                         <div key={key}>
-                            <label className="block text-lg font-semibold">{key}</label>
+                            <label className="block text-lg font-semibold">{t(`metadata.${key}`)}</label>
                             <Select
                                 isMulti
                                 options={predefinedKeyValues[key].map((value) => ({
                                     value,
-                                    label: value,
+                                    label: getTranslatedMetadata(key, value, i18n.language) || value,
                                 }))}
                                 onChange={(selectedOption) =>
                                     handleFilterChange(selectedOption, key)
                                 }
                                 value={filterOptions[key]}
-                                placeholder={`${t('metadataFilter.select.placeholder')} ${key}`}
+                                placeholder={`${t('metadataFilter.select.placeholder')} ${t(`metadata.${key}`)}`}
                                 className="react-select-container"
                             />
                         </div>

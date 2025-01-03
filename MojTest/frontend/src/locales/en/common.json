@@ -9,6 +9,14 @@
     "dashboard": "Dashboard",
     "manageQuizzes": "Manage Quizzes"
   },
+
+  "metadata": {
+    "Subject": "Subject",
+    "Part of Year": "Part of Year",
+    "Grade": "Grade",
+    "Difficulty": "Difficulty",
+    "Test Type": "Test Type"
+  },
   "questionCreation": {
     "title": "Create Question Bank Entry",
     "description": "Create a new question that can be used in future tests",
@@ -35,6 +43,8 @@
       "timeLimit": "Time limit: ",
       "minutes": "minutes",
       "actions": {
+        "deleteTitle": "Delete Test",
+        "deleteDescription": "Are you sure you want to delete \"{{title}}\"? This action cannot be undone.",
         "viewQuestions": "View Questions",
         "addQuestion": "Add Question",
         "editTest": "Edit Test",
@@ -42,6 +52,10 @@
         "deleteConfirm": "Are you sure you want to delete this test? This will also delete all associated questions."
       }
     }
+  },
+  "common": {
+    "cancel": "Cancel",
+    "delete": "Delete"
   },
   "addExistingQuestion": {
     "title": "Add Existing Question",
@@ -158,6 +172,10 @@
       "numeric": "Numeric"
     }
   },
+  "trueFalse": {
+        "true": "True",
+        "false": "False"
+    },
   "questionForm": {
     "labels": {
       "type": "Question Type",
@@ -170,6 +188,10 @@
       "answerTemplate": "Answer Template (Optional)",
       "correct": "Correct",
       "metadata": "Question Metadata"
+    },
+    "common": {
+      "cancel": "Cancel",
+      "delete": "Delete"
     },
     "types": {
       "multipleChoice": "Multiple Choice",
@@ -223,11 +245,20 @@
       "hint": "Hint: ",
       "answers": "Answers:",
       "actions": {
+        "deleteTitle": "Delete Question",
+        "deleteDescription": "Are you sure you want to delete question \"{{title}}\"? This action cannot be undone.",
         "edit": "Edit",
         "delete": "Delete",
         "deleteConfirm": "Are you sure you want to delete this question?"
       }
     }
+  },
+  "filters": {
+    "title": "Filters",
+    "allSubjects": "All Subjects",
+    "allDifficulties": "All Difficulties",
+    "allPeriods": "All Periods",
+    "allTypes": "All Types"
   },
   "testForm": {
     "pageTitle": "Create New Test",
@@ -459,10 +490,7 @@
   "questionTypes": {
     "MULTIPLE_CHOICE": "Multiple Choice",
     "TRUE_FALSE": "True/False",
-    "SHORT_ANSWER": "Short Answer",
-    "LONG_ANSWER": "Long Answer",
     "FILL_IN_THE_BLANK": "Fill in the Blank",
-    "MATCHING": "Matching",
     "ESSAY": "Essay",
     "NUMERIC": "Numeric"
   }

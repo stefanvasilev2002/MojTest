@@ -9,6 +9,13 @@
     "dashboard": "Табла",
     "manageQuizzes": "Управувај со Квизови"
   },
+  "metadata": {
+    "Subject": "Предмет",
+    "Part of Year": "Дел од годината",
+    "Grade": "Одделение",
+    "Difficulty": "Тежина",
+    "Test Type": "Тип на тест"
+  },
     "testForm": {
       "title": {
         "label": "Наслов",
@@ -52,11 +59,20 @@
       "hint": "Совет: ",
       "answers": "Одговори:",
       "actions": {
+        "deleteTitle": "Избриши прашање",
+        "deleteDescription": "Дали сте сигурни дека сакате да го избришете прашањето \"{{title}}\"? Оваа акција не може да се врати.",
         "edit": "Измени",
         "delete": "Избриши",
         "deleteConfirm": "Дали сте сигурни дека сакате да го избришете ова прашање?"
       }
     }
+  },
+  "filters": {
+    "title": "Филтри",
+    "allSubjects": "Сите предмети",
+    "allDifficulties": "Сите тежини",
+    "allPeriods": "Сите периоди",
+    "allTypes": "Сите типови"
   },
   "questionForm": {
     "labels": {
@@ -269,6 +285,8 @@
       "timeLimit": "Временско ограничување: ",
       "minutes": "минути",
       "actions": {
+        "deleteTitle": "Избриши тест",
+        "deleteDescription": "Дали сте сигурни дека сакате да го избришете \"{{title}}\"? Оваа акција не може да се врати.",
         "viewQuestions": "Погледни Прашања",
         "addQuestion": "Додади Прашање",
         "editTest": "Измени Тест",
@@ -438,14 +456,18 @@
     "fullName": "Целосно име"
   },
   "questionTypes": {
-    "MULTIPLE_CHOICE": "Повеќе избори",
-    "TRUE_FALSE": "Точно / Неточно",
-    "SHORT_ANSWER": "Краток одговор",
-    "LONG_ANSWER": "Долг одговор",
-    "FILL_IN_THE_BLANK": "Пополнете го празното",
-    "MATCHING": "Спарување",
+    "MULTIPLE_CHOICE": "Повеќекратен избор",
+    "TRUE_FALSE": "Точно/Неточно",
+    "FILL_IN_THE_BLANK": "Пополни го празното место",
     "ESSAY": "Есеј",
     "NUMERIC": "Нумерички"
+  },
+  "trueFalse": {
+    "true": "Точно",
+    "false": "Неточно"
+  },
+  "common": {
+    "cancel": "Откажи",
+    "delete": "Избриши"
   }
-
 }

@@ -9,6 +9,13 @@
     "dashboard": "Paneli",
     "manageQuizzes": "Menaxho Kuizet"
   },
+  "metadata": {
+    "Subject": "Lënda",
+    "Part of Year": "Pjesa e vitit",
+    "Grade": "Klasa",
+    "Difficulty": "Vështirësia",
+    "Test Type": "Lloji i testit"
+  },
   "pagination": {
     "previous": "Mbrapa",
     "next": "Para"
@@ -40,6 +47,8 @@
       "timeLimit": "Kufiri kohor: ",
       "minutes": "minuta",
       "actions": {
+        "deleteTitle": "Fshij testin",
+        "deleteDescription": "A jeni të sigurt që dëshironi të fshini \"{{title}}\"? Ky veprim nuk mund të zhbëhet.",
         "viewQuestions": "Shiko Pyetjet",
         "addQuestion": "Shto Pyetje",
         "editTest": "Ndrysho Testin",
@@ -63,6 +72,8 @@
       "hint": "Ndihmë: ",
       "answers": "Përgjigjet:",
       "actions": {
+        "deleteTitle": "Fshij pyetjen",
+        "deleteDescription": "A jeni të sigurt që dëshironi të fshini pyetjen \"{{title}}\"? Ky veprim nuk mund të zhbëhet.",
         "edit": "Ndrysho",
         "delete": "Fshi",
         "deleteConfirm": "Jeni i sigurt që dëshironi ta fshini këtë pyetje?"
@@ -111,6 +122,13 @@
       "creationFailed": "Gabim gjatë krijimit të pyetjes:"
     }
   },
+  "filters": {
+    "title": "Filtrat",
+    "allSubjects": "Të gjitha lëndët",
+    "allDifficulties": "Të gjitha vështirësitë",
+    "allPeriods": "Të gjitha periudhat",
+    "allTypes": "Të gjitha llojet"
+  },
   "questionManager": {
     "backToQuestions": "← Kthehu tek Pyetjet",
     "pageTitle": "Menaxho Pyetjet",
@@ -133,6 +151,14 @@
     "select": {
       "placeholder": "Zgjidhni"
     }
+  },
+  "trueFalse": {
+    "true": "E vërtetë",
+    "false": "E gabuar"
+  },
+  "common": {
+    "cancel": "Anulo",
+    "delete": "Fshij"
   },
   "testResults": {
     "title": "Rezultatet e testit",
@@ -429,13 +455,10 @@
     "fullName": "Emri i plotë"
   },
   "questionTypes": {
-    "MULTIPLE_CHOICE": "Përzgjedhje të shumëfishta",
-    "TRUE_FALSE": "E vërtetë / E gabuar",
-    "SHORT_ANSWER": "Përgjigje e shkurtër",
-    "LONG_ANSWER": "Përgjigje e gjatë",
-    "FILL_IN_THE_BLANK": "Plotëso boshllëkun",
-    "MATCHING": "Përputhje",
+    "MULTIPLE_CHOICE": "Zgjedhje të shumëfishta",
+    "TRUE_FALSE": "E vërtetë/E gabuar",
+    "FILL_IN_THE_BLANK": "Plotëso hapësirën",
     "ESSAY": "Ese",
-    "NUMERIC": "Numërik"
+    "NUMERIC": "Numerike"
   }
 }

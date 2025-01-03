@@ -5,9 +5,10 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext.jsx';
 import TestFilters from '../../components/TestFilters.jsx';
 import TestAttempts from "../../components/student/TestAttempts.jsx";
+import {getTranslatedMetadata} from "../../config/translatedMetadata.js";
 
 const StudentDashboard = () => {
-    const { t } = useTranslation("common");
+    const { t , i18n} = useTranslation("common");
     const [selectedTestId, setSelectedTestId] = useState(null);
     const { items: tests, loading, error } = useTest();
     const { user } = useAuth();
@@ -164,7 +165,7 @@ const StudentDashboard = () => {
                 <div className="flex justify-between items-center mb-6">
                     <h1 className="text-4xl font-bold text-blue-600">{t('studentDashboard.title')}</h1>
                     <div className="text-gray-600">
-                        {t('studentDashboard.grade')} <span className="font-semibold">{user.grade}</span>
+                        {t('studentDashboard.grade')} <span className="font-semibold">{getTranslatedMetadata('Grade', user.grade, i18n.language)}</span>
                     </div>
                 </div>
 

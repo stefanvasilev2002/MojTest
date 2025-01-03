@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { predefinedKeyValues } from "../../constants/metadata.js";
+import { predefinedKeyValues } from "../../config/predefinedKeyValues.js";
 
 const TestForm = ({ initialData, onSubmit, isEditing, userId }) => {
     const { t } = useTranslation('common');

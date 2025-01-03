@@ -1,12 +1,13 @@
 import React, {useState, useEffect, useCallback} from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { predefinedKeyValues } from "../../constants/metadata.js";
+import { predefinedKeyValues } from "../../config/predefinedKeyValues.js";
 import FormulaInput from "../FormulaInput.jsx";
 import FormulaDisplay from "../FormulaDisplay.jsx";
 import { useTranslation } from 'react-i18next';
+import {getTranslatedMetadata} from "../../config/translatedMetadata.js";
 
 const QuestionForm = ({ onSubmit, isEditing = false, initialData = {}, mode = 'create', loading = false }) => {
-    const { t } = useTranslation("common");
+    const { t , i18n} = useTranslation("common");
     const { user } = useAuth();
     const [error, setError] = useState(null);
     const [selectedType, setSelectedType] = useState(initialData.type || 'MULTIPLE_CHOICE');
@@ -73,8 +74,8 @@ const QuestionForm = ({ onSubmit, isEditing = false, initialData = {}, mode = 'c
                 return Array(4).fill().map(() => ({ answerText: '', isCorrect: false }));
             case 'TRUE_FALSE':
                 return [
-                    { answerText: 'True', isCorrect: true },
-                    { answerText: 'False', isCorrect: false }
+                    { answerText: `${t("trueFalse.true")}`, isCorrect: true },
+                    { answerText: `${t("trueFalse.false")}`, isCorrect: false }
                 ];
             case 'FILL_IN_THE_BLANK':
             case 'NUMERIC':
@@ -516,7 +517,7 @@ const QuestionForm = ({ onSubmit, isEditing = false, initialData = {}, mode = 'c
                 {Object.entries(predefinedKeyValues).map(([key, values]) => (
                     <div key={key}>
                         <label htmlFor={key} className="block text-sm font-medium text-gray-700">
-                            {key}
+                            {t(`metadata.${key}`)}
                         </label>
                         <select
                             id={key}
@@ -524,10 +525,10 @@ const QuestionForm = ({ onSubmit, isEditing = false, initialData = {}, mode = 'c
                             onChange={(e) => handleMetadataChange(key, e.target.value)}
                             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                         >
-                            <option value="">{t('questionForm.placeholders.selectMetadata', { field: key })}</option>
+                            <option value="">{t('questionForm.placeholders.selectMetadata', { field: t(`metadata.${key}`) })}</option>
                             {values.map(value => (
                                 <option key={value} value={value}>
-                                    {value}
+                                    {getTranslatedMetadata(key, value, i18n.language) || value}
                                 </option>
                             ))}
                         </select>

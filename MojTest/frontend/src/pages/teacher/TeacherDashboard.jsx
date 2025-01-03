@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import useTest from '../../hooks/crud/useTest.js';
 import { useAuth } from '../../context/AuthContext.jsx';
 import { useTranslation } from 'react-i18next';
+import {getTranslatedMetadata} from "../../config/translatedMetadata.js";
+import DeleteTestModal from "../../components/teacher/DeleteTestModal.jsx";
 
 const TeacherDashboard = () => {
     const { items: tests, loading: testsLoading, error: testsError, deleteItem: deleteTest } = useTest();
@@ -11,11 +13,29 @@ const TeacherDashboard = () => {
     const [activeTab, setActiveTab] = useState('myTests');
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 4;
-    const { t } = useTranslation("common");
+    const { t, i18n } = useTranslation("common");
 
+    const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+    const [testToDelete, setTestToDelete] = useState(null);
+    console.log(testToDelete);
     const myTests = tests.filter(test => test.creatorId === user.id);
     const allTests = tests;
+    const handleDeleteClick = (test) => {
+        setTestToDelete(test);
+        setDeleteModalOpen(true);
+    };
 
+    const handleDeleteConfirm = async () => {
+        if (testToDelete) {
+            try {
+                await deleteTest(testToDelete.id);
+                setDeleteModalOpen(false);
+                setTestToDelete(null);
+            } catch (error) {
+                console.error('Error deleting test:', error);
+            }
+        }
+    };
     // Get current tests based on pagination
     const getCurrentTests = () => {
         const currentTests = activeTab === 'myTests' ? myTests : allTests;
@@ -123,11 +143,9 @@ const TeacherDashboard = () => {
     };
 
     const renderTest = (test, isOwner) => (
-        <div
-            key={test.id}
-            className="bg-white rounded-lg shadow p-6"
-        >
+        <div key={test.id} className="bg-white rounded-lg shadow p-6">
             <div className="flex justify-between items-start">
+                {/* Title and description section remains the same */}
                 <div className="flex-grow">
                     <div className="flex items-center gap-2">
                         <h2 className="text-xl font-semibold">{test.title}</h2>
@@ -139,6 +157,7 @@ const TeacherDashboard = () => {
                     </div>
                     <p className="text-gray-600 mb-4">{test.description}</p>
                     <div className="space-y-2">
+                        {/* Questions and time limit section remains the same */}
                         <div className="flex items-center gap-4 text-sm text-gray-500">
                             <span className="flex items-center">
                                 <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -155,6 +174,7 @@ const TeacherDashboard = () => {
                                 </span>
                             )}
                         </div>
+                        {/* Updated metadata section with translations */}
                         {test.metadata && test.metadata.length > 0 && (
                             <div className="flex flex-wrap gap-2">
                                 {test.metadata.map((meta, index) => (
@@ -162,13 +182,14 @@ const TeacherDashboard = () => {
                                         key={index}
                                         className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
                                     >
-                                        {meta.key}: {meta.value}
+                                        {t(`metadata.${meta.key}`)}: {getTranslatedMetadata(meta.key, meta.value, i18n.language)}
                                     </span>
                                 ))}
                             </div>
                         )}
                     </div>
                 </div>
+                {/* Actions section remains the same */}
                 <div className="flex flex-col gap-2">
                     <div className="flex gap-2">
                         <button
@@ -204,7 +225,7 @@ const TeacherDashboard = () => {
                                 {t('dashboard.testDetails.actions.editTest')}
                             </button>
                             <button
-                                onClick={() => handleDeleteTest(test.id)}
+                                onClick={() => handleDeleteClick(test)}
                                 className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition-colors flex items-center"
                             >
                                 <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -212,6 +233,13 @@ const TeacherDashboard = () => {
                                 </svg>
                                 {t('dashboard.testDetails.actions.delete')}
                             </button>
+
+                            <DeleteTestModal
+                                isOpen={deleteModalOpen}
+                                onClose={() => setDeleteModalOpen(false)}
+                                onConfirm={handleDeleteConfirm}
+                                testTitle={testToDelete?.title}
+                            />
                         </div>
                     )}
                 </div>

@@ -2,11 +2,12 @@ import React from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
-const PrivateRoute = ({ children, requiredRole }) => {
+const PrivateRoute = ({ children, requiredRoles }) => {
     const { user, role } = useAuth();
     const location = useLocation();
     console.log(user);
     console.log("role ", role);
+    console.log("requiredRole: ", requiredRoles);
 
     // If user is not authenticated, redirect to login
     if (!user) {
@@ -18,15 +19,17 @@ const PrivateRoute = ({ children, requiredRole }) => {
         return children;
     }
 
-    // For non-admin users, check role hierarchy
-    const roleHierarchy = {
-        teacher: ['teacher'],
-        student: ['student']
-    };
-
     // Check if user has required role
-    const hasPermission = roleHierarchy[role?.toLowerCase()].includes(requiredRole);
-    console.log("requiredRole: ", requiredRole);
+
+    const userRoles = [role];
+    let hasPermission = false;
+
+    for(let i = 0; i < userRoles.length; i++) {
+        if (requiredRoles.includes(userRoles[i])) {
+            hasPermission = true;
+        }
+    }
+
     console.log("hasPermission: ", hasPermission);
 
     if (!hasPermission) {
