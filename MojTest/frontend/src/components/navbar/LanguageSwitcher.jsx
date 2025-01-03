@@ -4,7 +4,6 @@ import Select from 'react-select';
 import Flag from 'react-world-flags'; // Import react-world-flags
 import selectStyles from '../../styles/selectStyles'; // Import the styles
 
-// Language options with country codes and names
 const languageOptions = [
     { value: 'en', label: 'English', countryCode: 'GB' },   // UK flag
     { value: 'mk', label: 'Македонски', countryCode: 'MK' }, // North Macedonia flag
@@ -15,11 +14,9 @@ const LanguageSwitcher = () => {
     const { i18n } = useTranslation();
 
     const handleChange = (selectedOption) => {
-        // Change language when the user selects an option
         i18n.changeLanguage(selectedOption.value);
     };
 
-    // Custom component to render the selected language with flag
     const customSingleValue = ({ data }) => (
         <div className="flex items-center">
             <Flag code={data.countryCode} style={{ width: 20, height: 15, marginRight: 8 }} />
@@ -27,7 +24,6 @@ const LanguageSwitcher = () => {
         </div>
     );
 
-    // Custom component for rendering each option in the dropdown
     const customOption = (props) => {
         const { data, innerRef, innerProps } = props;
         return (

@@ -6,7 +6,7 @@ const PrivateRoute = ({ children, requiredRole }) => {
     const { user, role } = useAuth();
     const location = useLocation();
     console.log(user);
-    console.log(role);
+    console.log("role ", role);
 
     // If user is not authenticated, redirect to login
     if (!user) {
@@ -25,9 +25,9 @@ const PrivateRoute = ({ children, requiredRole }) => {
     };
 
     // Check if user has required role
-    const hasPermission = Array.isArray(requiredRole)
-        ? requiredRole.some(role => roleHierarchy[role?.toLowerCase()]?.includes(role?.toLowerCase()))
-        : roleHierarchy[role?.toLowerCase()]?.includes(requiredRole);
+    const hasPermission = roleHierarchy[role?.toLowerCase()].includes(requiredRole);
+    console.log("requiredRole: ", requiredRole);
+    console.log("hasPermission: ", hasPermission);
 
     if (!hasPermission) {
         // Get appropriate redirect path based on role

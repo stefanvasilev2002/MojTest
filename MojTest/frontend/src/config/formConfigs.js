@@ -1,4 +1,3 @@
-import { useTranslation } from "react-i18next";
 const formConfigs = {
     Answer: {
         fields: [
@@ -8,7 +7,7 @@ const formConfigs = {
                 name: "question",
                 label: "Question",
                 type: "select",
-                relation: "Question", // Indicates a relation to another entity
+                relation: "Question",
             },
         ],
     },

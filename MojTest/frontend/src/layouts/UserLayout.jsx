@@ -1,4 +1,3 @@
-// src/layouts/UserLayout.jsx
 import React from 'react';
 import { useAuth } from '../context/AuthContext';
 import AuthenticatedNavBarTeacher from "../components/navbar/AuthenticatedNavBarTeacher.jsx";

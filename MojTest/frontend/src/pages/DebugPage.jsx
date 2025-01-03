@@ -1,4 +1,3 @@
-// src/pages/DebugPage.jsx
 import React, { useState } from 'react';
 import ImageUploader from "../components/ImageUploader.jsx";
 import { useFormik } from 'formik';

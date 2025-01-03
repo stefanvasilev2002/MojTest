@@ -1,10 +1,9 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { useTranslation } from 'react-i18next'; // Import useTranslation hook
-import PublicNavBarTeacher from "../components/navbar/PublicNavBarTeacher.jsx";
+import { useTranslation } from 'react-i18next';
 
 const AboutTeacherPage = () => {
-    const { t } = useTranslation('common');  // Use 'common' namespace for translations
+    const { t } = useTranslation('common');
 
     return (
         <div>

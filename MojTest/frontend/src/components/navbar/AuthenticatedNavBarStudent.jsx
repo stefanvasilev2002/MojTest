@@ -1,9 +1,6 @@
-// src/components/AuthenticatedNavBarStudent.jsx
 import React from "react";
-import { Link } from "react-router-dom";
-import { useAuth} from "../../context/AuthContext.jsx";
 import NavBar from "./NavBar.jsx";
-import {useTranslation} from "react-i18next";  // Reuse the generic NavBar component
+import {useTranslation} from "react-i18next";
 
 const AuthenticatedNavBarStudent = () => {
     const { t } = useTranslation("common");

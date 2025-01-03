@@ -1,4 +1,3 @@
-// src/constants/questionTypes.js
 export const questionTypeLabels = {
     "MULTIPLE_CHOICE": "questionTypes.MULTIPLE_CHOICE",
     "TRUE_FALSE": "questionTypes.TRUE_FALSE",

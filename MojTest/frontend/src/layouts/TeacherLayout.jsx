@@ -1,8 +1,7 @@
-// src/layouts/TeacherLayout.jsx
 import React from 'react';
 import { useAuth } from '../context/AuthContext';
-import AuthenticatedNavBarTeacher from "../components/navbar/AuthenticatedNavBarTeacher.jsx";// Teacher Authenticated NavBar
-import PublicNavBarTeacher from "../components/navbar/PublicNavBarTeacher.jsx"; // Teacher Public NavBar
+import AuthenticatedNavBarTeacher from "../components/navbar/AuthenticatedNavBarTeacher.jsx";
+import PublicNavBarTeacher from "../components/navbar/PublicNavBarTeacher.jsx";
 import { Outlet } from 'react-router-dom';
 
 const TeacherLayout = () => {

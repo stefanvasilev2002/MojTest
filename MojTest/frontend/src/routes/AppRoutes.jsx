@@ -5,7 +5,7 @@ import { AuthProvider } from '../context/AuthContext';  // Import AuthProvider
 import LandingPage from "../pages/LandingPage.jsx";  // Your landing page component
 import PublicRoute from './PublicRoute';  // Updated PublicRoute
 import PrivateRoute from './PrivateRoute';  // Updated PrivateRoute
-import AboutTeacherPage from '../pages/AboutTeacherPage';  // Your AboutTeacherPage
+import AboutTeacherPage from '../pages/teacher/AboutTeacherPage.jsx';  // Your AboutTeacherPage
 import AboutStudentPage from '../pages/student/AboutStudentPage.jsx';  // Your AboutStudentPage
 import TeacherDashboard from '../pages/teacher/TeacherDashboard.jsx';  // Your TeacherDashboard
 import StudentDashboard from '../pages/student/StudentDashboard.jsx';  // Your StudentDashboard
@@ -21,10 +21,6 @@ import MetadataList from "../components/crud/MetadataList.jsx";
 import AnswersList from "../components/crud/AnswersList.jsx";
 import TestList from "../components/crud/TestList.jsx";
 import QuestionList from "../components/crud/QuestionList.jsx";
-
-// import StudentAnswersList from "../components/crud/StudentAnswersList.jsx";
-// import StudentTestList from "../components/crud/StudentTestList.jsx";
-// import TestQuestionList from "../components/crud/TestQuestionList.jsx";
 import UsersList from "../components/crud/UsersList.jsx";
 import StudentList from "../components/crud/StudentList.jsx";
 import TeacherList from "../components/crud/TeacherList.jsx";
@@ -38,7 +34,6 @@ import TestForm from "../components/crud/TestForm.jsx";
 import TakeTestPage from "../pages/student/TakeTestPage.jsx";
 import TestResultsPage from "../pages/student/TestResultsPage.jsx";
 import CreateTestPage from "../pages/teacher/CreateTestPage.jsx";
-import CreateQuestionPage from "../pages/teacher/CreateQuestionsPage.jsx";
 import EditQuestionPage from "../pages/teacher/EditQuestionPage.jsx";
 import EditTestPage from "../pages/teacher/EditTestPage.jsx";
 import QuestionsPage from "../pages/teacher/QuestionsPage.jsx";
