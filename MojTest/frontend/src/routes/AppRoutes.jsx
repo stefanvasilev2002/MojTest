@@ -72,6 +72,8 @@ const AppRoutes = () => {
                         <Route path="test/:testId/questions/:questionId/edit" element={<EditQuestionPage />} />
                         <Route path="create-question" element={<CreateFutureQuestion/>} />
                         <Route path="questions" element={<AllQuestionsPage />} />
+                        <Route path="/teacher-dashboard/questions/:questionId/edit" element={<EditQuestionPage />} />
+
                     </Route>
 
 

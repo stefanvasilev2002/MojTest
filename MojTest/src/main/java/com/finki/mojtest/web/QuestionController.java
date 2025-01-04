@@ -9,11 +9,15 @@ import com.finki.mojtest.model.mappers.QuestionMapper;
 import com.finki.mojtest.model.mappers.TestMapper;
 import com.finki.mojtest.service.QuestionService;
 import com.finki.mojtest.service.TestService;
+import jakarta.persistence.EntityNotFoundException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
@@ -85,10 +89,28 @@ public class QuestionController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<QuestionDTO> updateQuestion(@PathVariable Long id, @RequestBody QuestionDTO questionDTO) {
-        Question updatedQuestion = questionService.updateQuestion(id, questionDTO);
-
-        return new ResponseEntity<>(QuestionMapper.toDTO(updatedQuestion), HttpStatus.OK);
+    public ResponseEntity<?> updateQuestion(@PathVariable Long id, @RequestBody QuestionDTO questionDTO) {
+        try {
+            Question updatedQuestion = questionService.updateQuestion(id, questionDTO);
+            return new ResponseEntity<>(QuestionMapper.toDTO(updatedQuestion), HttpStatus.OK);
+        } catch (IllegalStateException e) {
+            // Handle the specific error for student answers constraint
+            Map<String, String> response = new HashMap<>();
+            response.put("error", e.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+        } catch (EntityNotFoundException e) {
+            Map<String, String> response = new HashMap<>();
+            response.put("error", e.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+        } catch (DataIntegrityViolationException e) {
+            Map<String, String> response = new HashMap<>();
+            response.put("error", "Cannot modify question due to existing references");
+            return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+        } catch (Exception e) {
+            Map<String, String> response = new HashMap<>();
+            response.put("error", "An unexpected error occurred");
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @DeleteMapping("/{id}")

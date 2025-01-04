@@ -14,6 +14,7 @@ import com.finki.mojtest.service.QuestionService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -99,55 +100,66 @@ public class QuestionServiceImpl implements QuestionService {
     @Override
     @Transactional
     public Question updateQuestion(Long id, QuestionDTO questionDTO) {
-        Question existingQuestion = getQuestionById(id);
+        try {
+            Question existingQuestion = getQuestionById(id);
 
-        // Resolve related entities
-        Teacher creator = teacherRepository.findById(questionDTO.getCreatorId())
-                .orElseThrow(() -> new EntityNotFoundException("Teacher not found"));
+            // Resolve related entities
+            Teacher creator = teacherRepository.findById(questionDTO.getCreatorId())
+                    .orElseThrow(() -> new EntityNotFoundException("Teacher not found"));
 
-        List<Test> tests = (questionDTO.getTestIds() != null && !questionDTO.getTestIds().isEmpty()) ?
-                testRepository.findAllById(questionDTO.getTestIds()) :
-                Collections.emptyList();
+            List<Test> tests = (questionDTO.getTestIds() != null && !questionDTO.getTestIds().isEmpty()) ?
+                    testRepository.findAllById(questionDTO.getTestIds()) :
+                    Collections.emptyList();
 
-        List<Metadata> metadata = new ArrayList<>();
-        if (questionDTO.getMetadata() != null && !questionDTO.getMetadata().isEmpty()) {
-            for (MetadataDTO metadataDTO : questionDTO.getMetadata()) {
-                Metadata existingMetadata = metadataRepository.findByKeyAndValue(metadataDTO.getKey(), metadataDTO.getValue())
-                        .orElse(null);
+            List<Metadata> metadata = new ArrayList<>();
+            if (questionDTO.getMetadata() != null && !questionDTO.getMetadata().isEmpty()) {
+                for (MetadataDTO metadataDTO : questionDTO.getMetadata()) {
+                    Metadata existingMetadata = metadataRepository.findByKeyAndValue(metadataDTO.getKey(), metadataDTO.getValue())
+                            .orElse(null);
 
-                if (existingMetadata != null) {
-                    metadata.add(existingMetadata);
-                } else {
-                    Metadata newMetadata = new Metadata();
-                    newMetadata.setKey(metadataDTO.getKey());
-                    newMetadata.setValue(metadataDTO.getValue());
-                    metadata.add(metadataRepository.save(newMetadata));
+                    if (existingMetadata != null) {
+                        metadata.add(existingMetadata);
+                    } else {
+                        Metadata newMetadata = new Metadata();
+                        newMetadata.setKey(metadataDTO.getKey());
+                        newMetadata.setValue(metadataDTO.getValue());
+                        metadata.add(metadataRepository.save(newMetadata));
+                    }
                 }
             }
+
+            QuestionMapper.updateFromDTO(existingQuestion, questionDTO, creator, tests, metadata, new Date());
+            existingQuestion.setDescription(questionDTO.getDescription());
+
+            if (questionDTO.getAnswers() != null) {
+                try {
+                    // Remove old answers
+                    answerRepository.deleteAll(existingQuestion.getAnswers());
+
+                    // Create new answers
+                    List<Answer> newAnswers = questionDTO.getAnswers().stream()
+                            .map(answerDTO -> {
+                                Answer answer = new Answer();
+                                answer.setAnswerText(answerDTO.getAnswerText());
+                                answer.setCorrect(answerDTO.isCorrect());
+                                answer.setQuestion(existingQuestion);
+                                return answer;
+                            })
+                            .collect(Collectors.toList());
+
+                    existingQuestion.setAnswers(answerRepository.saveAll(newAnswers));
+                } catch (DataIntegrityViolationException e) {
+                    throw new IllegalStateException("Cannot modify answers because they are referenced by student answers", e);
+                }
+            }
+
+            return questionRepository.save(existingQuestion);
+        } catch (DataIntegrityViolationException e) {
+            if (e.getMessage().contains("student_answer")) {
+                throw new IllegalStateException("Cannot modify question because it has been used in student answers", e);
+            }
+            throw e;
         }
-
-        QuestionMapper.updateFromDTO(existingQuestion, questionDTO, creator, tests, metadata, new Date());
-        existingQuestion.setDescription(questionDTO.getDescription());
-
-        if (questionDTO.getAnswers() != null) {
-            // Remove old answers
-            answerRepository.deleteAll(existingQuestion.getAnswers());
-
-            // Create new answers
-            List<Answer> newAnswers = questionDTO.getAnswers().stream()
-                    .map(answerDTO -> {
-                        Answer answer = new Answer();
-                        answer.setAnswerText(answerDTO.getAnswerText());
-                        answer.setCorrect(answerDTO.isCorrect());
-                        answer.setQuestion(existingQuestion);
-                        return answer;
-                    })
-                    .collect(Collectors.toList());
-
-            existingQuestion.setAnswers(answerRepository.saveAll(newAnswers));
-        }
-
-        return questionRepository.save(existingQuestion);
     }
 
 

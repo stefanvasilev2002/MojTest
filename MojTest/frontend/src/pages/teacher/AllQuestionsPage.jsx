@@ -64,7 +64,7 @@ const AllQuestionsPage = () => {
     };
 
     const handleEditQuestion = (questionId) => {
-        navigate(`/teacher-dashboard/edit-question/${questionId}`);
+        navigate(`/teacher-dashboard/questions/${questionId}/edit`);
     };
 
     const getQuestionTypeLabel = (type) => {
