@@ -14,12 +14,10 @@ const StudentDashboard = () => {
     const { user } = useAuth();
     const navigate = useNavigate();
     const [filters, setFilters] = useState({
-        subject: '',
-        difficulty: '',
-        partOfYear: '',
-        topic: '',
-        testType: '',
-        duration: ''
+        'Subject': '',
+        'Difficulty': '',
+        'Part of Year': '',
+        'Test Type': ''
     });
 
     useEffect(() => {
@@ -115,10 +113,10 @@ const StudentDashboard = () => {
         }
     };
 
-    const handleFilterChange = (filterName, value) => {
+    const handleFilterChange = (key, value) => {
         setFilters(prev => ({
             ...prev,
-            [filterName]: value
+            [key]: value
         }));
     };
 
@@ -133,10 +131,9 @@ const StudentDashboard = () => {
             return Object.entries(filters).every(([key, value]) => {
                 if (!value) return true;
 
-                return test.metadata?.some(meta =>
-                    meta.key.toLowerCase() === key.toLowerCase() &&
-                    meta.value === value
-                );
+                return test.metadata?.some(meta => {
+                    return meta.key === key && meta.value === value;
+                });
             });
         });
     }, [tests, filters, user.grade]);
@@ -194,9 +191,8 @@ const StudentDashboard = () => {
                                         {test.metadata?.map(meta => (
                                             <span
                                                 key={`${meta.key}-${meta.value}`}
-                                                className="inline-block px-2 py-1 text-xs font-semibold bg-blue-100 text-blue-800 rounded"
-                                            >
-                                                {meta.key}: {meta.value}
+                                                className="inline-block px-2 py-1 text-xs font-semibold bg-blue-100 text-blue-800 rounded">
+                                                {t(`metadata.${meta.key}`)}: {getTranslatedMetadata(meta.key, meta.value, i18n.language)}
                                             </span>
                                         ))}
                                     </div>

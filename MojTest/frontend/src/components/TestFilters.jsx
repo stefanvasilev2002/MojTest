@@ -5,7 +5,16 @@ import {getTranslatedMetadata} from "../config/translatedMetadata.js";
 
 const TestFilters = ({ filters, onFilterChange }) => {
     const { t, i18n } = useTranslation("common");
+    const keyMapping = {
+        'subject': 'Subject',
+        'difficulty': 'Difficulty',
+        'partOfYear': 'Part of Year',
+        'testType': 'Test Type'
+    };
 
+    const handleFilterChange = (filterName, value) => {
+        onFilterChange(keyMapping[filterName] || filterName, value);
+    };
     return (
         <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200">
             <h2 className="text-xl font-semibold text-gray-800 mb-6">{t('filters.title')}</h2>
@@ -16,8 +25,8 @@ const TestFilters = ({ filters, onFilterChange }) => {
                     </label>
                     <select
                         className="w-full border border-gray-300 rounded-lg shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500 hover:border-blue-400"
-                        value={filters.subject || ''}
-                        onChange={(e) => onFilterChange('subject', e.target.value)}
+                        value={filters['Subject'] || ''}  // Changed from filters.subject
+                        onChange={(e) => onFilterChange('Subject', e.target.value)}
                     >
                         <option value="">{t('filters.allSubjects')}</option>
                         {predefinedKeyValues.Subject?.map(subject => (
@@ -34,8 +43,8 @@ const TestFilters = ({ filters, onFilterChange }) => {
                     </label>
                     <select
                         className="w-full border border-gray-300 rounded-lg shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500 hover:border-blue-400"
-                        value={filters.difficulty || ''}
-                        onChange={(e) => onFilterChange('difficulty', e.target.value)}
+                        value={filters['Difficulty'] || ''}  // Changed from filters.difficulty
+                        onChange={(e) => onFilterChange('Difficulty', e.target.value)}
                     >
                         <option value="">{t('filters.allDifficulties')}</option>
                         {predefinedKeyValues.Difficulty?.map(level => (
@@ -52,8 +61,8 @@ const TestFilters = ({ filters, onFilterChange }) => {
                     </label>
                     <select
                         className="w-full border border-gray-300 rounded-lg shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500 hover:border-blue-400"
-                        value={filters.partOfYear || ''}
-                        onChange={(e) => onFilterChange('partOfYear', e.target.value)}
+                        value={filters['Part of Year'] || ''}  // Changed from filters.partOfYear
+                        onChange={(e) => onFilterChange('Part of Year', e.target.value)}
                     >
                         <option value="">{t('filters.allPeriods')}</option>
                         {predefinedKeyValues['Part of Year']?.map(period => (
@@ -70,8 +79,8 @@ const TestFilters = ({ filters, onFilterChange }) => {
                     </label>
                     <select
                         className="w-full border border-gray-300 rounded-lg shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500 hover:border-blue-400"
-                        value={filters.testType || ''}
-                        onChange={(e) => onFilterChange('testType', e.target.value)}
+                        value={filters['Test Type'] || ''}  // Changed from filters.testType
+                        onChange={(e) => onFilterChange('Test Type', e.target.value)}
                     >
                         <option value="">{t('filters.allTypes')}</option>
                         {predefinedKeyValues['Test Type']?.map(type => (
