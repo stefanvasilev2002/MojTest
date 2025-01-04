@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import testQuestionService from '../../services/testQuestionService';
 import DeleteQuestionModal from "../../components/teacher/DeleteQuestionModal.jsx";
 
-const QuestionsPage = () => {
+const TestQuestionsPage = () => {
     const { t } = useTranslation("common");
     const { testId } = useParams();
     const navigate = useNavigate();
@@ -129,18 +129,6 @@ const QuestionsPage = () => {
 
     const handleEditQuestion = (questionId) => {
         navigate(`/teacher-dashboard/test/${testId}/questions/${questionId}/edit`);
-    };
-
-    const handleDeleteQuestion = async (questionId) => {
-        if (window.confirm(t('questionsPage.questionDetails.actions.deleteConfirm'))) {
-            try {
-                await testQuestionService.deleteQuestion(questionId);
-                fetchTestAndQuestions();
-            } catch (error) {
-                setError(error.message);
-                console.error('Error deleting question:', error);
-            }
-        }
     };
 
     const getQuestionTypeLabel = (type) => {
@@ -283,4 +271,4 @@ const QuestionsPage = () => {
     );
 };
 
-export default QuestionsPage;
+export default TestQuestionsPage;

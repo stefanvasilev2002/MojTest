@@ -270,7 +270,23 @@
     "previous": "Претходно",
     "next": "Следно"
   },
+  "questions": {
+    "myQuestions": "Мои Прашања",
+    "allQuestions": "Сите Прашања",
+    "createNew": "Креирај Ново Прашање",
+    "createdBy": "Креирано од",
+    "type": "Тип",
+    "difficulty": "Тежина",
+    "loading": "Вчитување на прашања...",
+    "error": "Грешка при вчитување на прашања:",
+    "noMyQuestionsAvailable": "Сè уште немате креирано прашања",
+    "noQuestionsAvailable": "Нема достапни прашања",
+    "actions": {
+      "edit": "Измени"
+    }
+  },
   "dashboard": {
+    "questions": "Прашања",
     "createNewQuestion": "Креирај Ново Прашање",
     "myTests": "Мои Тестови",
     "allTests": "Сите Тестови",

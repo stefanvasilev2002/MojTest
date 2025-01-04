@@ -34,6 +34,7 @@
     "login": "Identifikimi"
   },
   "dashboard": {
+    "questions": "Pyetjet",
     "myTests": "Testet e Mia",
     "allTests": "Të Gjitha Testet",
     "createNewTest": "Krijo Test të Ri",
@@ -120,6 +121,21 @@
     "error": {
       "title": "Gabim",
       "creationFailed": "Gabim gjatë krijimit të pyetjes:"
+    }
+  },
+  "questions": {
+    "myQuestions": "Pyetjet e Mia",
+    "allQuestions": "Të Gjitha Pyetjet",
+    "createNew": "Krijo Pyetje të Re",
+    "createdBy": "Krijuar nga",
+    "type": "Lloji",
+    "difficulty": "Vështirësia",
+    "loading": "Duke ngarkuar pyetjet...",
+    "error": "Gabim në ngarkimin e pyetjeve:",
+    "noMyQuestionsAvailable": "Nuk keni krijuar ende asnjë pyetje",
+    "noQuestionsAvailable": "Nuk ka pyetje në dispozicion",
+    "actions": {
+      "edit": "Ndrysho"
     }
   },
   "filters": {

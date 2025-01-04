@@ -36,11 +36,12 @@ import TestResultsPage from "../pages/student/TestResultsPage.jsx";
 import CreateTestPage from "../pages/teacher/CreateTestPage.jsx";
 import EditQuestionPage from "../pages/teacher/EditQuestionPage.jsx";
 import EditTestPage from "../pages/teacher/EditTestPage.jsx";
-import QuestionsPage from "../pages/teacher/QuestionsPage.jsx";
+import TestQuestionsPage from "../pages/teacher/QuestionsPage.jsx";
 import QuestionDetails from "../components/crud/QuestionDetails.jsx";
 import TestDetailsPage from "../pages/student/TestDetailsPage.jsx";
 import QuestionManagerPage from "../pages/teacher/QuestionManagerPage.jsx";
 import CreateFutureQuestion from "../pages/teacher/CreateFutureQuestion.jsx";
+import AllQuestionsPage from "../pages/teacher/AllQuestionsPage.jsx";
 const AppRoutes = () => {
     return (
         <AuthProvider>
@@ -59,17 +60,18 @@ const AppRoutes = () => {
 
                     {/* Teacher Routes */}
                     <Route path="/teacher-dashboard" element={
-                        <PrivateRoute requiredRoless={["teacher", "admin"]}>
+                        <PrivateRoute requiredRoles={["teacher", "admin"]}>
                             <TeacherLayout />
                         </PrivateRoute>
                     }>
                         <Route index element={<TeacherDashboard />} />
                         <Route path="create-test" element={<CreateTestPage />} />
                         <Route path="edit-test/:id" element={<EditTestPage />} />
-                        <Route path="test/:testId/questions" element={<QuestionsPage />} />
+                        <Route path="test/:testId/questions" element={<TestQuestionsPage />} />
                         <Route path="test/:testId/questions/create" element={<QuestionManagerPage  />} />
                         <Route path="test/:testId/questions/:questionId/edit" element={<EditQuestionPage />} />
                         <Route path="create-question" element={<CreateFutureQuestion/>} />
+                        <Route path="questions" element={<AllQuestionsPage />} />
                     </Route>
 
 
@@ -97,14 +99,14 @@ const AppRoutes = () => {
                         <Route path="/test-results" element={<TestResultsPage/>}/></Route>
 
                     <Route path="/test-details" element={
-                        <PrivateRoute requiredRoless={["student", "admin"]}>
+                        <PrivateRoute requiredRoles={["student", "admin"]}>
                             <StudentLayout/>
                         </PrivateRoute>
                     }>
                         <Route path="/test-details" element={<TestDetailsPage/>}/></Route>
                     {/* Admin Routes */}
                     <Route path="/crud/hub" element={
-                        <PrivateRoute requiredRoless="admin">
+                        <PrivateRoute requiredRoles="admin">
                             <CrudLayout>
                                 <CrudHubPage />
                             </CrudLayout>
@@ -114,7 +116,7 @@ const AppRoutes = () => {
                     {/* Protected CRUD Routes */}
                     {/* Metadata Routes */}
                     <Route path="/crud/metadata" element={
-                        <PrivateRoute requiredRoless="admin">
+                        <PrivateRoute requiredRoles="admin">
                             <CrudLayout><MetadataList /></CrudLayout>
                         </PrivateRoute>
                     } />

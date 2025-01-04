@@ -29,6 +29,7 @@
     "next": "Next"
   },
   "dashboard": {
+    "questions": "Questions",
     "createNewQuestion": "Create New Question",
     "myTests": "My Tests",
     "allTests": "All Tests",
@@ -251,6 +252,21 @@
         "delete": "Delete",
         "deleteConfirm": "Are you sure you want to delete this question?"
       }
+    }
+  },
+  "questions": {
+    "myQuestions": "My Questions",
+    "allQuestions": "All Questions",
+    "createNew": "Create New Question",
+    "createdBy": "Created by",
+    "type": "Type",
+    "difficulty": "Difficulty",
+    "loading": "Loading questions...",
+    "error": "Error loading questions:",
+    "noMyQuestionsAvailable": "You haven't created any questions yet",
+    "noQuestionsAvailable": "No questions available",
+    "actions": {
+      "edit": "Edit"
     }
   },
   "filters": {
