@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { useAuth } from '../../context/authContext';
+import { useAuth } from '../../context/AuthContext.jsx';
 import testQuestionService from '../../services/testQuestionService';
 import QuestionForm from "../../components/teacher/QuestionForm.jsx";
 
