@@ -64,48 +64,58 @@ const AppRoutes = () => {
                             <TeacherLayout />
                         </PrivateRoute>
                     }>
+                        {/* Use index for the dashboard */}
                         <Route index element={<TeacherDashboard />} />
+                        {/* Other teacher routes */}
                         <Route path="create-test" element={<CreateTestPage />} />
                         <Route path="edit-test/:id" element={<EditTestPage />} />
                         <Route path="test/:testId/questions" element={<TestQuestionsPage />} />
-                        <Route path="test/:testId/questions/create" element={<QuestionManagerPage  />} />
+                        <Route path="test/:testId/questions/create" element={<QuestionManagerPage />} />
                         <Route path="test/:testId/questions/:questionId/edit" element={<EditQuestionPage />} />
-                        <Route path="create-question" element={<CreateFutureQuestion/>} />
+                        <Route path="create-question" element={<CreateFutureQuestion />} />
                         <Route path="questions" element={<AllQuestionsPage />} />
-                        <Route path="/teacher-dashboard/questions/:questionId/edit" element={<EditQuestionPage />} />
-
+                        {/* Remove the leading /teacher-dashboard from this path */}
+                        <Route path="questions/:questionId/edit" element={<EditQuestionPage />} />
                     </Route>
 
 
+                    // Change this section in your AppRoutes.jsx
                     {/* Student Routes */}
                     <Route path="/student-dashboard" element={
                         <PrivateRoute requiredRoles={["student", "admin"]}>
-                            <StudentLayout />  {/* Renders the layout */}
+                            <StudentLayout />
                         </PrivateRoute>
                     }>
-                        <Route path="/student-dashboard" element={<StudentDashboard />} />  {/* Student dashboard as a child route */}
+                        {/* Remove the duplicate path and use index instead */}
+                        <Route index element={<StudentDashboard />} />
                     </Route>
 
                     <Route path="/take-test/:studentTestId" element={
-                            <PrivateRoute requiredRoles={["student", "admin"]}>
-                                <StudentLayout/>
-                            </PrivateRoute>
-                        }>
-                        <Route path="/take-test/:studentTestId" element={<TakeTestPage/>}/></Route>
+                        <PrivateRoute requiredRoles={["student", "admin"]}>
+                            <StudentLayout />
+                        </PrivateRoute>
+                    }>
+                        {/* Use relative path here */}
+                        <Route index element={<TakeTestPage />} />
+                    </Route>
 
                     <Route path="/test-results" element={
                         <PrivateRoute requiredRoles={["student", "admin"]}>
-                            <StudentLayout/>
+                            <StudentLayout />
                         </PrivateRoute>
                     }>
-                        <Route path="/test-results" element={<TestResultsPage/>}/></Route>
+                        {/* Use relative path here */}
+                        <Route index element={<TestResultsPage />} />
+                    </Route>
 
                     <Route path="/test-details" element={
                         <PrivateRoute requiredRoles={["student", "admin"]}>
-                            <StudentLayout/>
+                            <StudentLayout />
                         </PrivateRoute>
                     }>
-                        <Route path="/test-details" element={<TestDetailsPage/>}/></Route>
+                        {/* Use relative path here */}
+                        <Route index element={<TestDetailsPage />} />
+                    </Route>
                     {/* Admin Routes */}
                     <Route path="/crud/hub" element={
                         <PrivateRoute requiredRoles="admin">

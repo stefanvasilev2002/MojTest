@@ -12,13 +12,13 @@ const TestAttempts = ({ testId, onClose }) => {
     const [totalPages, setTotalPages] = useState(0);
     const { user } = useAuth();
     const navigate = useNavigate();
-    const { t } = useTranslation();
+    const { t } = useTranslation("common");
 
     const fetchAttempts = async (pageNum) => {
         try {
             setLoading(true);
             const response = await fetch(
-                `${endpoints.studentTests.getAttempts(testId, user.id)}?page=${pageNum}&size=5`,
+                `${endpoints.studentTests.getAttempts(testId)}?studentId=${user.id}&page=${pageNum}&size=5`,
                 {
                     headers: {
                         'Authorization': `Bearer ${user.token}`,

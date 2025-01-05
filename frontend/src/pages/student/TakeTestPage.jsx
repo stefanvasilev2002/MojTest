@@ -13,6 +13,7 @@ import ExitConfirmationModal from "../../components/student/ExitConfirmationModa
 import QuestionNavigation from "../../components/student/QuestionNavigation.jsx";
 import SubmitConfirmationModal from "../../components/student/SubmitConfirmationModal.jsx";
 import { useTranslation } from 'react-i18next';
+import {endpoints} from "../../config/api.config.jsx";
 const TakeTestPage = () => {
     const { studentTestId } = useParams();
     const { t } = useTranslation("common");
@@ -110,7 +111,7 @@ const TakeTestPage = () => {
 
     const abandonTest = async () => {
         try {
-            const response = await fetch(`http://localhost:8080/api/student-tests/cancel/${studentTestId}`, {
+            const response = await fetch(endpoints.studentTests.cancel(studentTestId), {
                 method: 'DELETE',
                 headers: {
                     'Authorization': `Bearer ${user.token}`
@@ -126,11 +127,10 @@ const TakeTestPage = () => {
             alert('Failed to cancel test: ' + err.message);
         }
     };
-
     // Data fetching and answer handling
     const fetchTestData = async () => {
         try {
-            const response = await fetch(`http://localhost:8080/api/student-tests/${studentTestId}/take`, {
+            const response = await fetch(endpoints.studentTests.take(studentTestId), {
                 headers: {
                     'Authorization': `Bearer ${user.token}`,
                 },
@@ -155,7 +155,6 @@ const TakeTestPage = () => {
             setLoading(false);
         }
     };
-
     const handleAnswerChange = (questionId, answer) => {
         setAnswers({ ...answers, [questionId]: answer });
     };
@@ -216,7 +215,7 @@ const TakeTestPage = () => {
                 }
             }).filter(answer => answer !== null);
 
-            const response = await fetch(`http://localhost:8080/api/student-tests/${studentTestId}/submit`, {
+            const response = await fetch(endpoints.studentTests.submit(studentTestId), {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${user.token}`,
@@ -237,7 +236,9 @@ const TakeTestPage = () => {
             console.error('Error submitting test:', err);
             alert(err.message);
         }
-    };    if (loading) {
+    };
+
+    if (loading) {
         return (
             <div className="min-h-screen bg-gray-50 flex items-center justify-center">
                 <p className="text-lg">Loading test...</p>
@@ -316,7 +317,7 @@ const TakeTestPage = () => {
                                 <p className="text-lg mb-4">{currentQuestion.description}</p>
                                 {currentQuestion.imageId && (
                                     <img
-                                        src={`http://localhost:8080/api/files/download/${currentQuestion.imageId}/inline`}
+                                        src={endpoints.files.download(currentQuestion.imageId)}
                                         alt={t('takeTest.questionImage')}
                                         className="mb-4 max-w-full h-auto"
                                         onError={(e) => console.error(t('takeTest.error.imageLoad'), e)}

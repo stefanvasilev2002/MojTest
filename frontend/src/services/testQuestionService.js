@@ -1,64 +1,81 @@
-// src/services/testQuestionService.js
 import axios from 'axios';
+import { endpoints } from '../config/api.config';
 
-const BASE_URL = 'http://localhost:8080/api';
+// Create axios instance with default config
+const createAuthenticatedAxios = (token) => {
+    return axios.create({
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+        }
+    });
+};
 
 const testQuestionService = {
     // Question CRUD operations
-    createQuestion: async (questionDTO) => {
+    createQuestion: async (questionDTO, token) => {
         try {
-            const response = await axios.post(`${BASE_URL}/questions`, questionDTO);
+            const axiosInstance = createAuthenticatedAxios(token);
+            const response = await axiosInstance.post(endpoints.questions.create, questionDTO);
             return response.data;
         } catch (error) {
             throw new Error(error.response?.data || 'Failed to create question');
         }
     },
 
-    getQuestionById: async (id) => {
+    getQuestionById: async (id, token) => {
         try {
-            const response = await axios.get(`${BASE_URL}/questions/${id}`);
+            const axiosInstance = createAuthenticatedAxios(token);
+            const response = await axiosInstance.get(endpoints.questions.getById(id));
             return response.data;
         } catch (error) {
             throw new Error(error.response?.data || 'Failed to fetch question');
         }
     },
 
-    getAllQuestions: async () => {
+    getAllQuestions: async (token) => {
         try {
-            const response = await axios.get(`${BASE_URL}/questions`);
+            const axiosInstance = createAuthenticatedAxios(token);
+            const response = await axiosInstance.get(endpoints.questions.getAll);
             return response.data;
         } catch (error) {
             throw new Error(error.response?.data || 'Failed to fetch questions');
         }
     },
-    getAllQuestionsNotInTest: async (testId) => {
+
+    getAllQuestionsNotInTest: async (testId, token) => {
         try {
-            const response = await axios.get(`${BASE_URL}/questions/not-in-test/${testId}`);
+            const axiosInstance = createAuthenticatedAxios(token);
+            const response = await axiosInstance.get(endpoints.questions.getNotInTest(testId));
             return response.data;
         } catch (error) {
             throw new Error(error.response?.data || 'Failed to fetch questions');
         }
     },
-    updateQuestion: async (id, questionDTO) => {
+
+    updateQuestion: async (id, questionDTO, token) => {
         try {
-            const response = await axios.put(`${BASE_URL}/questions/${id}`, questionDTO);
+            const axiosInstance = createAuthenticatedAxios(token);
+            const response = await axiosInstance.put(endpoints.questions.update(id), questionDTO);
             return response.data;
         } catch (error) {
             throw new Error(error.response?.data || 'Failed to update question');
         }
     },
 
-    deleteQuestion: async (id) => {
+    deleteQuestion: async (id, token) => {
         try {
-            await axios.delete(`${BASE_URL}/questions/${id}`);
+            const axiosInstance = createAuthenticatedAxios(token);
+            await axiosInstance.delete(endpoints.questions.delete(id));
         } catch (error) {
             throw new Error(error.response?.data || 'Failed to delete question');
         }
     },
 
-    getQuestionsByTestId: async (testId) => {
+    getQuestionsByTestId: async (testId, token) => {
         try {
-            const response = await axios.get(`${BASE_URL}/questions/test/${testId}`);
+            const axiosInstance = createAuthenticatedAxios(token);
+            const response = await axiosInstance.get(endpoints.questions.getByTestId(testId));
             return response.data;
         } catch (error) {
             throw new Error(error.response?.data || 'Failed to fetch test questions');
@@ -66,68 +83,75 @@ const testQuestionService = {
     },
 
     // Answer CRUD operations
-    createAnswer: async (answerDTO) => {
+    createAnswer: async (answerDTO, token) => {
         try {
-            const response = await axios.post(`${BASE_URL}/answers`, answerDTO);
+            const axiosInstance = createAuthenticatedAxios(token);
+            const response = await axiosInstance.post(endpoints.answers.create, answerDTO);
             return response.data;
         } catch (error) {
             throw new Error(error.response?.data || 'Failed to create answer');
         }
     },
 
-    getAnswersByQuestionId: async (questionId) => {
+    getAnswersByQuestionId: async (questionId, token) => {
         try {
-            const response = await axios.get(`${BASE_URL}/answers/question/${questionId}`);
+            const axiosInstance = createAuthenticatedAxios(token);
+            const response = await axiosInstance.get(endpoints.answers.getByQuestionId(questionId));
             return response.data;
         } catch (error) {
             throw new Error(error.response?.data || 'Failed to fetch answers');
         }
     },
 
-    updateAnswer: async (id, answerDTO) => {
+    updateAnswer: async (id, answerDTO, token) => {
         try {
-            const response = await axios.put(`${BASE_URL}/answers/${id}`, answerDTO);
+            const axiosInstance = createAuthenticatedAxios(token);
+            const response = await axiosInstance.put(endpoints.answers.update(id), answerDTO);
             return response.data;
         } catch (error) {
             throw new Error(error.response?.data || 'Failed to update answer');
         }
     },
-// Add this method to your testQuestionService
-    createQuestionInTest: async (testId, questionCreateDTO) => {
+
+    deleteAnswer: async (id, token) => {
         try {
-            const response = await axios.post(`${BASE_URL}/questions/test/${testId}/create`, questionCreateDTO);
-            return response.data;
-        } catch (error) {
-            throw new Error(error.response?.data || 'Failed to create question in test');
-        }
-    },
-    deleteAnswer: async (id) => {
-        try {
-            await axios.delete(`${BASE_URL}/answers/${id}`);
+            const axiosInstance = createAuthenticatedAxios(token);
+            await axiosInstance.delete(endpoints.answers.delete(id));
         } catch (error) {
             throw new Error(error.response?.data || 'Failed to delete answer');
         }
     },
 
     // Test-Question Management operations
-    addQuestionToTest: async (testId, questionId) => {
+    createQuestionInTest: async (testId, questionCreateDTO, token) => {
         try {
-            const response = await axios.post(`${BASE_URL}/questions/${testId}/questions/${questionId}`);
+            const axiosInstance = createAuthenticatedAxios(token);
+            const response = await axiosInstance.post(endpoints.questions.createInTest(testId), questionCreateDTO);
+            return response.data;
+        } catch (error) {
+            throw new Error(error.response?.data || 'Failed to create question in test');
+        }
+    },
+
+    addQuestionToTest: async (testId, questionId, token) => {
+        try {
+            const axiosInstance = createAuthenticatedAxios(token);
+            const response = await axiosInstance.post(endpoints.questions.addToTest(testId, questionId));
             return response.data;
         } catch (error) {
             throw new Error(error.response?.data || 'Failed to add question to test');
         }
     },
 
-    removeQuestionFromTest: async (testId, questionId) => {
+    removeQuestionFromTest: async (testId, questionId, token) => {
         try {
-            const response = await axios.delete(`${BASE_URL}/questions/${testId}/questions/${questionId}`);
+            const axiosInstance = createAuthenticatedAxios(token);
+            const response = await axiosInstance.delete(endpoints.questions.removeFromTest(testId, questionId));
             return response.data;
         } catch (error) {
             throw new Error(error.response?.data || 'Failed to remove question from test');
         }
     }
-
 };
 
 export default testQuestionService;

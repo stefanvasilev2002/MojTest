@@ -1,8 +1,9 @@
 import TestForm from "../../components/teacher/TestForm.jsx";
-import {useNavigate, useParams} from "react-router-dom";
-import {useEffect, useState} from "react";
-import {useAuth} from "../../context/AuthContext.jsx";
+import { useNavigate, useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useAuth } from "../../context/AuthContext.jsx";
 import { useTranslation } from 'react-i18next';
+import { endpoints } from '../../config/api.config.jsx';
 
 const EditTestPage = () => {
     const { t } = useTranslation("common");
@@ -15,8 +16,14 @@ const EditTestPage = () => {
 
     useEffect(() => {
         const fetchTest = async () => {
+            if (!user?.token || !id) {
+                setError(t('editTest.invalidParams'));
+                setLoading(false);
+                return;
+            }
+
             try {
-                const response = await fetch(`http://localhost:8080/api/tests/get-test-for-teacher/${id}`, {
+                const response = await fetch(endpoints.tests.getForTeacher(id), {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${user.token}`,
@@ -24,7 +31,11 @@ const EditTestPage = () => {
                     }
                 });
 
-                if (!response.ok) throw new Error(t('editTest.fetchError'));
+                if (!response.ok) {
+                    const errorData = await response.text();
+                    throw new Error(errorData || t('editTest.fetchError'));
+                }
+
                 const data = await response.json();
 
                 const metadataMap = {};
@@ -36,18 +47,21 @@ const EditTestPage = () => {
                     ...data,
                     metadata: metadataMap
                 });
+                setError(null);
             } catch (err) {
+                console.error('Error fetching test:', err);
                 setError(err.message);
             } finally {
                 setLoading(false);
             }
         };
+
         fetchTest();
-    }, [id, user.token, t]);
+    }, [id, user?.token, t]);
 
     const handleSubmit = async (formData) => {
         try {
-            const response = await fetch(`http://localhost:8080/api/tests/update-test-from-teacher/${id}`, {
+            const response = await fetch(endpoints.tests.updateFromTeacher(id), {
                 method: 'PUT',
                 headers: {
                     'Authorization': `Bearer ${user.token}`,
@@ -56,18 +70,46 @@ const EditTestPage = () => {
                 body: JSON.stringify(formData)
             });
 
-            if (!response.ok) throw new Error(t('editTest.updateError'));
+            if (!response.ok) {
+                const errorData = await response.text();
+                throw new Error(errorData || t('editTest.updateError'));
+            }
+
             navigate('/teacher-dashboard');
         } catch (err) {
+            console.error('Error updating test:', err);
             setError(err.message);
         }
     };
 
-    if (loading) return <div className="p-4">{t('editTest.loading')}</div>;
-    if (error) return <div className="p-4 text-red-600">{t('editTest.error')}{error}</div>;
+    if (loading) {
+        return (
+            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+                <div className="text-lg">{t('editTest.loading')}</div>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="min-h-screen bg-gray-50 p-4">
+                <div className="max-w-4xl mx-auto">
+                    <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+                        {t('editTest.error')} {error}
+                    </div>
+                    <button
+                        onClick={() => navigate('/teacher-dashboard')}
+                        className="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+                    >
+                        {t('common.backToDashboard')}
+                    </button>
+                </div>
+            </div>
+        );
+    }
 
     return (
-        <div className="p-6">
+        <div className="min-h-screen bg-gray-50 p-6">
             <div className="max-w-4xl mx-auto">
                 <h1 className="text-3xl font-bold text-blue-600 mb-8">
                     {t('editTest.title')}
@@ -76,7 +118,7 @@ const EditTestPage = () => {
                     initialData={test}
                     onSubmit={handleSubmit}
                     isEditing={true}
-                    userId={user.id}
+                    userId={user?.id}
                     mode='edit'
                 />
             </div>

@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import QuestionForm from '../../components/teacher/QuestionForm';
 import { useAuth } from '../../context/AuthContext';
+import {endpoints} from "../../config/api.config.jsx";
 
 
 const CreateFutureQuestion = () => {
@@ -17,7 +18,7 @@ const CreateFutureQuestion = () => {
         setError(null);
 
         try {
-            const response = await fetch('http://localhost:8080/api/questions/create', {
+            const response = await fetch(endpoints.questions.create, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${user.token}`,
@@ -31,10 +32,9 @@ const CreateFutureQuestion = () => {
 
             if (!response.ok) {
                 const errorData = await response.json();
-                throw new Error(errorData.message || 'Failed to create question');
+                throw new Error(errorData.message || t('questionCreation.error'));
             }
 
-            // Navigate back to dashboard with success message
             navigate('/teacher-dashboard', {
                 state: {
                     notification: {
@@ -53,7 +53,6 @@ const CreateFutureQuestion = () => {
             setLoading(false);
         }
     };
-
     return (
         <div className="p-6">
             <div className="max-w-4xl mx-auto">

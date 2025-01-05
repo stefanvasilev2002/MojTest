@@ -4,6 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useTranslation } from 'react-i18next';
 import testQuestionService from '../../services/testQuestionService';
 import DeleteQuestionModal from "../../components/teacher/DeleteQuestionModal.jsx";
+import {endpoints} from "../../config/api.config.jsx";
 
 const TestQuestionsPage = () => {
     const { t } = useTranslation("common");
@@ -38,7 +39,7 @@ const TestQuestionsPage = () => {
     const handleDeleteConfirm = async () => {
         if (questionToDelete) {
             try {
-                await testQuestionService.deleteQuestion(questionToDelete.id);
+                await testQuestionService.deleteQuestion(questionToDelete.id, user.token);
                 setDeleteModalOpen(false);
                 setQuestionToDelete(null);
                 fetchTestAndQuestions();
@@ -47,6 +48,7 @@ const TestQuestionsPage = () => {
             }
         }
     };
+
     const handlePageChange = (pageNumber) => {
         setCurrentPage(pageNumber);
     };
@@ -54,16 +56,22 @@ const TestQuestionsPage = () => {
     const fetchTestAndQuestions = async () => {
         try {
             setLoading(true);
-            const testData = await fetch(`http://localhost:8080/api/tests/${testId}`, {
+            const testData = await fetch(endpoints.tests.getById(testId), {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${user.token}`,
                     'Content-Type': 'application/json'
                 },
             });
+
+            if (!testData.ok) {
+                throw new Error('Failed to fetch test data');
+            }
+
             setTest(await testData.json());
 
-            const questionsData = await testQuestionService.getQuestionsByTestId(testId);
+            // Use the service with token
+            const questionsData = await testQuestionService.getQuestionsByTestId(testId, user.token);
             setQuestions(questionsData);
             setError(null);
         } catch (err) {
@@ -73,7 +81,6 @@ const TestQuestionsPage = () => {
             setLoading(false);
         }
     };
-
     const renderPagination = () => {
         const pages = [];
         for (let i = 1; i <= totalPages; i++) {

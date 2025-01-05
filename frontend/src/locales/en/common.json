@@ -9,7 +9,22 @@
     "dashboard": "Dashboard",
     "manageQuizzes": "Manage Quizzes"
   },
-
+  "testAttempts": {
+    "title": "Test Attempts",
+    "loading": "Loading attempts...",
+    "noAttempts": "No attempts found for this test.",
+    "score": "Score",
+    "takenOn": "Taken on",
+    "viewDetails": "View Details"
+  },
+  "common": {
+    "previous": "Previous",
+    "next": "Next",
+    "page": "Page",
+    "of": "of",
+    "cancel": "Cancel",
+    "delete": "Delete"
+  },
   "metadata": {
     "Subject": "Subject",
     "Part of Year": "Part of Year",
@@ -39,6 +54,12 @@
     "noTestsAvailable": "No tests available.",
     "noMyTestsAvailable": "No tests available. Create your first test!",
     "testDetails": {
+      "error": {
+        "message": "Error loading test details",
+        "fetchResults": "Error fetching test results"
+      },
+      "loading": "Loading test details...",
+      "questionImage": "Question image",
       "createdBy": "Created by: Teacher",
       "questions": "questions",
       "timeLimit": "Time limit: ",
@@ -53,10 +74,6 @@
         "deleteConfirm": "Are you sure you want to delete this test? This will also delete all associated questions."
       }
     }
-  },
-  "common": {
-    "cancel": "Cancel",
-    "delete": "Delete"
   },
   "addExistingQuestion": {
     "title": "Add Existing Question",
@@ -329,7 +346,11 @@
     "loading": "Loading...",
     "error": "Error: ",
     "fetchError": "Failed to fetch test",
-    "updateError": "Failed to update test"
+    "updateError": "Failed to update test",
+    "invalidParams": "Invalid parameters",
+    "common": {
+      "backToDashboard": "Back to Dashboard"
+    }
   },
   "debugPageTitle": "Debug Page",
   "debugPageMessage": "This page helps you test the translations.",
