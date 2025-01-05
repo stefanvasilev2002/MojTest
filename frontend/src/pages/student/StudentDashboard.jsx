@@ -5,11 +5,11 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext.jsx';
 import TestFilters from '../../components/TestFilters.jsx';
 import TestAttempts from "../../components/student/TestAttempts.jsx";
-import {getTranslatedMetadata} from "../../config/translatedMetadata.js";
-import {endpoints} from "../../config/api.config.jsx";
+import { getTranslatedMetadata } from "../../config/translatedMetadata.js";
+import { endpoints } from "../../config/api.config.jsx";
 
 const StudentDashboard = () => {
-    const { t , i18n} = useTranslation("common");
+    const { t, i18n } = useTranslation("common");
     const [selectedTestId, setSelectedTestId] = useState(null);
     const { items: tests, loading, error } = useTest();
     const { user } = useAuth();
@@ -22,7 +22,7 @@ const StudentDashboard = () => {
     });
 
     useEffect(() => {
-        const checkActiveTest = () => {
+        const checkActiveTest = async () => {
             const lastTestId = localStorage.getItem('last_test_id');
             if (!lastTestId) return;
 
@@ -86,7 +86,7 @@ const StudentDashboard = () => {
                 }
             }
 
-            const response = fetch(endpoints.tests.start(testId, user.id), {
+            const response = await fetch(endpoints.tests.start(testId, user.id), {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${user.token}`,
@@ -100,13 +100,18 @@ const StudentDashboard = () => {
 
             const data = await response.json();
 
-            if(data.questions.length === 0) {
+            if (!data.questions || data.questions.length === 0) {
                 alert(t('studentDashboard.activeTest.errors.noQuestions'));
                 return;
             }
 
+            // Store test data
             localStorage.setItem('last_test_id', data.studentTestId);
-            navigate(`/take-test/${data.studentTestId}`, { state: data });
+            localStorage.setItem(`test_${data.studentTestId}_start_time`, Date.now().toString());
+            localStorage.setItem(`test_${data.studentTestId}_time`, data.timeLimit.toString());
+            localStorage.setItem(`test_${data.studentTestId}_data`, JSON.stringify(data));
+
+            navigate(`/take-test/${data.studentTestId}`);
 
         } catch (err) {
             console.error('Error starting test:', err);
@@ -122,6 +127,8 @@ const StudentDashboard = () => {
     };
 
     const filteredTests = useMemo(() => {
+        if (!tests || !user?.grade) return [];
+
         return tests.filter(test => {
             const isCorrectGrade = test.metadata?.some(meta =>
                 meta.key === 'Grade' && meta.value === user.grade
@@ -137,7 +144,15 @@ const StudentDashboard = () => {
                 });
             });
         });
-    }, [tests, filters, user.grade]);
+    }, [tests, filters, user?.grade]);
+
+    if (!user) {
+        return (
+            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+                <p className="text-lg text-red-600">{t('studentDashboard.unauthorized')}</p>
+            </div>
+        );
+    }
 
     if (loading) {
         return (
@@ -161,9 +176,14 @@ const StudentDashboard = () => {
         <div className="min-h-screen bg-gray-50 p-6">
             <div className="max-w-6xl mx-auto">
                 <div className="flex justify-between items-center mb-6">
-                    <h1 className="text-4xl font-bold text-blue-600">{t('studentDashboard.title')}</h1>
+                    <h1 className="text-4xl font-bold text-blue-600">
+                        {t('studentDashboard.title')}
+                    </h1>
                     <div className="text-gray-600">
-                        {t('studentDashboard.grade')} <span className="font-semibold">{getTranslatedMetadata('Grade', user.grade, i18n.language)}</span>
+                        {t('studentDashboard.grade')}
+                        <span className="font-semibold">
+                            {getTranslatedMetadata('Grade', user.grade, i18n.language)}
+                        </span>
                     </div>
                 </div>
 
@@ -171,63 +191,69 @@ const StudentDashboard = () => {
                     filters={filters}
                     onFilterChange={handleFilterChange}
                 />
-                <div className="m-3"></div>
 
-                {filteredTests.length === 0 ? (
-                    <div className="bg-white rounded-lg shadow p-6">
-                        <p>{t('studentDashboard.noTests')}</p>
-                    </div>
-                ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {filteredTests.map(test => (
-                            <div
-                                key={test.id}
-                                className="bg-white rounded-lg shadow hover:shadow-lg transition-shadow p-6"
-                            >
-                                <h2 className="text-xl font-semibold mb-4">{test.title}</h2>
-                                <div className="space-y-4">
-                                    <p className="text-gray-600">{test.description}</p>
+                <div className="mt-6">
+                    {filteredTests.length === 0 ? (
+                        <div className="bg-white rounded-lg shadow p-6">
+                            <p>{t('studentDashboard.noTests')}</p>
+                        </div>
+                    ) : (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {filteredTests.map(test => (
+                                <div
+                                    key={test.id}
+                                    className="bg-white rounded-lg shadow hover:shadow-lg transition-shadow p-6"
+                                >
+                                    <h2 className="text-xl font-semibold mb-4">{test.title}</h2>
+                                    <div className="space-y-4">
+                                        <p className="text-gray-600">{test.description}</p>
 
-                                    <div className="flex flex-wrap gap-2">
-                                        {test.metadata?.map(meta => (
-                                            <span
-                                                key={`${meta.key}-${meta.value}`}
-                                                className="inline-block px-2 py-1 text-xs font-semibold bg-blue-100 text-blue-800 rounded">
-                                                {t(`metadata.${meta.key}`)}: {getTranslatedMetadata(meta.key, meta.value, i18n.language)}
+                                        <div className="flex flex-wrap gap-2">
+                                            {test.metadata?.map(meta => (
+                                                <span
+                                                    key={`${meta.key}-${meta.value}`}
+                                                    className="inline-block px-2 py-1 text-xs font-semibold bg-blue-100 text-blue-800 rounded"
+                                                >
+                                                    {t(`metadata.${meta.key}`)}: {
+                                                    getTranslatedMetadata(meta.key, meta.value, i18n.language)
+                                                }
+                                                </span>
+                                            ))}
+                                        </div>
+
+                                        <div className="text-gray-500">
+                                            <span>
+                                                {test.numQuestions} {t('studentDashboard.testCard.questions')}
                                             </span>
-                                        ))}
-                                    </div>
+                                        </div>
 
-                                    <div className="text-gray-500">
-                                        <span>{test.numQuestions} {t('studentDashboard.testCard.questions')}</span>
-                                    </div>
-
-                                    <div className="flex justify-between gap-2">
-                                        <button
-                                            onClick={() => handleStartTest(test.id)}
-                                            className="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors"
-                                        >
-                                            {t('studentDashboard.testCard.buttons.startTest')}
-                                        </button>
-                                        <button
-                                            onClick={() => setSelectedTestId(test.id)}
-                                            className="bg-gray-600 text-white py-2 px-4 rounded-lg hover:bg-gray-700 transition-colors"
-                                        >
-                                            {t('studentDashboard.testCard.buttons.viewAttempts')}
-                                        </button>
+                                        <div className="flex justify-between gap-2">
+                                            <button
+                                                onClick={() => handleStartTest(test.id)}
+                                                className="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors"
+                                            >
+                                                {t('studentDashboard.testCard.buttons.startTest')}
+                                            </button>
+                                            <button
+                                                onClick={() => setSelectedTestId(test.id)}
+                                                className="bg-gray-600 text-white py-2 px-4 rounded-lg hover:bg-gray-700 transition-colors"
+                                            >
+                                                {t('studentDashboard.testCard.buttons.viewAttempts')}
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        ))}
-                    </div>
-                )}
+                            ))}
+                        </div>
+                    )}
 
-                {selectedTestId && (
-                    <TestAttempts
-                        testId={selectedTestId}
-                        onClose={() => setSelectedTestId(null)}
-                    />
-                )}
+                    {selectedTestId && (
+                        <TestAttempts
+                            testId={selectedTestId}
+                            onClose={() => setSelectedTestId(null)}
+                        />
+                    )}
+                </div>
             </div>
         </div>
     );

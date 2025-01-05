@@ -12,9 +12,6 @@ const TestFilters = ({ filters, onFilterChange }) => {
         'testType': 'Test Type'
     };
 
-    const handleFilterChange = (filterName, value) => {
-        onFilterChange(keyMapping[filterName] || filterName, value);
-    };
     return (
         <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200">
             <h2 className="text-xl font-semibold text-gray-800 mb-6">{t('filters.title')}</h2>

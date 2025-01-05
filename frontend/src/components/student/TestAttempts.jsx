@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext.jsx';
+import { endpoints } from '../../config/api.config.jsx';
+import { useTranslation } from 'react-i18next';
 
 const TestAttempts = ({ testId, onClose }) => {
     const [attempts, setAttempts] = useState([]);
@@ -10,15 +12,17 @@ const TestAttempts = ({ testId, onClose }) => {
     const [totalPages, setTotalPages] = useState(0);
     const { user } = useAuth();
     const navigate = useNavigate();
+    const { t } = useTranslation();
 
     const fetchAttempts = async (pageNum) => {
         try {
             setLoading(true);
             const response = await fetch(
-                `http://localhost:8080/api/student-tests/attempts/${testId}?studentId=${user.id}&page=${pageNum}&size=5`,
+                `${endpoints.studentTests.getAttempts(testId, user.id)}?page=${pageNum}&size=5`,
                 {
                     headers: {
-                        'Authorization': `Bearer ${user.token}`
+                        'Authorization': `Bearer ${user.token}`,
+                        'Content-Type': 'application/json'
                     }
                 }
             );
@@ -33,18 +37,26 @@ const TestAttempts = ({ testId, onClose }) => {
             setError(null);
         } catch (err) {
             setError(err.message);
+            console.error('Error fetching attempts:', err);
         } finally {
             setLoading(false);
         }
     };
 
     useEffect(() => {
-        fetchAttempts(page);
-    }, [testId, user.id, page]);
+        if (user?.token && testId) {
+            fetchAttempts(page);
+        }
+    }, [testId, user?.token, page]);
 
     const formatDateTime = (date, time) => {
-        const dateObj = new Date(date + 'T' + time);
-        return dateObj.toLocaleString();
+        try {
+            const dateObj = new Date(date + 'T' + time);
+            return dateObj.toLocaleString();
+        } catch (err) {
+            console.error('Error formatting date:', err);
+            return 'Invalid date';
+        }
     };
 
     const getScoreColor = (percentage) => {
@@ -57,7 +69,7 @@ const TestAttempts = ({ testId, onClose }) => {
         return (
             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
                 <div className="bg-white p-6 rounded-lg shadow-xl w-full max-w-md">
-                    <p className="text-center">Loading attempts...</p>
+                    <p className="text-center">{t('testAttempts.loading')}</p>
                 </div>
             </div>
         );
@@ -67,10 +79,13 @@ const TestAttempts = ({ testId, onClose }) => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
             <div className="bg-white p-6 rounded-lg shadow-xl w-full max-w-2xl max-h-[80vh] overflow-y-auto">
                 <div className="flex justify-between items-center mb-6">
-                    <h2 className="text-2xl font-bold text-gray-800">Test Attempts</h2>
+                    <h2 className="text-2xl font-bold text-gray-800">
+                        {t('testAttempts.title')}
+                    </h2>
                     <button
                         onClick={onClose}
                         className="text-gray-500 hover:text-gray-700"
+                        aria-label="Close"
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -85,7 +100,9 @@ const TestAttempts = ({ testId, onClose }) => {
                 )}
 
                 {attempts.length === 0 ? (
-                    <p className="text-gray-500 text-center py-4">No attempts found for this test.</p>
+                    <p className="text-gray-500 text-center py-4">
+                        {t('testAttempts.noAttempts')}
+                    </p>
                 ) : (
                     <>
                         <div className="space-y-4">
@@ -97,20 +114,22 @@ const TestAttempts = ({ testId, onClose }) => {
                                     <div className="flex justify-between items-start">
                                         <div className="space-y-1">
                                             <div className="flex items-center gap-2">
-                                                <span className="font-semibold">Score:</span>
+                                                <span className="font-semibold">{t('testAttempts.score')}:</span>
                                                 <span className={`font-bold ${getScoreColor(attempt.scorePercentage)}`}>
                                                     {attempt.score}/{attempt.totalPoints} ({attempt.scorePercentage.toFixed(1)}%)
                                                 </span>
                                             </div>
                                             <p className="text-sm text-gray-600">
-                                                Taken on: {formatDateTime(attempt.dateTaken, attempt.timeTaken)}
+                                                {t('testAttempts.takenOn')}: {formatDateTime(attempt.dateTaken, attempt.timeTaken)}
                                             </p>
                                         </div>
                                         <button
-                                            onClick={() => navigate('/test-details', { state: { studentTestId: attempt.id }})}
+                                            onClick={() => navigate('/test-details', {
+                                                state: { studentTestId: attempt.id }
+                                            })}
                                             className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors text-sm"
                                         >
-                                            View Details
+                                            {t('testAttempts.viewDetails')}
                                         </button>
                                     </div>
                                 </div>
@@ -128,10 +147,10 @@ const TestAttempts = ({ testId, onClose }) => {
                                         : 'bg-blue-100 text-blue-600 hover:bg-blue-200'
                                 }`}
                             >
-                                Previous
+                                {t('common.previous')}
                             </button>
                             <span className="text-gray-600">
-                                Page {page + 1} of {totalPages}
+                                {t('common.page')} {page + 1} {t('common.of')} {totalPages}
                             </span>
                             <button
                                 onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))}
@@ -142,7 +161,7 @@ const TestAttempts = ({ testId, onClose }) => {
                                         : 'bg-blue-100 text-blue-600 hover:bg-blue-200'
                                 }`}
                             >
-                                Next
+                                {t('common.next')}
                             </button>
                         </div>
                     </>
