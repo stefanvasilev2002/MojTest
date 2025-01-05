@@ -1,8 +1,7 @@
-// tailwind.config.js
-module.exports = {
+export default {
   content: [
     "./index.html",
-    "./src/**/*.{js,ts,jsx,tsx}", // This ensures Tailwind is applied to your React files
+    "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
     extend: {},
