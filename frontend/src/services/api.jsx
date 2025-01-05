@@ -1,17 +1,18 @@
+// src/api/axiosConfig.js
 import axios from 'axios';
 
-// Set up Axios instance
 const api = axios.create({
-    baseURL: import.meta.env.VITE_API_BASE_URL, // Use the environment variable
+    baseURL: import.meta.env.VITE_API_BASE_URL,
     timeout: 10000,
     headers: {
         'Content-Type': 'application/json',
     },
+    withCredentials: true // Important for CORS with credentials
 });
-// Add a request interceptor (optional, for auth tokens)
+
 api.interceptors.request.use(
     (config) => {
-        const token = localStorage.getItem('token'); // Example: Retrieve token from storage
+        const token = localStorage.getItem('token');
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
         }
@@ -22,11 +23,14 @@ api.interceptors.request.use(
     }
 );
 
-// Add a response interceptor (optional, for error handling)
 api.interceptors.response.use(
     (response) => response,
     (error) => {
-        console.error('API Error:', error.response || error.message);
+        if (error.response?.status === 401) {
+            // Handle unauthorized access
+            localStorage.removeItem('token');
+            window.location.href = '/login';
+        }
         return Promise.reject(error);
     }
 );
