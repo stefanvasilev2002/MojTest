@@ -6,6 +6,7 @@ import { useAuth } from '../../context/AuthContext.jsx';
 import TestFilters from '../../components/TestFilters.jsx';
 import TestAttempts from "../../components/student/TestAttempts.jsx";
 import {getTranslatedMetadata} from "../../config/translatedMetadata.js";
+import {endpoints} from "../../config/api.config.jsx";
 
 const StudentDashboard = () => {
     const { t , i18n} = useTranslation("common");
@@ -85,7 +86,7 @@ const StudentDashboard = () => {
                 }
             }
 
-            const response = await fetch(`http://localhost:8080/api/tests/start/${testId}?studentId=${user.id}`, {
+            const response = fetch(endpoints.tests.start(testId, user.id), {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${user.token}`,

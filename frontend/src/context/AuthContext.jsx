@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import * as jwt_decode from 'jwt-decode';
+import {endpoints} from "../config/api.config.jsx";
 
 const AuthContext = createContext(null);
 
@@ -18,7 +19,7 @@ export const AuthProvider = ({ children }) => {
                 };
 
                 // Immediately fetch additional user details if token exists
-                fetch(`http://localhost:8080/api/users/${decodedToken.userId}`, {
+                fetch(endpoints.users.getById(decodedToken.userId), {
                     headers: {
                         'Authorization': `Bearer ${storedToken}`
                     }
@@ -64,7 +65,7 @@ export const AuthProvider = ({ children }) => {
             localStorage.setItem('role', userRole);
 
             // Fetch full user details after login
-            const response = await fetch(`http://localhost:8080/api/users/${decodedToken.userId}`, {
+            const response = await fetch(endpoints.users.getById(decodedToken.userId), {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
