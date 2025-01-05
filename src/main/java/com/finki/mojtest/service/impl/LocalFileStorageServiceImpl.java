@@ -1,6 +1,7 @@
 package com.finki.mojtest.service.impl;
 
 import com.finki.mojtest.service.FileStorageService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -18,28 +19,41 @@ import java.nio.file.StandardCopyOption;
 @Service
 public class LocalFileStorageServiceImpl implements FileStorageService {
 
-    @Value("${file.upload-dir}")
-    private String uploadDir;
+    private final Path fileStorageLocation;
 
-    @Override
-    public String storeFile(MultipartFile file) throws IOException {
-        // Generate unique file name
-        String fileName = System.currentTimeMillis() + "_" + StringUtils.cleanPath(file.getOriginalFilename());
-
-        // Ensure upload directory exists
-        Path fileStorageLocation = Paths.get(uploadDir).toAbsolutePath().normalize();
-        Files.createDirectories(fileStorageLocation);
-
-        // Store file
-        Path targetLocation = fileStorageLocation.resolve(fileName);
-        Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
-
-        return fileName;
+    @Autowired
+    public LocalFileStorageServiceImpl(@Value("${file.upload-dir}") String uploadDir) {
+        this.fileStorageLocation = Paths.get(uploadDir).toAbsolutePath().normalize();
+        try {
+            Files.createDirectories(this.fileStorageLocation);
+        } catch (IOException ex) {
+            throw new RuntimeException("Could not create the directory where the uploaded files will be stored.", ex);
+        }
     }
 
     @Override
+    public String storeFile(MultipartFile file) throws IOException {
+        String fileName = System.currentTimeMillis() + "_" + StringUtils.cleanPath(file.getOriginalFilename());
+
+        try {
+            // Check if the fileName contains invalid characters
+            if (fileName.contains("..")) {
+                throw new RuntimeException("Filename contains invalid path sequence " + fileName);
+            }
+
+            Path targetLocation = this.fileStorageLocation.resolve(fileName);
+            Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+
+            return fileName;
+        } catch (IOException ex) {
+            throw new RuntimeException("Could not store file " + fileName, ex);
+        }
+    }
+
+    // Rest of your methods remain the same but use this.fileStorageLocation instead of Paths.get(uploadDir)
+    @Override
     public Resource loadFileAsResource(String fileName) throws MalformedURLException {
-        Path filePath = Paths.get(uploadDir).resolve(fileName).normalize();
+        Path filePath = this.fileStorageLocation.resolve(fileName).normalize();
         Resource resource = new UrlResource(filePath.toUri());
 
         if (resource.exists() && resource.isReadable()) {
@@ -51,23 +65,18 @@ public class LocalFileStorageServiceImpl implements FileStorageService {
 
     @Override
     public void deleteFile(String fileName) throws IOException {
-        Path filePath = Paths.get(uploadDir).resolve(fileName).normalize();
+        Path filePath = this.fileStorageLocation.resolve(fileName).normalize();
         Files.deleteIfExists(filePath);
     }
 
     @Override
     public String updateFile(MultipartFile newFile, String existingFileName) throws IOException {
-        Path fileStorageLocation = Paths.get(uploadDir).toAbsolutePath().normalize();
-        Files.createDirectories(fileStorageLocation);
-
-        // Resolve path to the existing file
-        Path existingFilePath = fileStorageLocation.resolve(existingFileName).normalize();
-
         // Delete the existing file if it exists
+        Path existingFilePath = this.fileStorageLocation.resolve(existingFileName).normalize();
         Files.deleteIfExists(existingFilePath);
 
         // Store the new file with the same name
-        Path targetLocation = fileStorageLocation.resolve(existingFileName);
+        Path targetLocation = this.fileStorageLocation.resolve(existingFileName);
         Files.copy(newFile.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
 
         return existingFileName;
