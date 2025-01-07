@@ -111,7 +111,7 @@ const EditTestPage = () => {
     return (
         <div className="min-h-screen bg-gray-50 p-6">
             <div className="max-w-4xl mx-auto">
-                <h1 className="text-3xl font-bold text-blue-600 mb-8">
+                <h1 className="space-y-6 max-w-2xl mx-auto text-3xl font-bold text-blue-600 mb-8">
                     {t('editTest.title')}
                 </h1>
                 <TestForm

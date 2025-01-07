@@ -27,7 +27,7 @@ const CreateTestPage = () => {
     return (
         <div className="p-6">
             <div className="max-w-4xl mx-auto">
-                <h1 className="text-3xl font-bold text-blue-600 mb-8">{t('testForm.pageTitle')}</h1>
+                <h1 className=" space-y-6 max-w-2xl mx-auto text-3xl font-bold text-blue-600 mb-8">{t('testForm.pageTitle')}</h1>
                 <TestForm
                     onSubmit={handleSubmit}
                     isEditing={false}

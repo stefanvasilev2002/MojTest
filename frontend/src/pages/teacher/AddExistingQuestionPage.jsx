@@ -68,21 +68,25 @@ const AddExistingQuestionPage = ({ onSelectQuestion }) => {
     };
 
     return (
-        <div className="p-6">
-            <div className="max-w-4xl mx-auto">
-                <h1 className="text-3xl font-bold text-blue-600 mb-8">
+        <div className="min-h-screen bg-gray-50">
+            <div className="px-4 sm:px-6 lg:px-8 py-6 max-w-[95%] mx-auto">
+                <h1 className="text-2xl sm:text-3xl font-bold text-blue-600 mb-6 sm:mb-8">
                     {t('addExistingQuestion.title')}
                 </h1>
 
-                <MetadataFilter
-                    filterOptions={filterOptions}
-                    setFilterOptions={setFilterOptions}
-                />
+                <div className="space-y-6">
+                    <MetadataFilter
+                        filterOptions={filterOptions}
+                        setFilterOptions={setFilterOptions}
+                    />
 
-                <QuestionList
-                    questions={filteredQuestions}
-                    onAddToTest={handleAddToTest}
-                />
+                    <div className="bg-white rounded-lg shadow-md p-4 sm:p-6 border border-gray-200">
+                        <QuestionList
+                            questions={filteredQuestions}
+                            onAddToTest={handleAddToTest}
+                        />
+                    </div>
+                </div>
             </div>
         </div>
     );
