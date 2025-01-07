@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { predefinedKeyValues } from "../../config/predefinedKeyValues.js";
+import { getTranslatedMetadata } from "../../config/translatedMetadata.js";
 
 const TestForm = ({ initialData, onSubmit, isEditing, userId }) => {
-    const { t } = useTranslation('common');
+    const { t, i18n } = useTranslation('common');
 
     const [formData, setFormData] = useState({
         title: '',
@@ -176,7 +177,7 @@ const TestForm = ({ initialData, onSubmit, isEditing, userId }) => {
                 {Object.entries(predefinedKeyValues).map(([key, values]) => (
                     <div key={key}>
                         <label htmlFor={key} className="block text-sm font-medium text-gray-700">
-                            {key}
+                            {t(`metadata.${key}`)}
                         </label>
                         <select
                             id={key}
@@ -185,10 +186,12 @@ const TestForm = ({ initialData, onSubmit, isEditing, userId }) => {
                             className="mt-1 block w-full rounded-md border border-gray-300 p-2
                                 focus:border-transparent focus:ring-2 focus:ring-blue-500 transition-colors"
                         >
-                            <option value="">{t('testForm.metadata.select')} {key}</option>
+                            <option value="">
+                                {t('questionForm.placeholders.selectMetadata', { field: t(`metadata.${key}`) })}
+                            </option>
                             {values.map(value => (
                                 <option key={value} value={value}>
-                                    {value}
+                                    {getTranslatedMetadata(key, value, i18n.language) || value}
                                 </option>
                             ))}
                         </select>

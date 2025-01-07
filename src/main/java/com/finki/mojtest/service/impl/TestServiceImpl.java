@@ -17,10 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -81,20 +78,28 @@ public class TestServiceImpl implements TestService {
         test.setTimeLimit(testDTO.getTimeLimit());
 
         for (MetadataDTO metaDTO : testDTO.getMetadata()) {
-            Metadata metadata = metadataRepository.findByKeyAndValue(metaDTO.getKey(), metaDTO.getValue())
-                    .orElseGet(() -> {
-                        Metadata newMeta = new Metadata();
-                        newMeta.setKey(metaDTO.getKey());
-                        newMeta.setValue(metaDTO.getValue());
-                        return metadataRepository.save(newMeta);
-                    });
+            if(test.getMetadata().stream().anyMatch(i-> Objects.equals(i.getKey(), metaDTO.getKey()))){
+                Metadata metadata = test.getMetadata().stream().filter(i-> Objects.equals(i.getKey(), metaDTO.getKey())).findFirst().get();
+                metadata.setValue(metaDTO.getValue());
+                metadataRepository.save(metadata);
 
-                    Optional<Metadata> m = test.getMetadata().stream().filter(i->i.getId()
-                            .equals(metadata.getId())).findFirst();
+            }
+            else {
+                Metadata metadata = metadataRepository.findByKeyAndValue(metaDTO.getKey(), metaDTO.getValue())
+                        .orElseGet(() -> {
+                            Metadata newMeta = new Metadata();
+                            newMeta.setKey(metaDTO.getKey());
+                            newMeta.setValue(metaDTO.getValue());
+                            return metadataRepository.save(newMeta);
+                        });
 
-            m.ifPresent(value -> test.getMetadata().remove(value));
+                Optional<Metadata> m = test.getMetadata().stream().filter(i->i.getId()
+                        .equals(metadata.getId())).findFirst();
 
-            test.getMetadata().add(metadata);
+                m.ifPresent(value -> test.getMetadata().remove(value));
+
+                test.getMetadata().add(metadata);
+            }
         }
         return testRepository.save(test);
     }
