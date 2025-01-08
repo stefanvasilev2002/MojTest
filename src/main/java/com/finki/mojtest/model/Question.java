@@ -28,7 +28,7 @@ public class Question {
     private String formula;
     private Boolean isCopy;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "image_file_id", referencedColumnName = "id")
     private File image;
     private String hint;

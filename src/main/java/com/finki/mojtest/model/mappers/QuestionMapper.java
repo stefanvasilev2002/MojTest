@@ -1,5 +1,6 @@
 package com.finki.mojtest.model.mappers;
 
+import com.finki.mojtest.model.File;
 import com.finki.mojtest.model.Metadata;
 import com.finki.mojtest.model.Question;
 import com.finki.mojtest.model.Test;
@@ -27,6 +28,9 @@ public class QuestionMapper {
         dto.setCreatorId(question.getCreator() != null ? question.getCreator().getId() : null);
         dto.setName(question.getCreator() != null ? question.getCreator().getUsername() : null);
         dto.setIsCopy(question.getIsCopy());
+        if(question.getImage() != null) {
+            dto.setFile(FileMapper.toDto(question.getImage()));
+        }
 
         if (question.getAnswers() != null) {
             dto.setAnswers(question.getAnswers().stream()
@@ -61,7 +65,7 @@ public class QuestionMapper {
 
         return question;
     }
-    public static Question updateFromDTO(Question existingQuestion, QuestionDTO dto, Teacher creator, List<Test> tests, List<Metadata> metadata, Date uploadedAt) {
+    public static Question updateFromDTO(Question existingQuestion, QuestionDTO dto, Teacher creator, List<Test> tests, List<Metadata> metadata, Date uploadedAt, File file) {
         if (existingQuestion == null || dto == null) return null;
 
         existingQuestion.setQuestionType(dto.getType() != null ? QuestionType.valueOf(dto.getType().toUpperCase()) : null); // Convert string to enum
@@ -78,7 +82,8 @@ public class QuestionMapper {
             }
         }
         existingQuestion.setHint(dto.getHint());
-
+        existingQuestion.setImage(file);
+        file.setRelatedEntityId(existingQuestion.getId());
         existingQuestion.setCreator(creator);
         existingQuestion.setTests(tests != null ? tests : Collections.emptyList());
         existingQuestion.setMetadata(metadata != null ? metadata : Collections.emptyList());
