@@ -507,5 +507,18 @@
     "FILL_IN_THE_BLANK": "Plotëso hapësirën",
     "ESSAY": "Ese",
     "NUMERIC": "Numerike"
+  },
+  "landingPage": {
+    "welcomeTitle": "Mirësevini në",
+    "platformName": "TestiIm",
+    "description": "Zgjedhni rolin tuaj për të mësuar më shumë rreth asaj që ofrojmë",
+    "imageAlt": "Pamja e Testit",
+    "getStarted": "Fillo tani",
+    "registerNow": "Regjistrohuni tani!",
+    "exploreFeatures": "Eksploro tiparet për Studentët dhe Mësuesit",
+    "studentCardTitle": "Për Studentët",
+    "studentCardDescription": "Merrni testet e personalizuara ose praktikoni me pyetje të paracaktuara. Ndjekni progresin tuaj teksa mësoni.",
+    "teacherCardTitle": "Për Mësuesit",
+    "teacherCardDescription": "Krijoni teste për studentët tuaj ose frymëzohuni nga baza e pyetjeve të ndara."
   }
 }

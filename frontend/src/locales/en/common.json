@@ -543,5 +543,18 @@
     "FILL_IN_THE_BLANK": "Fill in the Blank",
     "ESSAY": "Essay",
     "NUMERIC": "Numeric"
+  },
+  "landingPage": {
+    "welcomeTitle": "Welcome to",
+    "platformName": "MyTest",
+    "description": "Simplifying learning and teaching one test at a time",
+    "imageAlt": "Test image",
+    "getStarted": "Get started",
+    "registerNow": "Register now!",
+    "exploreFeatures": "Explore Features for Students and Teachers",
+    "studentCardTitle": "For Students",
+    "studentCardDescription": "Take personalized tests created by your teachers or practice on pre-made quizzes. Track your progress and gain confidence as you learn.",
+    "teacherCardTitle": "For Teachers",
+    "teacherCardDescription": "Easily create tests for your students using our shared question bank or customize your own. Get inspired by questions crafted by other educators!"
   }
 }
