@@ -64,10 +64,11 @@ const TestResultsPage = () => {
                                         <XCircle className="text-red-500 w-6 h-6 mr-2" />
                                     )}
                                     <span className="font-medium">
-                                        {t('testResults.questionPoints', {
-                                            earned: question.correctAnswer ? '1' : '0',
-                                            total: '1'
-                                        })}
+                                        {/*{t('testResults.questionPoints', {*/}
+                                        {/*    earned: question.correctAnswer ? '1' : '0',*/}
+                                        {/*    total: '1'*/}
+                                        {/*})}*/}
+                                        {question.earnedPoints}/{question.points} {t('testDetails.points')}
                                     </span>
                                 </div>
                             </div>

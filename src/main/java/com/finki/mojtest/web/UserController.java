@@ -62,7 +62,10 @@ public class UserController {
                 .map(user -> {
                     UserDTO dto = new UserDTO();
                     dto.setId(user.getId());
+                    dto.setEmail(user.getEmail());
                     dto.setUsername(user.getUsername());
+                    dto.setUsername(user.getUsername());
+                    dto.setFullName(user.getFullName());
                     if (user instanceof Student) {
                         dto.setGrade(((Student) user).getGrade());
                     }

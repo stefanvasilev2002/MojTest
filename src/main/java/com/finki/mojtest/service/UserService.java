@@ -1,6 +1,8 @@
 package com.finki.mojtest.service;
 
 import com.finki.mojtest.model.dtos.UserDTO;
+import com.finki.mojtest.model.dtos.auth.UserResponse;
+import com.finki.mojtest.model.dtos.auth.UserUpdateRequest;
 import com.finki.mojtest.model.users.User;
 
 import java.util.List;
@@ -15,7 +17,9 @@ public interface UserService {
     User updateUser(Long id, User updatedUser);
     void deleteUser(Long id);
     List<User> getUsersByRole(String role);
-
+    User updateUser(UserUpdateRequest userUpdateRequest);
     Optional<User> findById(Long id);
+    User findByEmail(String email);
+    User changePassword(Long userId, String oldPassword, String newPassword);
 }
 

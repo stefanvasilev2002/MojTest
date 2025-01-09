@@ -1,6 +1,7 @@
 package com.finki.mojtest.service.impl;
 
 import com.finki.mojtest.model.dtos.UserDTO;
+import com.finki.mojtest.model.dtos.auth.UserUpdateRequest;
 import com.finki.mojtest.model.exceptions.DuplicateFieldException;
 import com.finki.mojtest.model.users.Admin;
 import com.finki.mojtest.model.users.Student;
@@ -38,8 +39,8 @@ public class UserServiceImpl implements UserService {
         if (!userRepository.findByEmail(user.getEmail()).isEmpty()) {
             throw new DuplicateFieldException("Email already exists: " + user.getEmail());
         }
-        Student newUser = new Student(user.getUsername(),passwordEncoder.encode(user.getPassword()),
-                user.getEmail(),user.getFullName(),user.getRegistrationDate(), user.getGrade());
+        Student newUser = new Student(user.getUsername(), passwordEncoder.encode(user.getPassword()),
+                user.getEmail(), user.getFullName(), user.getRegistrationDate(), user.getGrade());
         return studentRepository.save(newUser);
     }
 
@@ -53,13 +54,13 @@ public class UserServiceImpl implements UserService {
             throw new DuplicateFieldException("Email already exists: " + user.getEmail());
         }
 
-        if(user instanceof Teacher){
+        if (user instanceof Teacher) {
             user.setDtype("Teacher");
         }
-        if(user instanceof Student){
+        if (user instanceof Student) {
             user.setDtype("Student");
         }
-        if (user instanceof Admin){
+        if (user instanceof Admin) {
             user.setDtype("Admin");
         }
 
@@ -124,7 +125,59 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public User updateUser(UserUpdateRequest updatedUser) {
+        User user = getUserById(updatedUser.getId());
+
+        if (updatedUser.getUsername() != null &&
+                !updatedUser.getUsername().equals(user.getUsername())
+                && userRepository.findByUsername(updatedUser.getUsername()).isPresent()) {
+            throw new DuplicateFieldException("Username already exists: " + updatedUser.getUsername());
+        }
+
+        if (updatedUser.getEmail() != null &&
+                !updatedUser.getEmail().equals(user.getEmail()) &&
+                !userRepository.findByEmail(updatedUser.getEmail()).isEmpty()) {
+            throw new DuplicateFieldException("Email already exists: " + updatedUser.getEmail());
+        }
+
+        if (updatedUser.getEmail() != null) {
+            user.setEmail(updatedUser.getEmail());
+        }
+        if (updatedUser.getUsername() != null) {
+            user.setUsername(updatedUser.getUsername());
+        }
+        if (updatedUser.getFullName() != null) {
+            user.setFullName(updatedUser.getFullName());
+        }
+        if (user instanceof Student) {
+            Student student = (Student) user;  // Cast to Student
+
+            // Check if grade is not empty
+            if (student.getGrade() != null && !student.getGrade().isEmpty()) {
+                student.setGrade(updatedUser.getGrade());
+            }
+        }
+        return userRepository.save(user);
+    }
+
+    @Override
     public Optional<User> findById(Long id) {
         return Optional.ofNullable(userRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("User not found with id " + id)));
+    }
+
+    @Override
+    public User findByEmail(String email) {
+        return userRepository.findByEmail(email).getFirst();
+    }
+
+    @Override
+    public User changePassword(Long userId, String oldPassword, String newPassword) {
+        User user = userRepository.findById(userId).orElseThrow();
+        if (passwordEncoder.matches(oldPassword, user.getPassword())) {
+            user.setPassword(passwordEncoder.encode(newPassword));
+            return userRepository.save(user);
+        } else {
+            throw new RuntimeException("Old password is incorrect"); // Handle incorrect password scenario
+        }
     }
 }

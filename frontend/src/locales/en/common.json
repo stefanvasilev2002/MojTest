@@ -94,7 +94,6 @@
       "returnDashboard": "Return to Dashboard"
     }
   },
-
   "takeTest": {
     "loading": "Loading test...",
     "timeLimit": "Time limit: {{minutes}} minutes",
@@ -158,15 +157,15 @@
       }
     }
   },
-    "metadataFilter": {
-      "buttons": {
-        "showFilters": "Show Filters",
-        "hideFilters": "Hide Filters"
-      },
-      "select": {
-        "placeholder": "Select"
-      }
+  "metadataFilter": {
+    "buttons": {
+      "showFilters": "Show Filters",
+      "hideFilters": "Hide Filters"
     },
+    "select": {
+      "placeholder": "Select"
+    }
+  },
   "questionList": {
     "title": "Available questions from other tests:",
     "noQuestions": "No questions added to this test yet.",
@@ -191,9 +190,9 @@
     }
   },
   "trueFalse": {
-        "true": "True",
-        "false": "False"
-    },
+    "true": "True",
+    "false": "False"
+  },
   "questionForm": {
     "labels": {
       "type": "Question Type",
@@ -232,7 +231,8 @@
       "create": "Create Question",
       "update": "Update Question"
     }
-  },  "questionManager": {
+  },
+  "questionManager": {
     "backToQuestions": "← Back to Questions",
     "pageTitle": "Manage Questions",
     "tabs": {
@@ -341,6 +341,24 @@
     "user": "Users",
     "hello": "Hello"
   },
+  "settings": {
+    "teacherTitle": "Teacher Settings",
+    "title": "Student Settings",
+    "username": "Username",
+    "email": "Email",
+    "grade": "Grade",
+    "fullName": "Full Name",
+    "update": "Update",
+    "updating": "Updating",
+    "changePassword": "Change Password",
+    "changePasswordPage": {
+      "title": "Change Password",
+      "currentPassword": "Current Password",
+      "newPassword": "New Password",
+      "confirmPassword": "Confirm New Password",
+      "updateButton": "Update"
+    }
+  },
   "editTest": {
     "title": "Edit Test",
     "loading": "Loading...",
@@ -355,18 +373,15 @@
   "debugPageTitle": "Debug Page",
   "debugPageMessage": "This page helps you test the translations.",
   "currentLanguageDescription": "English stuff",
-
   "landingPageTitle": "Welcome to Our Platform",
   "landingPageDescription": "Select your role to learn more about what we offer",
   "studentCardTitle": "For Students",
   "studentCardDescription": "Learn more about how we help students succeed",
   "teacherCardTitle": "For Teachers",
   "teacherCardDescription": "Discover the tools we provide to enhance teaching",
-
   "studentPageTitle": "About Students",
   "studentPageDescription": "Here's what we offer for students...",
   "studentPageContent": "We provide a variety of resources to help students achieve their goals and excel academically.",
-
   "teacherPageTitle": "About Teachers",
   "teacherPageDescription": "Here's what we offer for teachers...",
   "teacherPageContent": "We provide tools, resources, and professional development opportunities to support teachers in their work.",
@@ -444,8 +459,6 @@
       "dramaArt": "Drama Art",
       "comparativeLiterature": "Comparative Literature"
     }
-
-
   },
   "question": {
     "type": "Type",

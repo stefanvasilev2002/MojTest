@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import authService from "../services/authService";
+import * as jwt_decode from 'jwt-decode';
 
 const useAuthActions = () => {
     const { login: contextLogin, logout: contextLogout } = useAuth();
@@ -80,6 +81,87 @@ const useAuthActions = () => {
         }
     };
 
+    const handleUpdate = async (updatedData) => {
+        try {
+            setLoading(true);
+            setError(null);
+
+            const response = await authService.update(updatedData);
+
+            if (response.success) {
+                const decodedToken = jwt_decode.jwtDecode(response.data);
+
+                console.log("RESPONSE: "+decodedToken);
+                const role = decodedToken.roles[0].replace("ROLE_", "").toLowerCase();
+                contextLogin(response.data, role);
+                return {
+                    success: true,
+                    data: response.data
+                };
+            } else {
+                setError(response.error);
+                return {
+                    success: false,
+                    error: response.error
+                };
+            }
+        } catch (err) {
+            const errorMessage = err.response?.data?.message ||
+                err.response?.data ||
+                err.message ||
+                'Updating profile failed';
+
+            setError(errorMessage);
+            return {
+                success: false,
+                error: errorMessage
+            };
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handlePasswordChange = async (formData) => {
+        try {
+            setLoading(true);
+            setError(null);
+
+            const response = await authService.changePassword(formData);
+
+            if (response.success) {
+                const decodedToken = jwt_decode.jwtDecode(response.data);
+
+                console.log("RESPONSE: "+decodedToken);
+                const role = decodedToken.roles[0].replace("ROLE_", "").toLowerCase();
+                contextLogin(response.data, role);
+                return {
+                    success: true,
+                    data: response.data
+                };
+            } else {
+                setError(response.error);
+                return {
+                    success: false,
+                    error: response.error
+                };
+            }
+        } catch (err) {
+            const errorMessage = err.response?.data?.message ||
+                err.response?.data ||
+                err.message ||
+                'Updating profile failed';
+
+            setError(errorMessage);
+            return {
+                success: false,
+                error: errorMessage
+            };
+        } finally {
+            setLoading(false);
+        }
+    };
+
+
     const clearError = () => {
         setError(null);
     };
@@ -94,6 +176,8 @@ const useAuthActions = () => {
         handleLogin,
         handleRegister,
         handleLogout,
+        handleUpdate,
+        handlePasswordChange,
         clearError,
         loading,
         error,

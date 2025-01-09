@@ -225,6 +225,31 @@
       "placeholder": "Избери"
     }
   },
+  "settings": {
+    "teacherTitle": "Поставки за наставникот",
+    "title": "Поставки за студентот",
+    "username": "Корисничко име",
+    "email": "Меил",
+    "grade": "Одделение / Година",
+    "fullName": "Целосно име",
+    "update": "Ажурирај",
+    "updating": "Ажурирање",
+    "changePassword": "Промени лозинка",
+    "changePasswordPage": {
+      "title": "Промена на лозинка",
+      "currentPassword": "Моментална лозинка",
+      "newPassword": "Нова лозинка",
+      "confirmPassword": "Потврда на новата лозинка"
+    }
+  },
+  "testAttempts": {
+    "title": "Обиди за Тестот",
+    "loading": "Вчитување на обидите...",
+    "noAttempts": "Не се пронајдени обиди за овој тест.",
+    "score": "Резултат",
+    "takenOn": "Решен на",
+    "viewDetails": "Прегледај ги деталите"
+  },
   "editTest": {
     "title": "Измени Тест",
     "loading": "Вчитување...",
@@ -484,6 +509,10 @@
   },
   "common": {
     "cancel": "Откажи",
-    "delete": "Избриши"
+    "delete": "Избриши",
+    "previous": "Претходно",
+    "next": "Следно",
+    "page": "Страна",
+    "of": "од"
   }
 }

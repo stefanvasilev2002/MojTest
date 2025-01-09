@@ -6,7 +6,7 @@ const AuthenticatedNavBarStudent = () => {
     const { t } = useTranslation("common");
     const links = [
         { label: "nav.studentDashboard", path: "/student-dashboard" },
-        { label: "nav.settings", path: "/settings" },
+        { label: "nav.settings", path: "/student-settings" },
     ];
 
     return <NavBar links={links} />;

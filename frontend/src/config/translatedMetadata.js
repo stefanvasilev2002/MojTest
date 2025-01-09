@@ -109,6 +109,61 @@ export const metadataTranslations = {
       "Assessment": "Проценка"
     }
   },
+  al: {
+    Subject: {
+      "Mathematics": "Matematikë",
+      "Science": "Shkencë",
+      "Physics": "Fizikë",
+      "Chemistry": "Kimi",
+      "Biology": "Biologji",
+      "History": "Histori",
+      "Geography": "Gjeografi",
+      "Literature": "Letërsi",
+      "Language Arts": "Arte gjuhësore",
+      "Computer Science": "Shkencë kompjuterike",
+      "Foreign Language": "Gjuhë e huaj",
+      "Physical Education": "Edukim fizik",
+      "Art": "Art",
+      "Music": "Muzikë"
+    },
+    "Part of Year": {
+      "1st Quarter": "Tremujori i parë",
+      "2nd Quarter": "Tremujori i dytë",
+      "3rd Quarter": "Tremujori i tretë",
+      "4th Quarter": "Tremujori i katërt",
+      "First Semester": "Semestri i parë",
+      "Second Semester": "Semestri i dytë"
+    },
+    Grade: {
+      "1st Elementary Grade": "Klasa e parë fillore",
+      "2nd Elementary Grade": "Klasa e dytë fillore",
+      "3rd Elementary Grade": "Klasa e tretë fillore",
+      "4th Elementary Grade": "Klasa e katërt fillore",
+      "5th Elementary Grade": "Klasa e pestë fillore",
+      "6th Elementary Grade": "Klasa e gjashtë fillore",
+      "7th Elementary Grade": "Klasa e shtatë fillore",
+      "8th Elementary Grade": "Klasa e tetë fillore",
+      "9th Elementary Grade": "Klasa e nëntë fillore",
+      "1st High School Year": "Viti i parë i shkollës së mesme",
+      "2nd High School Year": "Viti i dytë i shkollës së mesme",
+      "3rd High School Year": "Viti i tretë i shkollës së mesme",
+      "4th High School Year": "Viti i katërt i shkollës së mesme"
+    },
+    Difficulty: {
+      "Beginner": "Fillestar",
+      "Intermediate": "I ndërmjetëm",
+      "Advanced": "I avancuar",
+      "Expert": "Ekspert"
+    },
+    "Test Type": {
+      "Practice": "Praktikë",
+      "Quiz": "Kuiz",
+      "Midterm": "Gjysmëvjetor",
+      "Final": "Final",
+      "Placement": "Vendosje",
+      "Assessment": "Vlerësim"
+    }
+  },
   sq: {
     Subject: {
       "Mathematics": "Matematikë",

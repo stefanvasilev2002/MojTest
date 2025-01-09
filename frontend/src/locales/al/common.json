@@ -115,7 +115,8 @@
       "create": "Krijo pyetje",
       "update": "Përditëso pyetje"
     }
-  },  "createQuestion": {
+  },
+  "createQuestion": {
     "backToQuestions": "← Kthehu tek Pyetjet",
     "pageTitle": "Krijo Pyetje të Re",
     "error": {
@@ -174,7 +175,11 @@
   },
   "common": {
     "cancel": "Anulo",
-    "delete": "Fshij"
+    "delete": "Fshij",
+    "previous": "E mëparshme",
+    "next": "E ardhshme",
+    "page": "Faqe",
+    "of": "nga"
   },
   "testResults": {
     "title": "Rezultatet e testit",
@@ -274,6 +279,32 @@
       "essay": "Ese",
       "numeric": "Numerike"
     }
+  },
+  "settings": {
+    "teacherTitle": "Cilësimet e mësuesit",
+    "title": "Cilësimet e studentëve",
+    "username": "Emri i përdoruesit",
+    "email": "Email",
+    "grade": "Klasa",
+    "fullName": "Emri i plotë",
+    "update": "Përditëso",
+    "updating": "Përditësim",
+    "changePassword": "Ndrysho fjalëkalimin",
+    "changePasswordPage": {
+      "title": "Ndrysho fjalëkalimin",
+      "currentPassword": "Fjalëkalimi aktual",
+      "newPassword": "Fjalëkalimi i ri",
+      "confirmPassword": "Konfirmo fjalëkalimin e ri",
+      "updateButton": "Përditëso"
+    }
+  },
+  "testAttempts": {
+    "title": "Përpjekje për Test",
+    "loading": "Po ngarkohen përpjekjet...",
+    "noAttempts": "Nuk u gjetën përpjekje për këtë test.",
+    "score": "Rezultati",
+    "takenOn": "Marrë më",
+    "viewDetails": "Shiko Detajet"
   },
   "editTest": {
     "title": "Ndrysho Testin",
@@ -416,36 +447,36 @@
     "edit": "Ndrysho Pyetje"
   },
   "registerPage": {
-  "title": "Regjistrohu",
-  "username": "Emri i përdoruesit",
-  "password": "Fjalëkalimi",
-  "confirmPassword": "Konfirmo fjalëkalimin",
-  "email": "Email",
-  "fullName": "Emri i plotë",
-  "selectRole": "Zgjidhni rolin",
-  "roleTeacher": "Mësues",
-  "roleStudent": "Student",
-  "register": "Regjistrohu",
-  "registering": "Duke u regjistruar...",
-  "placeholders": {
-    "username": "Shkruani emrin e përdoruesit",
-    "password": "Shkruani fjalëkalimin",
-    "confirmPassword": "Konfirmoni fjalëkalimin",
-    "email": "Shkruani emailin",
-    "fullName": "Shkruani emrin e plotë"
-  },
-  "validation": {
-    "usernameRequired": "Emri i përdoruesit është i detyrueshëm",
-    "usernameTooShort": "Emri i përdoruesit duhet të ketë të paktën 3 karaktere",
-    "passwordRequired": "Fjalëkalimi është i detyrueshëm",
-    "passwordTooShort": "Fjalëkalimi duhet të ketë të paktën 6 karaktere",
-    "confirmPasswordRequired": "Ju lutem konfirmoni fjalëkalimin",
-    "passwordsDontMatch": "Fjalëkalimet nuk përputhen",
-    "emailRequired": "Emaili është i detyrueshëm",
-    "emailInvalid": "Ju lutem shkruani një email të vlefshëm",
-    "fullNameRequired": "Emri i plotë është i detyrueshëm",
-    "roleRequired": "Ju lutem zgjidhni një rol"
-  }
+    "title": "Regjistrohu",
+    "username": "Emri i përdoruesit",
+    "password": "Fjalëkalimi",
+    "confirmPassword": "Konfirmo fjalëkalimin",
+    "email": "Email",
+    "fullName": "Emri i plotë",
+    "selectRole": "Zgjidhni rolin",
+    "roleTeacher": "Mësues",
+    "roleStudent": "Student",
+    "register": "Regjistrohu",
+    "registering": "Duke u regjistruar...",
+    "placeholders": {
+      "username": "Shkruani emrin e përdoruesit",
+      "password": "Shkruani fjalëkalimin",
+      "confirmPassword": "Konfirmoni fjalëkalimin",
+      "email": "Shkruani emailin",
+      "fullName": "Shkruani emrin e plotë"
+    },
+    "validation": {
+      "usernameRequired": "Emri i përdoruesit është i detyrueshëm",
+      "usernameTooShort": "Emri i përdoruesit duhet të ketë të paktën 3 karaktere",
+      "passwordRequired": "Fjalëkalimi është i detyrueshëm",
+      "passwordTooShort": "Fjalëkalimi duhet të ketë të paktën 6 karaktere",
+      "confirmPasswordRequired": "Ju lutem konfirmoni fjalëkalimin",
+      "passwordsDontMatch": "Fjalëkalimet nuk përputhen",
+      "emailRequired": "Emaili është i detyrueshëm",
+      "emailInvalid": "Ju lutem shkruani një email të vlefshëm",
+      "fullNameRequired": "Emri i plotë është i detyrueshëm",
+      "roleRequired": "Ju lutem zgjidhni një rol"
+    }
   },
   "crudHub": {
     "title": "CRUD Qendra",

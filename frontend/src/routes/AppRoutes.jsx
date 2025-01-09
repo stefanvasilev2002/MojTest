@@ -1,14 +1,14 @@
 // src/routes/AppRoutes.jsx
 import React from 'react';
-import {BrowserRouter as Router, Routes, Route, Navigate} from 'react-router-dom';
-import { AuthProvider } from '../context/AuthContext';  // Import AuthProvider
-import LandingPage from "../pages/LandingPage.jsx";  // Your landing page component
-import PublicRoute from './PublicRoute';  // Updated PublicRoute
-import PrivateRoute from './PrivateRoute';  // Updated PrivateRoute
-import AboutTeacherPage from '../pages/teacher/AboutTeacherPage.jsx';  // Your AboutTeacherPage
-import AboutStudentPage from '../pages/student/AboutStudentPage.jsx';  // Your AboutStudentPage
-import TeacherDashboard from '../pages/teacher/TeacherDashboard.jsx';  // Your TeacherDashboard
-import StudentDashboard from '../pages/student/StudentDashboard.jsx';  // Your StudentDashboard
+import {BrowserRouter as Router, Navigate, Route, Routes} from 'react-router-dom';
+import {AuthProvider} from '../context/AuthContext'; // Import AuthProvider
+import LandingPage from "../pages/LandingPage.jsx"; // Your landing page component
+import PublicRoute from './PublicRoute'; // Updated PublicRoute
+import PrivateRoute from './PrivateRoute'; // Updated PrivateRoute
+import AboutTeacherPage from '../pages/teacher/AboutTeacherPage.jsx'; // Your AboutTeacherPage
+import AboutStudentPage from '../pages/student/AboutStudentPage.jsx'; // Your AboutStudentPage
+import TeacherDashboard from '../pages/teacher/TeacherDashboard.jsx'; // Your TeacherDashboard
+import StudentDashboard from '../pages/student/StudentDashboard.jsx'; // Your StudentDashboard
 import DebugPage from '../pages/DebugPage';
 import LoginPage from "../pages/auth/LoginPage.jsx";
 import RegisterPage from "../pages/auth/RegisterPage.jsx";
@@ -42,40 +42,47 @@ import TestDetailsPage from "../pages/student/TestDetailsPage.jsx";
 import QuestionManagerPage from "../pages/teacher/QuestionManagerPage.jsx";
 import CreateFutureQuestion from "../pages/teacher/CreateFutureQuestion.jsx";
 import AllQuestionsPage from "../pages/teacher/AllQuestionsPage.jsx";
+import StudentSettings from "../pages/student/StudentSettings.jsx";
+import TeacherSettings from "../pages/teacher/TeacherSettings.jsx";
+import ChangePassword from "../pages/teacher/ChangePassword.jsx";
+
 const AppRoutes = () => {
     return (
         <AuthProvider>
             <Router>
                 <Routes>
                     {/* Public Routes */}
-                    <Route path="/" element={<PublicRoute><PublicLayout><LandingPage /></PublicLayout></PublicRoute>} />
-                    <Route path="/about-teacher" element={<PublicRoute><PublicLayout><AboutTeacherPage /></PublicLayout></PublicRoute>} />
-                    <Route path="/about-student" element={<PublicRoute><PublicLayout><AboutStudentPage /></PublicLayout></PublicRoute>} />
-                    <Route path="/login" element={<PublicRoute><PublicLayout><LoginPage /></PublicLayout></PublicRoute>} />
-                    <Route path="/register" element={<PublicRoute><PublicLayout><RegisterPage /></PublicLayout></PublicRoute>} />
+                    <Route path="/" element={<PublicRoute><PublicLayout><LandingPage/></PublicLayout></PublicRoute>}/>
+                    <Route path="/about-teacher"
+                           element={<PublicRoute><PublicLayout><AboutTeacherPage/></PublicLayout></PublicRoute>}/>
+                    <Route path="/about-student"
+                           element={<PublicRoute><PublicLayout><AboutStudentPage/></PublicLayout></PublicRoute>}/>
+                    <Route path="/login"
+                           element={<PublicRoute><PublicLayout><LoginPage/></PublicLayout></PublicRoute>}/>
+                    <Route path="/register"
+                           element={<PublicRoute><PublicLayout><RegisterPage/></PublicLayout></PublicRoute>}/>
 
-                    <Route path="/question/:questionId" element={<QuestionDetails />} /> {/* New route */}
-
+                    <Route path="/question/:questionId" element={<QuestionDetails/>}/> {/* New route */}
 
 
                     {/* Teacher Routes */}
                     <Route path="/teacher-dashboard" element={
                         <PrivateRoute requiredRoles={["teacher", "admin"]}>
-                            <TeacherLayout />
+                            <TeacherLayout/>
                         </PrivateRoute>
                     }>
                         {/* Use index for the dashboard */}
-                        <Route index element={<TeacherDashboard />} />
+                        <Route index element={<TeacherDashboard/>}/>
                         {/* Other teacher routes */}
-                        <Route path="create-test" element={<CreateTestPage />} />
-                        <Route path="edit-test/:id" element={<EditTestPage />} />
-                        <Route path="test/:testId/questions" element={<TestQuestionsPage />} />
-                        <Route path="test/:testId/questions/create" element={<QuestionManagerPage />} />
-                        <Route path="test/:testId/questions/:questionId/edit" element={<EditQuestionPage />} />
-                        <Route path="create-question" element={<CreateFutureQuestion />} />
-                        <Route path="questions" element={<AllQuestionsPage />} />
+                        <Route path="create-test" element={<CreateTestPage/>}/>
+                        <Route path="edit-test/:id" element={<EditTestPage/>}/>
+                        <Route path="test/:testId/questions" element={<TestQuestionsPage/>}/>
+                        <Route path="test/:testId/questions/create" element={<QuestionManagerPage/>}/>
+                        <Route path="test/:testId/questions/:questionId/edit" element={<EditQuestionPage/>}/>
+                        <Route path="create-question" element={<CreateFutureQuestion/>}/>
+                        <Route path="questions" element={<AllQuestionsPage/>}/>
                         {/* Remove the leading /teacher-dashboard from this path */}
-                        <Route path="questions/:questionId/edit" element={<EditQuestionPage />} />
+                        <Route path="questions/:questionId/edit" element={<EditQuestionPage/>}/>
                     </Route>
 
 
@@ -83,167 +90,188 @@ const AppRoutes = () => {
                     {/* Student Routes */}
                     <Route path="/student-dashboard" element={
                         <PrivateRoute requiredRoles={["student", "admin"]}>
-                            <StudentLayout />
+                            <StudentLayout/>
                         </PrivateRoute>
                     }>
                         {/* Remove the duplicate path and use index instead */}
-                        <Route index element={<StudentDashboard />} />
+                        <Route index element={<StudentDashboard/>}/>
+                    </Route>
+
+                    <Route path="/student-settings" element={
+                        <PrivateRoute requiredRoles={["student", "admin"]}>
+                            <StudentLayout/>
+                        </PrivateRoute>
+                    }>
+                        <Route index element={<StudentSettings/>}/>
+                    </Route>
+                    <Route path="/change-password" element={
+                        <PrivateRoute requiredRoles={["teacher", "admin", "student"]}>
+                            <ChangePassword/>
+                        </PrivateRoute>
+                    }>
+                    </Route>
+                    <Route path="/teacher-settings" element={
+                        <PrivateRoute requiredRoles={["teacher", "admin"]}>
+                            <TeacherLayout/>
+                        </PrivateRoute>
+                    }>
+                        <Route index element={<TeacherSettings/>}/>
                     </Route>
 
                     <Route path="/take-test/:studentTestId" element={
                         <PrivateRoute requiredRoles={["student", "admin"]}>
-                            <StudentLayout />
+                            <StudentLayout/>
                         </PrivateRoute>
                     }>
                         {/* Use relative path here */}
-                        <Route index element={<TakeTestPage />} />
+                        <Route index element={<TakeTestPage/>}/>
                     </Route>
 
                     <Route path="/test-results" element={
                         <PrivateRoute requiredRoles={["student", "admin"]}>
-                            <StudentLayout />
+                            <StudentLayout/>
                         </PrivateRoute>
                     }>
                         {/* Use relative path here */}
-                        <Route index element={<TestResultsPage />} />
+                        <Route index element={<TestResultsPage/>}/>
                     </Route>
 
                     <Route path="/test-details" element={
                         <PrivateRoute requiredRoles={["student", "admin"]}>
-                            <StudentLayout />
+                            <StudentLayout/>
                         </PrivateRoute>
                     }>
                         {/* Use relative path here */}
-                        <Route index element={<TestDetailsPage />} />
+                        <Route index element={<TestDetailsPage/>}/>
                     </Route>
                     {/* Admin Routes */}
                     <Route path="/crud/hub" element={
                         <PrivateRoute requiredRoles="admin">
                             <CrudLayout>
-                                <CrudHubPage />
+                                <CrudHubPage/>
                             </CrudLayout>
                         </PrivateRoute>
-                    } />
+                    }/>
 
                     {/* Protected CRUD Routes */}
                     {/* Metadata Routes */}
                     <Route path="/crud/metadata" element={
                         <PrivateRoute requiredRoles="admin">
-                            <CrudLayout><MetadataList /></CrudLayout>
+                            <CrudLayout><MetadataList/></CrudLayout>
                         </PrivateRoute>
-                    } />
+                    }/>
                     <Route path="/crud/metadata/new" element={
                         <PrivateRoute requiredRoles="admin">
-                            <CrudLayout><MetadataForm /></CrudLayout>
+                            <CrudLayout><MetadataForm/></CrudLayout>
                         </PrivateRoute>
-                    } />
+                    }/>
                     <Route path="/crud/metadata/edit/:id" element={
                         <PrivateRoute requiredRoles="admin">
-                            <CrudLayout><MetadataForm /></CrudLayout>
+                            <CrudLayout><MetadataForm/></CrudLayout>
                         </PrivateRoute>
-                    } />
+                    }/>
 
                     {/* Answer Routes */}
                     <Route path="/crud/answer" element={
                         <PrivateRoute requiredRoles="admin">
-                            <CrudLayout><AnswersList /></CrudLayout>
+                            <CrudLayout><AnswersList/></CrudLayout>
                         </PrivateRoute>
-                    } />
+                    }/>
 
                     {/* Test Routes */}
                     <Route path="/crud/test" element={
                         <PrivateRoute requiredRoles="admin">
-                            <CrudLayout><TestList /></CrudLayout>
+                            <CrudLayout><TestList/></CrudLayout>
                         </PrivateRoute>
-                    } />
+                    }/>
                     <Route path="/crud/test/new" element={
                         <PrivateRoute requiredRoles="admin">
-                            <CrudLayout><TestForm /></CrudLayout>
+                            <CrudLayout><TestForm/></CrudLayout>
                         </PrivateRoute>
-                    } />
+                    }/>
                     <Route path="/crud/test/edit/:id" element={
                         <PrivateRoute requiredRoles="admin">
-                            <CrudLayout><TestForm /></CrudLayout>
+                            <CrudLayout><TestForm/></CrudLayout>
                         </PrivateRoute>
-                    } />
+                    }/>
 
                     {/* Question Routes */}
                     <Route path="/crud/question" element={
                         <PrivateRoute requiredRoles="admin">
-                            <CrudLayout><QuestionList /></CrudLayout>
+                            <CrudLayout><QuestionList/></CrudLayout>
                         </PrivateRoute>
-                    } />
+                    }/>
                     <Route path="/crud/question/new" element={
                         <PrivateRoute requiredRoles="admin">
-                            <CrudLayout><QuestionForm /></CrudLayout>
+                            <CrudLayout><QuestionForm/></CrudLayout>
                         </PrivateRoute>
-                    } />
+                    }/>
                     <Route path="/crud/question/edit/:id" element={
                         <PrivateRoute requiredRoles="admin">
-                            <CrudLayout><QuestionForm /></CrudLayout>
+                            <CrudLayout><QuestionForm/></CrudLayout>
                         </PrivateRoute>
-                    } />
+                    }/>
 
                     {/* User Management Routes */}
                     <Route path="/crud/user" element={
                         <PrivateRoute requiredRoles="admin">
-                            <CrudLayout><UsersList /></CrudLayout>
+                            <CrudLayout><UsersList/></CrudLayout>
                         </PrivateRoute>
-                    } />
+                    }/>
 
                     {/* Admin User Routes */}
                     <Route path="/crud/users/admin" element={
                         <PrivateRoute requiredRoles="admin">
-                            <CrudLayout><AdminList /></CrudLayout>
+                            <CrudLayout><AdminList/></CrudLayout>
                         </PrivateRoute>
-                    } />
+                    }/>
                     <Route path="/crud/users/admin/new" element={
                         <PrivateRoute requiredRoles="admin">
-                            <CrudLayout><AdminForm /></CrudLayout>
+                            <CrudLayout><AdminForm/></CrudLayout>
                         </PrivateRoute>
-                    } />
+                    }/>
                     <Route path="/crud/users/admin/edit/:id" element={
                         <PrivateRoute requiredRoles="admin">
-                            <CrudLayout><AdminForm /></CrudLayout>
+                            <CrudLayout><AdminForm/></CrudLayout>
                         </PrivateRoute>
-                    } />
+                    }/>
 
                     {/* Teacher User Routes */}
                     <Route path="/crud/users/teacher" element={
                         <PrivateRoute requiredRoles="admin">
-                            <CrudLayout><TeacherList /></CrudLayout>
+                            <CrudLayout><TeacherList/></CrudLayout>
                         </PrivateRoute>
-                    } />
+                    }/>
                     <Route path="/crud/users/teacher/new" element={
                         <PrivateRoute requiredRoles="admin">
-                            <CrudLayout><TeacherForm /></CrudLayout>
+                            <CrudLayout><TeacherForm/></CrudLayout>
                         </PrivateRoute>
-                    } />
+                    }/>
                     <Route path="/crud/users/teacher/edit/:id" element={
                         <PrivateRoute requiredRoles="admin">
-                            <CrudLayout><TeacherForm /></CrudLayout>
+                            <CrudLayout><TeacherForm/></CrudLayout>
                         </PrivateRoute>
-                    } />
+                    }/>
 
                     {/* Student User Routes */}
                     <Route path="/crud/users/student" element={
                         <PrivateRoute requiredRoles="admin">
-                            <CrudLayout><StudentList /></CrudLayout>
+                            <CrudLayout><StudentList/></CrudLayout>
                         </PrivateRoute>
-                    } />
+                    }/>
                     <Route path="/crud/users/student/new" element={
                         <PrivateRoute requiredRoles="admin">
-                            <CrudLayout><StudentForm /></CrudLayout>
+                            <CrudLayout><StudentForm/></CrudLayout>
                         </PrivateRoute>
-                    } />
+                    }/>
                     <Route path="/crud/users/student/edit/:id" element={
                         <PrivateRoute requiredRoles="admin">
-                            <CrudLayout><StudentForm /></CrudLayout>
+                            <CrudLayout><StudentForm/></CrudLayout>
                         </PrivateRoute>
-                    } />
+                    }/>
                     <Route path="/debug" element={<DebugPage/>}></Route>
                     {/* Catch-all route - redirect to appropriate dashboard */}
-                    <Route path="*" element={<Navigate to="/login" replace />} />
+                    <Route path="*" element={<Navigate to="/login" replace/>}/>
                 </Routes>
             </Router>
         </AuthProvider>

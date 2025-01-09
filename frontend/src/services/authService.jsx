@@ -74,6 +74,58 @@ const authService = {
         }
     },
 
+    update: async (updatedData) => {
+        try {
+            const response = await axiosInstance.put('/update', updatedData);
+
+            if (response.data) {
+                localStorage.setItem('token', response.data);
+                localStorage.setItem('fullName', updatedData.fullName);
+                // Set up auth header for future requests
+                authService.setupAuthHeader();
+
+                return {
+                    success: true,
+                    data: response.data
+                };
+            }
+
+            return {
+                success: false,
+                error: 'Updating profile failed: No token received'
+            };
+        } catch (error) {
+            return authService.handleError(error, 'Updating profile failed');
+        }
+    },
+    changePassword: async (formData) => {
+        try {
+            const token = localStorage.getItem('token');
+            const response = await axiosInstance.post('/change-password', formData,{
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }});
+
+            if (response.data) {
+                localStorage.setItem('token', response.data);
+                // Set up auth header for future requests
+                authService.setupAuthHeader();
+
+                return {
+                    success: true,
+                    data: response.data
+                };
+            }
+
+            return {
+                success: false,
+                error: 'Changing password failed: No token received'
+            };
+        } catch (error) {
+            return authService.handleError(error, 'Changing password failed');
+        }
+    },
+
     logout: () => {
         // Clear all auth-related data
         const keysToRemove = ['token', 'user', 'role', 'fullName', 'userPreferences'];

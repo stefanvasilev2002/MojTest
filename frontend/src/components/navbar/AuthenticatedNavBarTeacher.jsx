@@ -7,7 +7,7 @@ const AuthenticatedNavBarTeacher = () => {
     const { t } = useTranslation("common");
     const links = [
         { label: "nav.teacherDashboard", path: "/teacher-dashboard" },
-        { label: "nav.settings", path: "/settings" },
+        { label: "nav.settings", path: "/teacher-settings" },
     ];
 
     return <NavBar links={links} />;

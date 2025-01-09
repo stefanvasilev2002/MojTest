@@ -29,7 +29,9 @@ export const AuthProvider = ({ children }) => {
                         // Update user state with all information
                         const updatedUser = {
                             ...userInfo,
+                            username: data.username,
                             grade: data.grade,
+                            email: data.email,
                             fullName: data.fullName || decodedToken.fullName,  // Prefer API data, fallback to token
                         };
                         setUser(updatedUser);
@@ -83,6 +85,7 @@ export const AuthProvider = ({ children }) => {
                 username: decodedToken.sub,
                 token: token,
                 grade: userData.grade,
+                email: userData.email,
                 fullName: userData.fullName || decodedToken.fullName  // Prefer API data, fallback to token
             });
 
