@@ -14,6 +14,7 @@ import QuestionNavigation from "../../components/student/QuestionNavigation.jsx"
 import SubmitConfirmationModal from "../../components/student/SubmitConfirmationModal.jsx";
 import { useTranslation } from 'react-i18next';
 import {endpoints} from "../../config/api.config.jsx";
+import ImageDisplay from "../../components/student/ImageDisplay.jsx";
 const TakeTestPage = () => {
     const { studentTestId } = useParams();
     const { t } = useTranslation("common");
@@ -257,7 +258,7 @@ const TakeTestPage = () => {
     }
 
     const currentQuestion = testData.questions[currentQuestionIndex];
-
+    console.log(currentQuestion)
     return (
         <div className="min-h-screen bg-gray-50 p-6">
             <TimeUpModal
@@ -316,12 +317,7 @@ const TakeTestPage = () => {
                             <div className="mb-6">
                                 <p className="text-lg mb-4">{currentQuestion.description}</p>
                                 {currentQuestion.imageId && (
-                                    <img
-                                        src={endpoints.files.download(currentQuestion.imageId)}
-                                        alt={t('takeTest.questionImage')}
-                                        className="mb-4 max-w-full h-auto"
-                                        onError={(e) => console.error(t('takeTest.error.imageLoad'), e)}
-                                    />
+                                    <ImageDisplay imageId={currentQuestion.imageId} />
                                 )}
 
                                 <div className="space-y-4">

@@ -17,10 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -35,6 +32,7 @@ public class QuestionServiceImpl implements QuestionService {
     private final UserRepository userRepository;
     private final StudentAnswerRepository studentAnswerRepository;
     private final TestQuestionRepository testQuestionRepository;
+    private final FileRepository fileRepository;
 
     @Override
     public Question createQuestion(Question question) {
@@ -110,6 +108,11 @@ public class QuestionServiceImpl implements QuestionService {
             List<Test> tests = (questionDTO.getTestIds() != null && !questionDTO.getTestIds().isEmpty()) ?
                     testRepository.findAllById(questionDTO.getTestIds()) :
                     Collections.emptyList();
+            File image = null;
+            if(questionDTO.getFile() != null) {
+                image=fileRepository.findById(questionDTO.getFile().getId()).orElse(null);
+            }
+
 
             List<Metadata> metadata = new ArrayList<>();
             if (questionDTO.getMetadata() != null && !questionDTO.getMetadata().isEmpty()) {
@@ -128,7 +131,8 @@ public class QuestionServiceImpl implements QuestionService {
                 }
             }
 
-            QuestionMapper.updateFromDTO(existingQuestion, questionDTO, creator, tests, metadata, new Date());
+            QuestionMapper.updateFromDTO(existingQuestion, questionDTO, creator, tests, metadata, new Date(), image);
+
             existingQuestion.setDescription(questionDTO.getDescription());
 
             if (questionDTO.getAnswers() != null) {
@@ -215,7 +219,29 @@ public class QuestionServiceImpl implements QuestionService {
         question.setCreator(creator);
         question.setIsCopy(questionCreateDTO.getIsCopy());
 
+
+
         question = questionRepository.save(question);
+
+        if(questionCreateDTO.getFile() != null) {
+            Optional<File> image = fileRepository.findById(questionCreateDTO.getFile().getId());
+            if(image.isPresent()) {
+                Optional<Question> checkIfFileExist = questionRepository.findByImage_Id(questionCreateDTO.getFile().getId());
+                if(checkIfFileExist.isPresent()) {
+                    File imageFile = new File();
+                    imageFile.setFileName(image.get().getFileName());
+                    imageFile.setFilePath(image.get().getFilePath());
+                    imageFile.setFileType(image.get().getFileType());
+                    imageFile.setRelatedEntityId(question.getId());
+                    imageFile.setUploadedAt(image.get().getUploadedAt());
+                    imageFile = fileRepository.save(imageFile);
+                    question.setImage(imageFile);
+                }else{
+                    question.setImage(image.get());
+                }
+
+            }
+        }
 
         if (questionCreateDTO.getMetadata() != null) {
             Question finalQuestion = question;
@@ -287,6 +313,13 @@ public class QuestionServiceImpl implements QuestionService {
         question.setHint(questionCreateDTO.getHint());
         question.setCreator(creator);
         question.setIsCopy(questionCreateDTO.getIsCopy());
+
+        if(questionCreateDTO.getFile() != null) {
+            Optional<File> image = fileRepository.findById(questionCreateDTO.getFile().getId());
+            if(image.isPresent()) {
+                question.setImage(image.get());
+            }
+        }
 
         question = questionRepository.save(question);
 

@@ -20,4 +20,5 @@ public class QuestionFromTeacherDTO {
     private List<CreateAnswerDTO> answers;
     private List<MetadataDTO> metadata;
     private Boolean isCopy;
+    private FileDTO file;
 }

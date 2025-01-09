@@ -5,6 +5,7 @@ import FormulaInput from "../FormulaInput.jsx";
 import FormulaDisplay from "../FormulaDisplay.jsx";
 import { useTranslation } from 'react-i18next';
 import {getTranslatedMetadata} from "../../config/translatedMetadata.js";
+import ImageUploader from "../ImageUploader.jsx";
 
 const QuestionForm = ({ onSubmit, isEditing = false, initialData = {}, mode = 'create', loading = false }) => {
     const { t , i18n} = useTranslation("common");
@@ -21,6 +22,7 @@ const QuestionForm = ({ onSubmit, isEditing = false, initialData = {}, mode = 'c
         creatorId: initialData.creatorId || user?.id,
         metadata: initialData.metadata || {},
         answers: [],
+        file: initialData.file || null,
     });
     const [originalData, setOriginalData] = useState(null);
     const [isInitialValuesSet, setIsInitialValuesSet] = useState(false);
@@ -55,6 +57,7 @@ const QuestionForm = ({ onSubmit, isEditing = false, initialData = {}, mode = 'c
                 creatorId: initialData.creatorId || user?.id,
                 metadata: metadataDTOMap,
                 answers: processedAnswers,
+                file: initialData.file || null,
             };
 
             setFormData(fullData);
@@ -254,6 +257,12 @@ const QuestionForm = ({ onSubmit, isEditing = false, initialData = {}, mode = 'c
         return true; // All fields are the same
     };
 
+    const handleImageUploadComplete = (uploadedFile) => {
+        setFormData((prev) => ({
+            ...prev,
+            file: { id: uploadedFile.fileId }, // Store image ID in formData
+        }));
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -413,6 +422,16 @@ const QuestionForm = ({ onSubmit, isEditing = false, initialData = {}, mode = 'c
                     placeholder={t('questionForm.placeholders.hint')}
                 />
             </div>
+            <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Optional Image
+                </label>
+                <ImageUploader
+                    label="Upload Image"
+                    onUploadComplete={handleImageUploadComplete}
+                    initialFile={formData.file}
+                />
+            </div>
 
             <div>
                 {selectedType === 'NUMERIC' && (
@@ -525,7 +544,8 @@ const QuestionForm = ({ onSubmit, isEditing = false, initialData = {}, mode = 'c
                             onChange={(e) => handleMetadataChange(key, e.target.value)}
                             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                         >
-                            <option value="">{t('questionForm.placeholders.selectMetadata', { field: t(`metadata.${key}`) })}</option>
+                            <option
+                                value="">{t('questionForm.placeholders.selectMetadata', {field: t(`metadata.${key}`)})}</option>
                             {values.map(value => (
                                 <option key={value} value={value}>
                                     {getTranslatedMetadata(key, value, i18n.language) || value}

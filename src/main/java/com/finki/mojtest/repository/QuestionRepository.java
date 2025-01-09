@@ -1,5 +1,6 @@
 package com.finki.mojtest.repository;
 
+import com.finki.mojtest.model.File;
 import com.finki.mojtest.model.Question;
 import com.finki.mojtest.model.Test;
 import com.finki.mojtest.model.enumerations.QuestionType;
@@ -9,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface QuestionRepository extends JpaRepository<Question, Long> {
@@ -20,4 +22,6 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
     List<Question> findByTestId(@Param("testId") Long testId);
 
     List<Question> findAllByTestsNotContaining(Test test);
+
+    Optional<Question> findByImage_Id(Long id);
 }

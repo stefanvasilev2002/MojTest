@@ -1,5 +1,6 @@
 package com.finki.mojtest.model.dtos;
 
+import com.finki.mojtest.model.File;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -27,6 +28,7 @@ public class QuestionDTO {
     private List<AnswerDTO> answers;
 
     private List<MetadataDTO> metadata;
+    private FileDTO file;
     private Boolean isCopy;
 }
 
