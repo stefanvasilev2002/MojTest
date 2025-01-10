@@ -293,6 +293,85 @@
     "allPeriods": "All Periods",
     "allTypes": "All Types"
   },
+  "studentPage": {
+    "hero": {
+      "title": "Transform Your Learning Journey",
+      "subtitle": "Personalized learning experience designed for your success"
+    },
+    "features": {
+      "title": "What You Get as a Student",
+      "practice": {
+        "title": "Practice Tests",
+        "description": "Access a wide range of practice tests to enhance your knowledge"
+      },
+      "progress": {
+        "title": "Track Progress",
+        "description": "Monitor your performance and see your improvement over time"
+      },
+      "flexible": {
+        "title": "Flexible Learning",
+        "description": "Study at your own pace with 24/7 access to materials"
+      }
+    },
+    "stats": {
+      "tests": "Available Tests",
+      "students": "Active Students",
+      "satisfaction": "Satisfaction Rate"
+    }
+  },
+  "teacherPage": {
+    "hero": {
+      "title": "Empower Your Teaching",
+      "subtitle": "Comprehensive tools to enhance your teaching experience"
+    },
+    "features": {
+      "title": "Teacher Tools & Features",
+      "create": {
+        "title": "Test Creation",
+        "description": "Create and customize tests with our intuitive interface"
+      },
+      "analytics": {
+        "title": "Advanced Analytics",
+        "description": "Get detailed insights into student performance"
+      },
+      "collaboration": {
+        "title": "Collaboration",
+        "description": "Share resources and collaborate with other educators"
+      }
+    },
+    "workflow": {
+      "title": "Your Teaching Workflow",
+      "step1": {
+        "title": "Create Tests",
+        "description": "Design comprehensive assessments using our test creation tools"
+      },
+      "step2": {
+        "title": "Monitor Progress",
+        "description": "Track student performance and identify areas for improvement"
+      }
+    }
+  },
+  "landingPage": {
+    "welcomeTitle": "Welcome to",
+    "platformName": "MojTest",
+    "description": "Your smart platform for creating and taking tests",
+    "getStarted": "Get Started",
+    "registerNow": "Register Now",
+    "exploreFeatures": "Explore Our Features",
+    "studentCardTitle": "For Students",
+    "studentCardDescription": "Take tests, track your progress, and improve your knowledge with personalized learning experiences.",
+    "teacherCardTitle": "For Teachers",
+    "teacherCardDescription": "Create tests, monitor student progress, and get detailed insights into student performance.",
+    "platformFeatures": "Platform Features",
+    "platformDescription": "Advanced analytics, real-time feedback, and comprehensive testing tools all in one place.",
+    "stats": {
+      "tests": "Available Tests",
+      "students": "Active Students",
+      "satisfaction": "Satisfaction Rate"
+    },
+    "ctaTitle": "Ready to transform your learning experience?",
+    "imageAlt": "Online testing platform illustration"
+  },
   "testForm": {
     "pageTitle": "Create New Test",
     "title": {
@@ -543,18 +622,5 @@
     "FILL_IN_THE_BLANK": "Fill in the Blank",
     "ESSAY": "Essay",
     "NUMERIC": "Numeric"
-  },
-  "landingPage": {
-    "welcomeTitle": "Welcome to",
-    "platformName": "MyTest",
-    "description": "Simplifying learning and teaching one test at a time",
-    "imageAlt": "Test image",
-    "getStarted": "Get started",
-    "registerNow": "Register now!",
-    "exploreFeatures": "Explore Features for Students and Teachers",
-    "studentCardTitle": "For Students",
-    "studentCardDescription": "Take personalized tests created by your teachers or practice on pre-made quizzes. Track your progress and gain confidence as you learn.",
-    "teacherCardTitle": "For Teachers",
-    "teacherCardDescription": "Easily create tests for your students using our shared question bank or customize your own. Get inspired by questions crafted by other educators!"
   }
 }

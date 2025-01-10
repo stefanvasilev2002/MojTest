@@ -9,6 +9,85 @@
     "dashboard": "Paneli",
     "manageQuizzes": "Menaxho Kuizet"
   },
+  "studentPage": {
+    "hero": {
+      "title": "Transformoni Udhëtimin Tuaj të Mësimit",
+      "subtitle": "Përvojë e personalizuar mësimi e dizajnuar për suksesin tuaj"
+    },
+    "features": {
+      "title": "Çfarë Merrni si Student",
+      "practice": {
+        "title": "Teste Praktike",
+        "description": "Qasje në një gamë të gjerë testesh praktike për të përmirësuar njohuritë tuaja"
+      },
+      "progress": {
+        "title": "Ndiqni Progresin",
+        "description": "Monitoroni performancën tuaj dhe shihni përmirësimin tuaj me kalimin e kohës"
+      },
+      "flexible": {
+        "title": "Mësim Fleksibël",
+        "description": "Studioni me ritmin tuaj me qasje 24/7 në materiale"
+      }
+    },
+    "stats": {
+      "tests": "Teste të Disponueshme",
+      "students": "Studentë Aktivë",
+      "satisfaction": "Shkalla e Kënaqësisë"
+    }
+  },
+  "teacherPage": {
+    "hero": {
+      "title": "Fuqizoni Mësimdhënien Tuaj",
+      "subtitle": "Mjete gjithëpërfshirëse për të përmirësuar përvojën tuaj të mësimdhënies"
+    },
+    "features": {
+      "title": "Mjetet dhe Veçoritë e Mësuesit",
+      "create": {
+        "title": "Krijimi i Testeve",
+        "description": "Krijoni dhe përshtatni teste me ndërfaqen tonë intuitive"
+      },
+      "analytics": {
+        "title": "Analitika e Avancuar",
+        "description": "Merrni njohuri të detajuara për performancën e studentëve"
+      },
+      "collaboration": {
+        "title": "Bashkëpunim",
+        "description": "Ndani burime dhe bashkëpunoni me edukatorë të tjerë"
+      }
+    },
+    "workflow": {
+      "title": "Rrjedha e Punës së Mësimdhënies Tuaj",
+      "step1": {
+        "title": "Krijoni Teste",
+        "description": "Dizajnoni vlerësime gjithëpërfshirëse duke përdorur mjetet tona të krijimit të testeve"
+      },
+      "step2": {
+        "title": "Monitoroni Progresin",
+        "description": "Ndiqni performancën e studentëve dhe identifikoni fushat për përmirësim"
+      }
+    }
+  },
+  "landingPage": {
+    "welcomeTitle": "Mirë se vini në",
+    "platformName": "MojTest",
+    "description": "Platforma juaj e mençur për krijimin dhe dhënien e testeve",
+    "getStarted": "Filloni",
+    "registerNow": "Regjistrohu Tani",
+    "exploreFeatures": "Eksploroni Veçoritë Tona",
+    "studentCardTitle": "Për Studentët",
+    "studentCardDescription": "Jepni teste, ndiqni përparimin tuaj dhe përmirësoni njohuritë tuaja me përvoja të personalizuara të të mësuarit.",
+    "teacherCardTitle": "Për Mësuesit",
+    "teacherCardDescription": "Krijoni teste, monitoroni përparimin e studentëve dhe merrni njohuri të detajuara për performancën e studentëve.",
+    "platformFeatures": "Veçoritë e Platformës",
+    "platformDescription": "Analitikë e avancuar, reagime në kohë reale dhe mjete gjithëpërfshirëse të testimit në një vend.",
+    "stats": {
+      "tests": "Teste në Dispozicion",
+      "students": "Studentë Aktivë",
+      "satisfaction": "Shkalla e Kënaqësisë"
+    },
+    "ctaTitle": "Gati për të transformuar përvojën tuaj të të mësuarit?",
+    "imageAlt": "Ilustrim i platformës së testimit online"
+  },
   "metadata": {
     "Subject": "Lënda",
     "Part of Year": "Pjesa e vitit",
@@ -507,18 +586,5 @@
     "FILL_IN_THE_BLANK": "Plotëso hapësirën",
     "ESSAY": "Ese",
     "NUMERIC": "Numerike"
-  },
-  "landingPage": {
-    "welcomeTitle": "Mirësevini në",
-    "platformName": "TestiIm",
-    "description": "Zgjedhni rolin tuaj për të mësuar më shumë rreth asaj që ofrojmë",
-    "imageAlt": "Pamja e Testit",
-    "getStarted": "Fillo tani",
-    "registerNow": "Regjistrohuni tani!",
-    "exploreFeatures": "Eksploro tiparet për Studentët dhe Mësuesit",
-    "studentCardTitle": "Për Studentët",
-    "studentCardDescription": "Merrni testet e personalizuara ose praktikoni me pyetje të paracaktuara. Ndjekni progresin tuaj teksa mësoni.",
-    "teacherCardTitle": "Për Mësuesit",
-    "teacherCardDescription": "Krijoni teste për studentët tuaj ose frymëzohuni nga baza e pyetjeve të ndara."
   }
 }
