@@ -1,10 +1,11 @@
 import React from 'react';
+import FormulaDisplay from "../FormulaDisplay.jsx";
 
 const NumericAnswer = ({ question, questionId, correctAnswer, onAnswerChange }) => {
     return (
         <div className="space-y-4">
             <label className="block text-gray-700" htmlFor={`question-${questionId}`}>
-                {question.questionText}
+                {question.questionText} <br/> <FormulaDisplay formula={question.formula}/>
             </label>
             <input
                 type="number"

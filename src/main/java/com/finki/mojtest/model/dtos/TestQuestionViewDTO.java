@@ -7,6 +7,7 @@ import java.util.List;
 @Data
 public class TestQuestionViewDTO {
     private Long questionId;
+    private String formula;
     private Long testQuestionId;
     private String description;
     private Integer points;

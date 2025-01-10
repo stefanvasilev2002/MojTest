@@ -209,7 +209,7 @@ const TakeTestPage = () => {
                             questionId: parseInt(questionId),
                             answerIds: [],
                             textAnswer: answerValue.toString(),
-                            questionType: question.questionType
+                            questionType: question.questionType,
                         }];
                     default:
                         return [];

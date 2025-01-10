@@ -105,6 +105,10 @@ public class StudentTestServiceImpl implements StudentTestService {
         questionDTO.setId(question.getId());
         questionDTO.setDescription(question.getDescription());
         questionDTO.setHint(question.getHint());
+        if(question.getFormula() != null) {
+            questionDTO.setFormula(question.getFormula());
+
+        }
 
         List<AnswerDTO> answers = question.getAnswers().stream()
                 .map(answer -> {

@@ -127,6 +127,7 @@ public class TestServiceImpl implements TestService {
             questionDTO.setStudentAnswerId(studentAnswer.getId());
             questionDTO.setQuestionType(question.getQuestionType().toString());
             questionDTO.setHint(question.getHint());
+            questionDTO.setFormula(question.getFormula());
             List<AnswerViewDTO> answers = question.getAnswers().stream()
                     .map(answer -> {
                         AnswerViewDTO answerDTO = new AnswerViewDTO();
