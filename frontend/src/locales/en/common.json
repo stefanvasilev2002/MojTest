@@ -26,6 +26,13 @@
     "points": "{{count}} point",
     "points_plural": "{{count}} points"
   },
+  "export": {
+    "title": "Export Test",
+    "description": "Export this test as PDF or Word document",
+    "pdf": "PDF",
+    "word": "Word",
+    "errorMessage": "Failed to export test"
+  },
   "timer": {
     "remaining": "Time Remaining",
     "hours": "{{hours}}h",

@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { getTranslatedMetadata } from "../../config/translatedMetadata.js";
 import DeleteTestModal from "../../components/teacher/DeleteTestModal.jsx";
 import { ChevronDown, Edit, Plus, Trash2, HelpCircle } from 'lucide-react';
+import TestExport from "./TestExport.jsx";
 
 const TeacherDashboard = () => {
     const { items: tests, loading: testsLoading, error: testsError, deleteItem: deleteTest } = useTest();
@@ -166,6 +167,11 @@ const TeacherDashboard = () => {
                         <Edit className="w-4 h-4 mr-2" />
                         <span className="whitespace-nowrap">{t('dashboard.testDetails.actions.editTest')}</span>
                     </button>
+                    <TestExport
+                        testId={test.id}
+                        testTitle={test.title}
+                        className="w-full sm:w-auto"
+                    />
                     <button
                         onClick={() => handleDeleteClick(test)}
                         className="w-full sm:w-auto bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition-colors flex items-center justify-center"
@@ -177,7 +183,6 @@ const TeacherDashboard = () => {
             )}
         </div>
     );
-
     const renderTest = (test, isOwner) => (
         <div key={test.id} className="bg-white rounded-lg shadow p-4 sm:p-6">
             <div className="flex flex-col sm:flex-row justify-between">

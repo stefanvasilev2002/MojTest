@@ -82,8 +82,10 @@ public class QuestionMapper {
             }
         }
         existingQuestion.setHint(dto.getHint());
-        existingQuestion.setImage(file);
-        file.setRelatedEntityId(existingQuestion.getId());
+        if(file != null){
+            existingQuestion.setImage(file);
+            file.setRelatedEntityId(existingQuestion.getId());
+        }
         existingQuestion.setCreator(creator);
         existingQuestion.setTests(tests != null ? tests : Collections.emptyList());
         existingQuestion.setMetadata(metadata != null ? metadata : Collections.emptyList());

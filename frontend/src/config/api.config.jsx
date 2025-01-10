@@ -6,6 +6,9 @@ export const endpoints = {
         login: `${API_BASE_URL}/auth/login`,
         register: `${API_BASE_URL}/auth/register`
     },
+    export:{
+        test: (testId, format) => `${API_BASE_URL}/export/${testId}?format=${format}`
+    },
     // In api.config.jsx, add to the existing endpoints object:
     questions: {
         create: `${API_BASE_URL}/questions/create`,
