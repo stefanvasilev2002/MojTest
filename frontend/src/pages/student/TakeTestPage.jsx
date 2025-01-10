@@ -180,13 +180,6 @@ const TakeTestPage = () => {
         });
     };
 
-    const handleOpenSubmitModal = () => {
-        setShowSubmitModal(true);
-    };
-    const handleConfirmSubmit = () => {
-        setShowSubmitModal(false);
-        handleSubmitTest();
-    };
     const handleSubmitTest = async () => {
         try {
             const answersToSend = Object.entries(answers).flatMap(([questionId, answerValue]) => {
@@ -368,7 +361,44 @@ const TakeTestPage = () => {
                                             onAnswerChange={handleAnswerChange}
                                         />
                                     )}
-                                    {/* [Other answer components remain the same] */}
+                                    {currentQuestion.questionType === 'MULTIPLE_CHOICE' && (
+                                        <MultipleChoiceAnswer
+                                            question={currentQuestion}
+                                            questionId={currentQuestion.questionId}
+                                            selectedAnswers={answers[currentQuestion.questionId] || []}
+                                            onAnswerChange={handleCheckBoxChange}
+                                        />
+                                    )}
+                                    {currentQuestion.questionType === 'NUMERIC' && (
+                                        <NumericAnswer
+                                            question={currentQuestion}
+                                            questionId={currentQuestion.questionId}
+                                            correctAnswer={answers[currentQuestion.questionId]}
+                                            onAnswerChange={handleAnswerChange}
+                                        />
+                                    )}
+                                    {currentQuestion.questionType === 'ESSAY' && (
+                                        <EssayAnswer
+                                            question={currentQuestion}
+                                            questionId={currentQuestion.questionId}
+                                            correctAnswer={answers[currentQuestion.questionId]}
+                                            onAnswerChange={handleAnswerChange}
+                                        />
+                                    )}
+                                    {currentQuestion.questionType === 'FILL_IN_THE_BLANK' && (
+                                        <FillInTheBlankAnswer
+                                            question={currentQuestion}
+                                            questionId={currentQuestion.questionId}
+                                            answer={answers[currentQuestion.questionId]}
+                                            onAnswerChange={handleAnswerChange}
+                                        />
+                                    )}
+                                    <HintButton
+                                        hint={currentQuestion.hint}
+                                        questionId={currentQuestion.questionId}
+                                        hintsUsed={hintsUsed}
+                                        onHintTaken={handleHintUsed}
+                                    />
                                 </div>
 
                                 <HintButton
