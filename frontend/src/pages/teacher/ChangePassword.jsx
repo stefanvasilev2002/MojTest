@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import useAuthActions from "../../hooks/useAuthActions.js";
 import { useAuth } from "../../context/AuthContext.jsx";
+import { ArrowLeft } from 'lucide-react';
 
 const ChangePassword = () => {
     const { t } = useTranslation('common');
@@ -81,6 +82,13 @@ const ChangePassword = () => {
     return (
         <div className="flex justify-center items-center min-h-screen bg-gray-100">
             <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
+                <button
+                    onClick={() => navigate(-1)}
+                    className="absolute left-8 top-8 text-gray-600 hover:text-gray-900 flex items-center gap-2 text-sm"
+                >
+                    <ArrowLeft className="w-4 h-4"/>
+                    {t('common.back')}
+                </button>
                 <h2 className="text-2xl font-semibold text-center mb-4">
                     {t('settings.changePasswordPage.title')}
                 </h2>
@@ -166,7 +174,7 @@ const ChangePassword = () => {
                         className="w-full p-3 bg-blue-500 text-white rounded-lg
                             hover:bg-blue-600 transition-colors disabled:bg-blue-300 disabled:cursor-not-allowed"
                     >
-                        {loading ? t('settings.updating'):  t('settings.update')}
+                        {loading ? t('settings.updating') : t('settings.update')}
                     </button>
                 </form>
             </div>

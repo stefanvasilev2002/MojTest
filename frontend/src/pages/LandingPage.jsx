@@ -36,6 +36,7 @@ const LandingPage = () => {
                                     className="text-6xl font-bold text-blue-600 tracking-tight"
                                 >
                                     {t("landingPage.welcomeTitle")}
+                                    <span> </span>
                                     <span className="text-blue-800 font-extrabold">
                                         {t("landingPage.platformName")}
                                     </span>

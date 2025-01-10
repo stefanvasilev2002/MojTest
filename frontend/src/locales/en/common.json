@@ -17,13 +17,55 @@
     "takenOn": "Taken on",
     "viewDetails": "View Details"
   },
+  "hint": {
+    "show": "Show Hint"
+  },
+  "questionNavigation": {
+    "title": "Questions",
+    "questionNumber": "Question {{number}}",
+    "points": "{{count}} point",
+    "points_plural": "{{count}} points"
+  },
+  "timer": {
+    "remaining": "Time Remaining",
+    "hours": "{{hours}}h",
+    "minutes": "{{minutes}} :",
+    "seconds": "{{seconds}}"
+  },
+  "timeUpModal": {
+    "title": "Time's Up!",
+    "message": "Your test time has expired and will be submitted automatically."
+  },
+  "submitModal": {
+    "warning": {
+      "title": "Warning: Unanswered Questions",
+      "message": "You have {{count}} unanswered question:",
+      "message_plural": "You have {{count}} unanswered questions:",
+      "questionItem": "Question {{number}}: {{description}}",
+      "returnButton": "Return to Test",
+      "submitButton": "Submit Anyway"
+    },
+    "confirm": {
+      "title": "Submit Test",
+      "message": "Are you sure you want to submit your test? This action cannot be undone.",
+      "cancelButton": "Cancel",
+      "submitButton": "Submit Test"
+    }
+  },
+  "exitModal": {
+    "title": "Exit Test?",
+    "message": "Are you sure you want to exit? This will abandon your test and you will need to start over. Your answers will not be saved.",
+    "cancel": "Cancel",
+    "confirm": "Exit Test"
+  },
   "common": {
     "previous": "Previous",
     "next": "Next",
     "page": "Page",
     "of": "of",
     "cancel": "Cancel",
-    "delete": "Delete"
+    "delete": "Delete",
+    "back": "Back"
   },
   "metadata": {
     "Subject": "Subject",

@@ -1,7 +1,10 @@
 import React from 'react';
 import { Clock } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 const TimeUpModal = ({ isOpen }) => {
+  const { t } = useTranslation('common');
+
   if (!isOpen) return null;
 
   return (
@@ -12,11 +15,11 @@ const TimeUpModal = ({ isOpen }) => {
               <Clock className="h-6 w-6 text-red-600" />
             </div>
             <h2 className="text-xl font-semibold text-gray-900">
-              Time's Up!
+              {t('timeUpModal.title')}
             </h2>
           </div>
           <p className="text-gray-600 mb-2">
-            Your test time has expired and will be submitted automatically.
+            {t('timeUpModal.message')}
           </p>
           <div className="mt-4 flex justify-center">
             <div className="animate-spin h-5 w-5 border-2 border-blue-600 border-t-transparent rounded-full"></div>

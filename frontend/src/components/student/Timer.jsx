@@ -1,23 +1,22 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Clock } from 'lucide-react';
 
 const Timer = ({ timeLimit, testId, onTimeUp }) => {
+    const { t } = useTranslation('common');
     const [timeLeft, setTimeLeft] = useState(() => {
         const testStartTime = localStorage.getItem(`test_${testId}_start_time`);
 
-        // If no start time exists, this is a new test
         if (!testStartTime) {
             localStorage.setItem(`test_${testId}_start_time`, Date.now().toString());
-            // Add this line to store the time limit
             localStorage.setItem(`test_${testId}_time`, timeLimit.toString());
             return timeLimit * 60;
         }
 
-        // Calculate remaining time based on start time
         const startTime = parseInt(testStartTime);
         const elapsedSeconds = Math.floor((Date.now() - startTime) / 1000);
         const remainingSeconds = Math.max(0, (timeLimit * 60) - elapsedSeconds);
 
-        // If time is already up, trigger submission
         if (remainingSeconds <= 0) {
             setTimeout(onTimeUp, 0);
         }
@@ -28,10 +27,7 @@ const Timer = ({ timeLimit, testId, onTimeUp }) => {
     const [isWarning, setIsWarning] = useState(timeLeft <= 300 && timeLeft > 60);
 
     useEffect(() => {
-        // Don't start timer if time is already up
-        if (timeLeft <= 0) {
-            return;
-        }
+        if (timeLeft <= 0) return;
 
         const timer = setInterval(() => {
             const startTime = parseInt(localStorage.getItem(`test_${testId}_start_time`));
@@ -51,11 +47,9 @@ const Timer = ({ timeLimit, testId, onTimeUp }) => {
             }
         }, 1000);
 
-        // Cleanup timer on unmount
         return () => clearInterval(timer);
     }, [testId, timeLimit, onTimeUp]);
 
-    // Set warning state when 5 minutes remaining
     useEffect(() => {
         if (timeLeft <= 300 && timeLeft > 60) {
             setIsWarning(true);
@@ -63,18 +57,14 @@ const Timer = ({ timeLimit, testId, onTimeUp }) => {
             setIsWarning(false);
         }
     }, [timeLeft]);
-// Add the new useEffect here for last activity tracking
+
     useEffect(() => {
         const updateLastActivity = () => {
             localStorage.setItem(`test_${testId}_lastUpdate`, Date.now().toString());
         };
 
-        // Update immediately when component mounts
         updateLastActivity();
-
-        // Then update every 30 seconds
         const interval = setInterval(updateLastActivity, 30000);
-
         return () => clearInterval(interval);
     }, [testId]);
 
@@ -85,19 +75,19 @@ const Timer = ({ timeLimit, testId, onTimeUp }) => {
 
         const parts = [];
         if (hours > 0) {
-            parts.push(`${hours.toString().padStart(2, '0')}h`);
+            parts.push(t('timer.hours', { hours: hours.toString().padStart(2, '0') }));
         }
         if (minutes > 0 || hours > 0) {
-            parts.push(`${minutes.toString().padStart(2, '0')}m`);
+            parts.push(t('timer.minutes', { minutes: minutes.toString().padStart(2, '0') }));
         }
-        parts.push(`${remainingSeconds.toString().padStart(2, '0')}s`);
+        parts.push(t('timer.seconds', { seconds: remainingSeconds.toString().padStart(2, '0') }));
 
         return parts.join(' ');
     };
 
     const getTimerStyles = () => {
         if (timeLeft <= 60) {
-            return 'bg-red-100 text-red-800 border-red-300';
+            return 'bg-red-100 text-red-800 border-red-300 animate-pulse';
         }
         if (isWarning) {
             return 'bg-yellow-100 text-yellow-800 border-yellow-300';
@@ -106,21 +96,12 @@ const Timer = ({ timeLimit, testId, onTimeUp }) => {
     };
 
     return (
-        <div className={`fixed top-20 right-4 px-4 py-2 rounded-lg border ${getTimerStyles()} font-medium shadow-md`}>
+        <div className={`fixed top-20 right-4 px-4 py-2 rounded-lg border ${getTimerStyles()} font-medium shadow-md transition-colors duration-200`}>
             <div className="flex items-center gap-2">
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                >
-                    <path
-                        fillRule="evenodd"
-                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
-                        clipRule="evenodd"
-                    />
-                </svg>
-                Time Remaining: {formatTime(timeLeft)}
+                <Clock className="h-5 w-5" />
+                <span>
+                    {t('timer.remaining')}: {formatTime(timeLeft)}
+                </span>
             </div>
         </div>
     );

@@ -6,6 +6,7 @@ import FormulaDisplay from "../FormulaDisplay.jsx";
 import { useTranslation } from 'react-i18next';
 import {getTranslatedMetadata} from "../../config/translatedMetadata.js";
 import ImageUploader from "../ImageUploader.jsx";
+import { Plus, Minus, Check, X, ArrowLeft } from 'lucide-react';
 
 const QuestionForm = ({ onSubmit, isEditing = false, initialData = {}, mode = 'create', loading = false }) => {
     const { t , i18n} = useTranslation("common");
@@ -340,21 +341,22 @@ const QuestionForm = ({ onSubmit, isEditing = false, initialData = {}, mode = 'c
         }));
     };
     return (
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="max-w-4xl mx-auto space-y-6 p-4 sm:p-6">
             {error && (
-                <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
+                <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6 text-sm sm:text-base">
                     {error}
                 </div>
             )}
 
-            <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+            {/* Question Type Selection */}
+            <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">
                     {t('questionForm.labels.type')}
                 </label>
                 <select
                     value={selectedType}
                     onChange={handleTypeChange}
-                    className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                    className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base"
                 >
                     <option value="MULTIPLE_CHOICE">{t('questionForm.types.multipleChoice')}</option>
                     <option value="TRUE_FALSE">{t('questionForm.types.trueFalse')}</option>
@@ -364,8 +366,9 @@ const QuestionForm = ({ onSubmit, isEditing = false, initialData = {}, mode = 'c
                 </select>
             </div>
 
-            <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+            {/* Question Description */}
+            <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">
                     {t('questionForm.labels.question')}
                 </label>
                 <textarea
@@ -374,14 +377,15 @@ const QuestionForm = ({ onSubmit, isEditing = false, initialData = {}, mode = 'c
                     onChange={handleInputChange}
                     required
                     rows="3"
-                    className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                    className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base"
                     placeholder={t('questionForm.placeholders.question')}
                 />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+            {/* Points Section */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                    <label className="block text-sm font-medium text-gray-700">
                         {t('questionForm.labels.points')}
                     </label>
                     <input
@@ -391,11 +395,11 @@ const QuestionForm = ({ onSubmit, isEditing = false, initialData = {}, mode = 'c
                         onChange={handleInputChange}
                         min="1"
                         required
-                        className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                        className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base"
                     />
                 </div>
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                <div className="space-y-2">
+                    <label className="block text-sm font-medium text-gray-700">
                         {t('questionForm.labels.negativePoints')}
                     </label>
                     <input
@@ -404,13 +408,14 @@ const QuestionForm = ({ onSubmit, isEditing = false, initialData = {}, mode = 'c
                         value={formData.negativePointsPerAnswer}
                         onChange={handleInputChange}
                         min="0"
-                        className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                        className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base"
                     />
                 </div>
             </div>
 
-            <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+            {/* Hint */}
+            <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">
                     {t('questionForm.labels.hint')}
                 </label>
                 <input
@@ -418,45 +423,51 @@ const QuestionForm = ({ onSubmit, isEditing = false, initialData = {}, mode = 'c
                     name="hint"
                     value={formData.hint}
                     onChange={handleInputChange}
-                    className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                    className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base"
                     placeholder={t('questionForm.placeholders.hint')}
                 />
             </div>
-            <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+
+            {/* Image Upload */}
+            <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">
                     Optional Image
                 </label>
-                <ImageUploader
-                    label="Upload Image"
-                    onUploadComplete={handleImageUploadComplete}
-                    initialFile={formData.file}
-                />
+                <div className="w-full sm:w-auto">
+                    <ImageUploader
+                        label="Upload Image"
+                        onUploadComplete={handleImageUploadComplete}
+                        initialFile={formData.file}
+                    />
+                </div>
             </div>
 
-            <div>
-                {selectedType === 'NUMERIC' && (
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                            {t('questionForm.labels.formula')}
-                        </label>
-                        <FormulaDisplay formula={formData.formula} isBlock={false}/>
+            {/* Formula Input for Numeric Questions */}
+            {selectedType === 'NUMERIC' && (
+                <div className="space-y-2">
+                    <label className="block text-sm font-medium text-gray-700">
+                        {t('questionForm.labels.formula')}
+                    </label>
+                    <div className="space-y-2">
+                        <FormulaDisplay formula={formData.formula} isBlock={false} />
                         <FormulaInput
                             formula={formData.formula}
                             setFormula={setFormula}
                         />
                     </div>
-                )}
-            </div>
+                </div>
+            )}
 
+            {/* Answers Section */}
             {selectedType === 'ESSAY' ? (
-                <div className="space-y-4">
+                <div className="space-y-2">
                     <h3 className="text-lg font-medium text-gray-900">
                         {t('questionForm.labels.answerTemplate')}
                     </h3>
                     <textarea
                         value={formData.answers[0]?.answerText || ''}
                         onChange={(e) => handleAnswerChange(0, 'answerText', e.target.value)}
-                        className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                        className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base"
                         rows="4"
                         placeholder={t('questionForm.placeholders.answerTemplate')}
                     />
@@ -471,108 +482,125 @@ const QuestionForm = ({ onSubmit, isEditing = false, initialData = {}, mode = 'c
                             <button
                                 type="button"
                                 onClick={addAnswer}
-                                className="text-blue-600 hover:text-blue-800"
                                 disabled={formData.answers.length >= 8}
+                                className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-800 disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
                             >
+                                <Plus className="w-4 h-4" />
                                 {t('questionForm.buttons.addAnswer')}
                             </button>
                         )}
                     </div>
-                    {formData.answers.map((answer, index) => (
-                        <div key={`answer-${index}`} className="flex items-center gap-4">
-                            <input
-                                type="text"
-                                value={answer.answerText}
-                                onChange={(e) => handleAnswerChange(index, 'answerText', e.target.value)}
-                                className="flex-1 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                                placeholder={t('questionForm.placeholders.answer')}
-                                disabled={selectedType === 'TRUE_FALSE'}
-                            />
+                    <div className="space-y-3">
+                        {formData.answers.map((answer, index) => (
+                            <div key={`answer-${index}`} className="flex flex-col sm:flex-row gap-2 sm:items-center">
+                                <input
+                                    type="text"
+                                    value={answer.answerText}
+                                    onChange={(e) => handleAnswerChange(index, 'answerText', e.target.value)}
+                                    className="flex-1 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base"
+                                    placeholder={t('questionForm.placeholders.answer')}
+                                    disabled={selectedType === 'TRUE_FALSE'}
+                                />
 
-                            {selectedType === 'MULTIPLE_CHOICE' && (
-                                <>
-                                    <label className="flex items-center">
-                                        <input
-                                            type="checkbox"
-                                            checked={Boolean(answer.isCorrect)}
-                                            onChange={(e) => handleMultipleChoiceChange(index, e.target.checked)}
-                                            className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                                        />
-                                        <span className="ml-2">{t('questionForm.labels.correct')}</span>
-                                    </label>
-                                    {formData.answers.length > 2 && (
-                                        <button
-                                            type="button"
-                                            onClick={() => removeAnswer(index)}
-                                            className="text-red-600 hover:text-red-800"
-                                        >
-                                            {t('questionForm.buttons.remove')}
-                                        </button>
+                                <div className="flex items-center gap-2 justify-end sm:justify-start">
+                                    {selectedType === 'MULTIPLE_CHOICE' && (
+                                        <>
+                                            <label className="inline-flex items-center gap-2 text-sm">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={Boolean(answer.isCorrect)}
+                                                    onChange={(e) => handleMultipleChoiceChange(index, e.target.checked)}
+                                                    className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                                />
+                                                <span>{t('questionForm.labels.correct')}</span>
+                                            </label>
+                                            {formData.answers.length > 2 && (
+                                                <button
+                                                    type="button"
+                                                    onClick={() => removeAnswer(index)}
+                                                    className="text-red-600 hover:text-red-800"
+                                                >
+                                                    <Minus className="w-4 h-4" />
+                                                </button>
+                                            )}
+                                        </>
                                     )}
-                                </>
-                            )}
 
-                            {selectedType === 'TRUE_FALSE' && (
-                                <label className="flex items-center">
-                                    <input
-                                        type="radio"
-                                        name="correctAnswer"
-                                        checked={Boolean(answer.isCorrect)}
-                                        onChange={() => handleTrueFalseChange(index)}
-                                        className="border-gray-300 text-blue-600 focus:ring-blue-500"
-                                    />
-                                    <span className="ml-2">{t('questionForm.labels.correct')}</span>
-                                </label>
-                            )}
-                        </div>
-                    ))}
+                                    {selectedType === 'TRUE_FALSE' && (
+                                        <label className="inline-flex items-center gap-2 text-sm">
+                                            <input
+                                                type="radio"
+                                                name="correctAnswer"
+                                                checked={Boolean(answer.isCorrect)}
+                                                onChange={() => handleTrueFalseChange(index)}
+                                                className="border-gray-300 text-blue-600 focus:ring-blue-500"
+                                            />
+                                            <span>{t('questionForm.labels.correct')}</span>
+                                        </label>
+                                    )}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
                 </div>
             )}
 
+            {/* Metadata Section */}
             <div className="space-y-4">
                 <h3 className="text-lg font-medium text-gray-900">
                     {t('questionForm.labels.metadata')}
                 </h3>
-                {Object.entries(predefinedKeyValues).map(([key, values]) => (
-                    <div key={key}>
-                        <label htmlFor={key} className="block text-sm font-medium text-gray-700">
-                            {t(`metadata.${key}`)}
-                        </label>
-                        <select
-                            id={key}
-                            value={formData.metadata[key] || ''}
-                            onChange={(e) => handleMetadataChange(key, e.target.value)}
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                        >
-                            <option
-                                value="">{t('questionForm.placeholders.selectMetadata', {field: t(`metadata.${key}`)})}</option>
-                            {values.map(value => (
-                                <option key={value} value={value}>
-                                    {getTranslatedMetadata(key, value, i18n.language) || value}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {Object.entries(predefinedKeyValues).map(([key, values]) => (
+                        <div key={key} className="space-y-2">
+                            <label htmlFor={key} className="block text-sm font-medium text-gray-700">
+                                {t(`metadata.${key}`)}
+                            </label>
+                            <select
+                                id={key}
+                                value={formData.metadata[key] || ''}
+                                onChange={(e) => handleMetadataChange(key, e.target.value)}
+                                className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sm:text-base"
+                            >
+                                <option value="">
+                                    {t('questionForm.placeholders.selectMetadata', {field: t(`metadata.${key}`)})}
                                 </option>
-                            ))}
-                        </select>
-                    </div>
-                ))}
+                                {values.map(value => (
+                                    <option key={value} value={value}>
+                                        {getTranslatedMetadata(key, value, i18n.language) || value}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                    ))}
+                </div>
             </div>
 
-            <div className="flex justify-end space-x-4">
+            {/* Form Actions */}
+            <div className="flex flex-col-reverse sm:flex-row justify-end gap-3 sm:gap-4 pt-4">
                 <button
                     type="button"
                     onClick={() => window.history.back()}
-                    className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                    className="w-full sm:w-auto px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 flex items-center justify-center gap-2"
                 >
+                    <ArrowLeft className="w-4 h-4" />
                     {t('questionForm.buttons.cancel')}
                 </button>
                 <button
                     type="submit"
                     disabled={loading}
-                    className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
+                    className="w-full sm:w-auto px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 flex items-center justify-center gap-2"
                 >
+                    {loading ? (
+                        <span className="animate-spin">⌛</span>
+                    ) : (
+                        <Check className="w-4 h-4" />
+                    )}
                     {isEditing ? t('questionForm.buttons.update') : t('questionForm.buttons.create')}
                 </button>
             </div>
         </form>
     );
-}
+};
+
 export default QuestionForm;

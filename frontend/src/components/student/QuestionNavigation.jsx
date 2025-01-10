@@ -1,4 +1,6 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
+import { Check } from 'lucide-react';
 
 const QuestionNavigation = ({
                                 questions,
@@ -6,6 +8,8 @@ const QuestionNavigation = ({
                                 onQuestionChange,
                                 answers,
                             }) => {
+    const { t } = useTranslation('common');
+
     const getQuestionStatus = (questionId) => {
         const answer = answers[questionId];
         if (!answer) return 'unanswered';
@@ -15,7 +19,9 @@ const QuestionNavigation = ({
 
     return (
         <div className="bg-white rounded-lg shadow p-4 w-64">
-            <h2 className="text-lg font-semibold mb-4">Questions</h2>
+            <h2 className="text-lg font-semibold mb-4">
+                {t('questionNavigation.title')}
+            </h2>
             <div className="space-y-2">
                 {questions.map((question, index) => {
                     const status = getQuestionStatus(question.questionId);
@@ -33,25 +39,13 @@ const QuestionNavigation = ({
                             }`}
                         >
                             <div className="flex items-center justify-between">
-                                <span>Question {index + 1}</span>
+                                <span>{t('questionNavigation.questionNumber', { number: index + 1 })}</span>
                                 {status === 'answered' && currentQuestion !== index && (
-                                    <svg
-                                        className="w-5 h-5 text-green-600"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M5 13l4 4L19 7"
-                                        />
-                                    </svg>
+                                    <Check className="w-5 h-5 text-green-600" />
                                 )}
                             </div>
                             <div className="text-sm mt-1 truncate">
-                                {question.points} points
+                                {t('questionNavigation.points', { count: question.points })}
                             </div>
                         </button>
                     );

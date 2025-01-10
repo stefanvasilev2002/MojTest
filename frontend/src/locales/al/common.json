@@ -258,7 +258,49 @@
     "previous": "E mëparshme",
     "next": "E ardhshme",
     "page": "Faqe",
-    "of": "nga"
+    "of": "nga",
+    "back": "Mbrapa"
+  },
+  "timer": {
+    "remaining": "Koha e mbetur",
+    "hours": "{{hours}}o",
+    "minutes": "{{minutes}} :",
+    "seconds": "{{seconds}}"
+  },
+  "timeUpModal": {
+    "title": "Koha mbaroi!",
+    "message": "Koha juaj e testit ka skaduar dhe do të dorëzohet automatikisht."
+  },
+  "submitModal": {
+    "warning": {
+      "title": "Paralajmërim: Pyetje të papërgjigjura",
+      "message": "Keni {{count}} pyetje të papërgjigjur:",
+      "message_plural": "Keni {{count}} pyetje të papërgjigjura:",
+      "questionItem": "Pyetja {{number}}: {{description}}",
+      "returnButton": "Kthehu në test",
+      "submitButton": "Dorëzo gjithsesi"
+    },
+    "confirm": {
+      "title": "Dorëzo testin",
+      "message": "Jeni të sigurt që dëshironi të dorëzoni testin tuaj? Ky veprim nuk mund të zhbëhet.",
+      "cancelButton": "Anulo",
+      "submitButton": "Dorëzo testin"
+    }
+  },
+  "hint": {
+    "show": "Shfaq ndihmën"
+  },
+  "questionNavigation": {
+    "title": "Pyetjet",
+    "questionNumber": "Pyetja {{number}}",
+    "points": "{{count}} pikë",
+    "points_plural": "{{count}} pikë"
+  },
+  "exitModal": {
+    "title": "Dilni nga testi?",
+    "message": "A jeni të sigurt që dëshironi të dilni? Kjo do të braktisë testin tuaj dhe do të duhet të filloni nga e para. Përgjigjet tuaja nuk do të ruhen.",
+    "cancel": "Anulo",
+    "confirm": "Dil nga testi"
   },
   "testResults": {
     "title": "Rezultatet e testit",
@@ -586,5 +628,12 @@
     "FILL_IN_THE_BLANK": "Plotëso hapësirën",
     "ESSAY": "Ese",
     "NUMERIC": "Numerike"
+  },
+  "questionCreation": {
+    "title": "Krijo një hyrje në bankën e pyetjeve",
+    "description": "Krijo një pyetje të re që mund të përdoret në testet e ardhshme",
+    "backToDashboard": "Kthehu në Panel",
+    "success": "Pyetja u krijua me sukses",
+    "error": "Dështoi krijimi i pyetjes"
   }
 }
