@@ -17,12 +17,15 @@ import com.itextpdf.layout.Document;
 import com.itextpdf.layout.element.Image;
 import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.properties.TextAlignment;
+import org.apache.poi.util.IOUtils;
 import org.apache.poi.util.Units;
 import org.apache.poi.xwpf.usermodel.*;
 import org.scilab.forge.jlatexmath.TeXConstants;
 import org.scilab.forge.jlatexmath.TeXFormula;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -40,24 +43,32 @@ import java.time.format.DateTimeFormatter;
 @Service
 public class TestExportServiceImpl implements TestExportService {
 
-    private static final String FONT_PATH = "src/main/resources/fonts/FreeSans.ttf";
+    private static final String FONT_PATH = "classpath:fonts/FreeSans.ttf";
     private static final String CHECKBOX = "▢";
     private static final float TITLE_SIZE = 20f;
     private static final float HEADER_SIZE = 14f;
     private static final float NORMAL_SIZE = 12f;
     private static final float SMALL_SIZE = 10f;
     private static final int INDENT = 40;
+
     private final FileStorageService fileStorageService;
 
-    private PdfFont unicodeFont;
+    @Autowired
+    private ResourceLoader resourceLoader;
 
     public TestExportServiceImpl(FileStorageService fileStorageService) {
         this.fileStorageService = fileStorageService;
-        try {
-            unicodeFont = PdfFontFactory.createFont(FONT_PATH, PdfEncodings.IDENTITY_H);
+    }
 
+    private PdfFont loadUnicodeFont() throws IOException {
+        try {
+            Resource fontResource = resourceLoader.getResource(FONT_PATH);
+            return PdfFontFactory.createFont(
+                    IOUtils.toByteArray(fontResource.getInputStream()),
+                    PdfEncodings.IDENTITY_H
+            );
         } catch (Exception e) {
-            throw new RuntimeException("Failed to initialize font. Make sure FreeSans.ttf is in the resources/fonts directory", e);
+            throw new IOException("Failed to load font from classpath. Make sure FreeSans.ttf is in the resources/fonts directory", e);
         }
     }
 
@@ -68,13 +79,12 @@ public class TestExportServiceImpl implements TestExportService {
         Document document = null;
 
         try {
-            // Create new instances for each generation
             PdfWriter writer = new PdfWriter(baos);
             pdf = new PdfDocument(writer);
             document = new Document(pdf);
 
-            // Create a new font instance for each document
-            PdfFont unicodeFont = PdfFontFactory.createFont(FONT_PATH, PdfEncodings.IDENTITY_H);
+            // Load font when needed
+            PdfFont unicodeFont = loadUnicodeFont();
 
             addPDFHeader(document, test, unicodeFont);
             addPDFInstructions(document, unicodeFont);
@@ -86,7 +96,6 @@ public class TestExportServiceImpl implements TestExportService {
 
             ByteArrayResource resource = new ByteArrayResource(baos.toByteArray());
             return buildResponse(resource, test.getTitle(), "pdf");
-
         } catch (Exception e) {
             throw new RuntimeException("Failed to generate PDF: " + e.getMessage(), e);
         } finally {
@@ -164,6 +173,7 @@ public class TestExportServiceImpl implements TestExportService {
             throw new RuntimeException("Failed to add PDF instructions", e);
         }
     }
+
     private void addPDFQuestions(Document document, Test test, PdfFont font) {
         try {
             int questionNum = 1;
@@ -189,7 +199,16 @@ public class TestExportServiceImpl implements TestExportService {
 
                 // Add formula if present
                 if (question.getFormula() != null && !question.getFormula().isEmpty()) {
-                    addPDFFormula(document, question.getFormula());
+                    try {
+                        addPDFFormula(document, question.getFormula(), font);
+                    } catch (Exception e) {
+                        // Fallback to text if formula rendering fails
+                        document.add(new Paragraph("Formula: " + question.getFormula())
+                                .setFont(font)
+                                .setFontSize(NORMAL_SIZE)
+                                .setItalic()
+                                .setMarginLeft(INDENT));
+                    }
                 }
 
                 addPDFAnswers(document, question, font);
@@ -199,7 +218,25 @@ public class TestExportServiceImpl implements TestExportService {
             throw new RuntimeException("Failed to add PDF questions", e);
         }
     }
-    private void addPDFFormula(Document document, String formula) {
+
+    private void addPDFImage(Document document, File imageFile) {
+        try {
+            Resource imageResource = fileStorageService.loadFileAsResource(imageFile.getFileName());
+            byte[] imageData = imageResource.getContentAsByteArray();
+
+            ImageData imgData = ImageDataFactory.create(imageData);
+            Image pdfImage = new Image(imgData)
+                    .setMarginLeft(INDENT)
+                    .setMarginBottom(10)
+                    .scaleToFit(400, 300);
+
+            document.add(pdfImage);
+        } catch (Exception e) {
+            System.err.println("Failed to add image: " + e.getMessage());
+        }
+    }
+
+    private void addPDFFormula(Document document, String formula, PdfFont font) {
         try {
             TeXFormula texFormula = new TeXFormula(formula);
             BufferedImage image = (BufferedImage) texFormula.createBufferedImage(TeXConstants.STYLE_DISPLAY,
@@ -208,7 +245,6 @@ public class TestExportServiceImpl implements TestExportService {
             ByteArrayOutputStream imgBytes = new ByteArrayOutputStream();
             ImageIO.write(image, "PNG", imgBytes);
 
-            // Create new image data instance
             ImageData imgData = ImageDataFactory.create(imgBytes.toByteArray());
             Image pdfImage = new Image(imgData)
                     .setMarginLeft(INDENT)
@@ -221,7 +257,7 @@ public class TestExportServiceImpl implements TestExportService {
             System.err.println("Failed to add formula: " + e.getMessage());
             try {
                 document.add(new Paragraph("Formula: " + formula)
-                        .setFont(PdfFontFactory.createFont(FONT_PATH, PdfEncodings.IDENTITY_H))
+                        .setFont(font)
                         .setFontSize(NORMAL_SIZE)
                         .setItalic()
                         .setMarginLeft(INDENT));
@@ -230,23 +266,7 @@ public class TestExportServiceImpl implements TestExportService {
             }
         }
     }
-    private void addPDFImage(Document document, File imageFile) {
-        try {
-            Resource imageResource = fileStorageService.loadFileAsResource(imageFile.getFileName());
-            byte[] imageData = imageResource.getContentAsByteArray();
 
-            // Create new image data instance
-            ImageData imgData = ImageDataFactory.create(imageData);
-            Image pdfImage = new Image(imgData)
-                    .setMarginLeft(INDENT)
-                    .setMarginBottom(10)
-                    .scaleToFit(400, 300);
-
-            document.add(pdfImage);
-        } catch (Exception e) {
-            System.err.println("Failed to add image: " + e.getMessage());
-        }
-    }
     private void addPDFAnswers(Document document, Question question, PdfFont font) {
         try {
             switch (question.getQuestionType()) {
@@ -293,31 +313,12 @@ public class TestExportServiceImpl implements TestExportService {
                             .setFontSize(NORMAL_SIZE)
                             .setMarginLeft(INDENT));
                 }
-
             }
         } catch (Exception e) {
             throw new RuntimeException("Failed to add PDF answers", e);
         }
     }
-    private void addLatexFormula(Document document, String latex) throws Exception {
-        TeXFormula formula = new TeXFormula(latex);
-        BufferedImage image = (BufferedImage) formula.createBufferedImage(TeXConstants.STYLE_DISPLAY,
-                16, Color.BLACK, Color.WHITE);
 
-        ByteArrayOutputStream imgBytes = new ByteArrayOutputStream();
-        ImageIO.write(image, "PNG", imgBytes);
-
-        // Create new image data factory for THIS document
-        byte[] imageData = imgBytes.toByteArray();
-        ImageData imageDataInstance = ImageDataFactory.create(imageData);
-
-        Image pdfImage = new Image(imageDataInstance)
-                .setMarginLeft(INDENT)
-                .setMarginBottom(10)
-                .scaleToFit(300, 100);
-
-        document.add(pdfImage);
-    }
     private void addPDFFooter(Document document, PdfFont font) {
         try {
             document.add(new Paragraph()
@@ -330,6 +331,7 @@ public class TestExportServiceImpl implements TestExportService {
             throw new RuntimeException("Failed to add PDF footer", e);
         }
     }
+
     @Override
     public ResponseEntity<ByteArrayResource> generateWord(Test test) {
         try (XWPFDocument document = new XWPFDocument()) {
@@ -354,7 +356,7 @@ public class TestExportServiceImpl implements TestExportService {
         XWPFRun titleRun = titleParagraph.createRun();
         titleRun.setText(test.getTitle());
         titleRun.setBold(true);
-        titleRun.setFontSize((int)TITLE_SIZE);
+        titleRun.setFontSize((int) TITLE_SIZE);
         titleRun.setFontFamily("Arial");
         titleRun.addBreak();
 
@@ -380,7 +382,7 @@ public class TestExportServiceImpl implements TestExportService {
         XWPFRun titleRun = titleParagraph.createRun();
         titleRun.setText("Инструкции:");
         titleRun.setBold(true);
-        titleRun.setFontSize((int)HEADER_SIZE);
+        titleRun.setFontSize((int) HEADER_SIZE);
         titleRun.addBreak();
 
         String[] instructions = {
@@ -399,7 +401,6 @@ public class TestExportServiceImpl implements TestExportService {
 
         document.createParagraph().createRun().addBreak();
     }
-
     private void addWordQuestions(XWPFDocument document, Test test) {
         int questionNum = 1;
         for (Question question : test.getQuestionBank()) {
@@ -415,9 +416,13 @@ public class TestExportServiceImpl implements TestExportService {
 
             questionRun.setText(questionText + pointsText);
             questionRun.addBreak();
+
+            // Add image if present
             if (question.getImage() != null) {
                 addWordImage(document, question.getImage());
             }
+
+            // Add formula if present
             if (question.getFormula() != null && !question.getFormula().isEmpty()) {
                 addWordLatexFormula(document, question.getFormula());
             }
@@ -426,6 +431,7 @@ public class TestExportServiceImpl implements TestExportService {
             document.createParagraph().createRun().addBreak();
         }
     }
+
     private void addWordImage(XWPFDocument document, File imageFile) {
         try {
             Resource imageResource = fileStorageService.loadFileAsResource(imageFile.getFileName());
@@ -460,10 +466,10 @@ public class TestExportServiceImpl implements TestExportService {
             );
             imageRun.addBreak();
         } catch (Exception e) {
-            // Log error and continue without image
             System.err.println("Failed to add image: " + e.getMessage());
         }
     }
+
     private void addWordLatexFormula(XWPFDocument document, String latex) {
         try {
             TeXFormula formula = new TeXFormula(latex);
@@ -489,6 +495,7 @@ public class TestExportServiceImpl implements TestExportService {
                     Units.toEMU(targetHeight)
             );
             formulaRun.addBreak();
+            imgBytes.close();
         } catch (Exception e) {
             XWPFParagraph fallbackParagraph = document.createParagraph();
             fallbackParagraph.setIndentationLeft(INDENT * 20);
