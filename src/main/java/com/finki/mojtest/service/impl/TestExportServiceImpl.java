@@ -1,180 +1,337 @@
 package com.finki.mojtest.service.impl;
 
 import com.finki.mojtest.model.Answer;
+import com.finki.mojtest.model.File;
 import com.finki.mojtest.model.Question;
 import com.finki.mojtest.model.Test;
+import com.finki.mojtest.service.FileStorageService;
 import com.finki.mojtest.service.TestExportService;
-import com.itextpdf.kernel.colors.ColorConstants;
+import com.itextpdf.io.font.PdfEncodings;
+import com.itextpdf.io.image.ImageData;
+import com.itextpdf.io.image.ImageDataFactory;
+import com.itextpdf.kernel.font.PdfFont;
+import com.itextpdf.kernel.font.PdfFontFactory;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.layout.Document;
+import com.itextpdf.layout.element.Image;
 import com.itextpdf.layout.element.Paragraph;
-import com.itextpdf.layout.element.Text;
 import com.itextpdf.layout.properties.TextAlignment;
+import org.apache.poi.util.Units;
 import org.apache.poi.xwpf.usermodel.*;
+import org.scilab.forge.jlatexmath.TeXConstants;
+import org.scilab.forge.jlatexmath.TeXFormula;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 @Service
 public class TestExportServiceImpl implements TestExportService {
 
-    private static final int TITLE_FONT_SIZE = 20;
-    private static final int HEADER_FONT_SIZE = 14;
-    private static final int NORMAL_FONT_SIZE = 12;
-    private static final int MARGIN_BOTTOM = 20;
-    private static final int ANSWER_INDENT = 20;
+    private static final String FONT_PATH = "src/main/resources/fonts/FreeSans.ttf";
+    private static final String CHECKBOX = "▢";
+    private static final float TITLE_SIZE = 20f;
+    private static final float HEADER_SIZE = 14f;
+    private static final float NORMAL_SIZE = 12f;
+    private static final float SMALL_SIZE = 10f;
+    private static final int INDENT = 40;
+    private final FileStorageService fileStorageService;
+
+    private PdfFont unicodeFont;
+
+    public TestExportServiceImpl(FileStorageService fileStorageService) {
+        this.fileStorageService = fileStorageService;
+        try {
+            unicodeFont = PdfFontFactory.createFont(FONT_PATH, PdfEncodings.IDENTITY_H);
+
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to initialize font. Make sure FreeSans.ttf is in the resources/fonts directory", e);
+        }
+    }
 
     @Override
-    public ByteArrayResource generatePDF(Test test) {
-        try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
-            PdfWriter writer = new PdfWriter(baos);
-            PdfDocument pdf = new PdfDocument(writer);
-            Document document = new Document(pdf);
+    public ResponseEntity<ByteArrayResource> generatePDF(Test test) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        PdfDocument pdf = null;
+        Document document = null;
 
-            addPDFHeader(document, test);
-            addPDFInstructions(document, test);
-            addPDFQuestions(document, test);
-            addPDFFooter(document);
+        try {
+            // Create new instances for each generation
+            PdfWriter writer = new PdfWriter(baos);
+            pdf = new PdfDocument(writer);
+            document = new Document(pdf);
+
+            // Create a new font instance for each document
+            PdfFont unicodeFont = PdfFontFactory.createFont(FONT_PATH, PdfEncodings.IDENTITY_H);
+
+            addPDFHeader(document, test, unicodeFont);
+            addPDFInstructions(document, unicodeFont);
+            addPDFQuestions(document, test, unicodeFont);
+            addPDFFooter(document, unicodeFont);
 
             document.close();
-            return new ByteArrayResource(baos.toByteArray());
+            pdf.close();
+
+            ByteArrayResource resource = new ByteArrayResource(baos.toByteArray());
+            return buildResponse(resource, test.getTitle(), "pdf");
+
         } catch (Exception e) {
-            throw new RuntimeException("Failed to generate PDF", e);
+            throw new RuntimeException("Failed to generate PDF: " + e.getMessage(), e);
+        } finally {
+            try {
+                if (document != null) {
+                    document.close();
+                }
+                if (pdf != null) {
+                    pdf.close();
+                }
+                baos.close();
+            } catch (IOException e) {
+                System.err.println("Error closing resources: " + e.getMessage());
+            }
         }
     }
 
-    private void addPDFHeader(Document document, Test test) {
-        // Add title
-        document.add(new Paragraph(test.getTitle())
-                .setFontSize(TITLE_FONT_SIZE)
-                .setBold()
-                .setTextAlignment(TextAlignment.CENTER)
-                .setMarginBottom(MARGIN_BOTTOM));
+    private void addPDFHeader(Document document, Test test, PdfFont font) {
+        try {
+            document.add(new Paragraph(test.getTitle())
+                    .setFont(font)
+                    .setFontSize(TITLE_SIZE)
+                    .setBold()
+                    .setTextAlignment(TextAlignment.CENTER)
+                    .setMarginBottom(20));
 
-        // Add test description if exists
-        if (test.getDescription() != null && !test.getDescription().isEmpty()) {
-            document.add(new Paragraph(test.getDescription())
-                    .setFontSize(NORMAL_FONT_SIZE)
-                    .setItalic()
-                    .setMarginBottom(10));
-        }
-
-        // Add test metadata
-        Paragraph metadata = new Paragraph()
-                .setFontSize(NORMAL_FONT_SIZE)
-                .setMarginBottom(MARGIN_BOTTOM);
-
-        metadata.add(new Text("Time limit: " + test.getTimeLimit() + " minutes\n"));
-        metadata.add(new Text("Total points: " + calculateTotalPoints(test) + "\n"));
-        metadata.add(new Text("Number of questions: " + test.getNumQuestions()));
-
-        document.add(metadata);
-    }
-
-    private void addPDFInstructions(Document document, Test test) {
-        document.add(new Paragraph("Instructions:")
-                .setFontSize(HEADER_FONT_SIZE)
-                .setBold()
-                .setMarginBottom(10));
-
-        Paragraph instructions = new Paragraph()
-                .setFontSize(NORMAL_FONT_SIZE)
-                .setMarginBottom(MARGIN_BOTTOM);
-
-        instructions.add("- Read each question carefully before answering\n");
-        instructions.add("- Multiple choice questions: Select the best answer\n");
-        instructions.add("- True/False questions: Mark your choice clearly\n");
-        instructions.add("- Fill-in-the-blank: Write your answer in the space provided\n");
-        if (hasNegativePoints(test)) {
-            instructions.add("- Note: Some questions may have negative points for incorrect answers\n");
-        }
-
-        document.add(instructions);
-    }
-
-    private void addPDFQuestions(Document document, Test test) {
-        for (int i = 0; i < test.getQuestionBank().size(); i++) {
-            Question question = test.getQuestionBank().get(i);
-
-            // Add question text with points
-            String questionText = String.format("%d. %s [%d points]",
-                    (i + 1), question.getDescription(), question.getPoints());
-            if (question.getNegativePointsPerAnswer() > 0) {
-                questionText += String.format(" [-%d points per wrong answer]",
-                        question.getNegativePointsPerAnswer());
+            if (test.getDescription() != null && !test.getDescription().isEmpty()) {
+                document.add(new Paragraph(test.getDescription())
+                        .setFont(font)
+                        .setFontSize(NORMAL_SIZE)
+                        .setItalic()
+                        .setMarginBottom(10));
             }
 
-            document.add(new Paragraph(questionText)
-                    .setFontSize(NORMAL_FONT_SIZE)
+            document.add(new Paragraph()
+                    .setFont(font)
+                    .setFontSize(NORMAL_SIZE)
+                    .add("Времетраење: " + test.getTimeLimit() + " минути")
                     .setMarginBottom(5));
 
-            // Add hint if exists
-            if (question.getHint() != null && !question.getHint().isEmpty()) {
-                document.add(new Paragraph("Hint: " + question.getHint())
-                        .setFontSize(NORMAL_FONT_SIZE)
-                        .setItalic()
-                        .setFontColor(ColorConstants.GRAY)
-                        .setMarginLeft(ANSWER_INDENT)
+            document.add(new Paragraph()
+                    .setFont(font)
+                    .setFontSize(NORMAL_SIZE)
+                    .add("Вкупно поени: " + calculateTotalPoints(test))
+                    .setMarginBottom(20));
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to add PDF header", e);
+        }
+    }
+
+    private void addPDFInstructions(Document document, PdfFont font) {
+        try {
+            document.add(new Paragraph("Инструкции:")
+                    .setFont(font)
+                    .setFontSize(HEADER_SIZE)
+                    .setBold()
+                    .setMarginBottom(10));
+
+            String[] instructions = {
+                    "• Внимателно прочитајте го секое прашање",
+                    "• За прашања со повеќе избори: Одберете ЕДЕН точен одговор",
+                    "• За точно/неточно прашања: Означете ја вашата одлука",
+                    "• За нумерички прашања: Запишете го одговорот во дадениот простор"
+            };
+
+            for (String instruction : instructions) {
+                document.add(new Paragraph(instruction)
+                        .setFont(font)
+                        .setFontSize(NORMAL_SIZE)
+                        .setMarginLeft(INDENT)
                         .setMarginBottom(5));
             }
-
-            addPDFAnswers(document, question);
+            document.add(new Paragraph().setMarginBottom(20));
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to add PDF instructions", e);
         }
     }
+    private void addPDFQuestions(Document document, Test test, PdfFont font) {
+        try {
+            int questionNum = 1;
+            for (Question question : test.getQuestionBank()) {
+                String questionText = String.format("%d. %s", questionNum++, question.getDescription());
+                Paragraph questionParagraph = new Paragraph(questionText)
+                        .setFont(font)
+                        .setFontSize(NORMAL_SIZE)
+                        .setMarginBottom(10);
 
-    private void addPDFAnswers(Document document, Question question) {
-        switch (question.getQuestionType()) {
-            case MULTIPLE_CHOICE -> {
-                for (Answer answer : question.getAnswers()) {
-                    document.add(new Paragraph("□ " + answer.getAnswerText())
-                            .setMarginLeft(ANSWER_INDENT)
-                            .setMarginBottom(2));
+                String pointsText = String.format(" [%d поени]", question.getPoints());
+                if (question.getNegativePointsPerAnswer() > 0) {
+                    pointsText += String.format(" [-%d за неточен одговор]",
+                            question.getNegativePointsPerAnswer());
                 }
-            }
-            case TRUE_FALSE -> {
-                document.add(new Paragraph("□ True")
-                        .setMarginLeft(ANSWER_INDENT));
-                document.add(new Paragraph("□ False")
-                        .setMarginLeft(ANSWER_INDENT));
-            }
-            case NUMERIC -> {
+                questionParagraph.add(pointsText);
+                document.add(questionParagraph);
+
+                // Add question image if present
+                if (question.getImage() != null) {
+                    addPDFImage(document, question.getImage());
+                }
+
+                // Add formula if present
                 if (question.getFormula() != null && !question.getFormula().isEmpty()) {
-                    document.add(new Paragraph("Formula: " + question.getFormula())
-                            .setMarginLeft(ANSWER_INDENT)
-                            .setItalic());
+                    addPDFFormula(document, question.getFormula());
                 }
-                document.add(new Paragraph("Answer: _________________")
-                        .setMarginLeft(ANSWER_INDENT));
+
+                addPDFAnswers(document, question, font);
+                document.add(new Paragraph().setMarginBottom(15));
             }
-            case ESSAY -> {
-                document.add(new Paragraph("Answer:")
-                        .setMarginLeft(ANSWER_INDENT));
-                // Add multiple lines for essay response
-                for (int i = 0; i < 5; i++) {
-                    document.add(new Paragraph("_________________________________")
-                            .setMarginLeft(ANSWER_INDENT));
-                }
-            }
-            default -> document.add(new Paragraph("Answer: _________________")
-                    .setMarginLeft(ANSWER_INDENT));
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to add PDF questions", e);
         }
-        document.add(new Paragraph().setMarginBottom(10));
     }
+    private void addPDFFormula(Document document, String formula) {
+        try {
+            TeXFormula texFormula = new TeXFormula(formula);
+            BufferedImage image = (BufferedImage) texFormula.createBufferedImage(TeXConstants.STYLE_DISPLAY,
+                    16, Color.BLACK, Color.WHITE);
 
-    private void addPDFFooter(Document document) {
-        document.add(new Paragraph("Generated on: " +
-                LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")))
-                .setFontSize(10)
-                .setTextAlignment(TextAlignment.RIGHT)
-                .setMarginTop(MARGIN_BOTTOM));
+            ByteArrayOutputStream imgBytes = new ByteArrayOutputStream();
+            ImageIO.write(image, "PNG", imgBytes);
+
+            // Create new image data instance
+            ImageData imgData = ImageDataFactory.create(imgBytes.toByteArray());
+            Image pdfImage = new Image(imgData)
+                    .setMarginLeft(INDENT)
+                    .setMarginBottom(10)
+                    .scaleToFit(300, 100);
+
+            document.add(pdfImage);
+            imgBytes.close();
+        } catch (Exception e) {
+            System.err.println("Failed to add formula: " + e.getMessage());
+            try {
+                document.add(new Paragraph("Formula: " + formula)
+                        .setFont(PdfFontFactory.createFont(FONT_PATH, PdfEncodings.IDENTITY_H))
+                        .setFontSize(NORMAL_SIZE)
+                        .setItalic()
+                        .setMarginLeft(INDENT));
+            } catch (Exception ex) {
+                System.err.println("Failed to add formula fallback text: " + ex.getMessage());
+            }
+        }
     }
+    private void addPDFImage(Document document, File imageFile) {
+        try {
+            Resource imageResource = fileStorageService.loadFileAsResource(imageFile.getFileName());
+            byte[] imageData = imageResource.getContentAsByteArray();
 
+            // Create new image data instance
+            ImageData imgData = ImageDataFactory.create(imageData);
+            Image pdfImage = new Image(imgData)
+                    .setMarginLeft(INDENT)
+                    .setMarginBottom(10)
+                    .scaleToFit(400, 300);
+
+            document.add(pdfImage);
+        } catch (Exception e) {
+            System.err.println("Failed to add image: " + e.getMessage());
+        }
+    }
+    private void addPDFAnswers(Document document, Question question, PdfFont font) {
+        try {
+            switch (question.getQuestionType()) {
+                case MULTIPLE_CHOICE -> {
+                    for (Answer answer : question.getAnswers()) {
+                        document.add(new Paragraph(CHECKBOX + " " + answer.getAnswerText())
+                                .setFont(font)
+                                .setFontSize(NORMAL_SIZE)
+                                .setMarginLeft(INDENT)
+                                .setMarginBottom(5));
+                    }
+                }
+                case TRUE_FALSE -> {
+                    document.add(new Paragraph(CHECKBOX + " Точно")
+                            .setFont(font)
+                            .setFontSize(NORMAL_SIZE)
+                            .setMarginLeft(INDENT));
+                    document.add(new Paragraph(CHECKBOX + " Неточно")
+                            .setFont(font)
+                            .setFontSize(NORMAL_SIZE)
+                            .setMarginLeft(INDENT));
+                }
+                case NUMERIC -> {
+                    document.add(new Paragraph("Одговор: ________________________")
+                            .setFont(font)
+                            .setFontSize(NORMAL_SIZE)
+                            .setMarginLeft(INDENT));
+                }
+                case ESSAY -> {
+                    document.add(new Paragraph("Одговор:")
+                            .setFont(font)
+                            .setFontSize(NORMAL_SIZE)
+                            .setMarginLeft(INDENT));
+                    for (int i = 0; i < 5; i++) {
+                        document.add(new Paragraph("_________________________________")
+                                .setFont(font)
+                                .setMarginLeft(INDENT)
+                                .setMarginBottom(10));
+                    }
+                }
+                case FILL_IN_THE_BLANK -> {
+                    document.add(new Paragraph("Празно место: ________________________")
+                            .setFont(font)
+                            .setFontSize(NORMAL_SIZE)
+                            .setMarginLeft(INDENT));
+                }
+
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to add PDF answers", e);
+        }
+    }
+    private void addLatexFormula(Document document, String latex) throws Exception {
+        TeXFormula formula = new TeXFormula(latex);
+        BufferedImage image = (BufferedImage) formula.createBufferedImage(TeXConstants.STYLE_DISPLAY,
+                16, Color.BLACK, Color.WHITE);
+
+        ByteArrayOutputStream imgBytes = new ByteArrayOutputStream();
+        ImageIO.write(image, "PNG", imgBytes);
+
+        // Create new image data factory for THIS document
+        byte[] imageData = imgBytes.toByteArray();
+        ImageData imageDataInstance = ImageDataFactory.create(imageData);
+
+        Image pdfImage = new Image(imageDataInstance)
+                .setMarginLeft(INDENT)
+                .setMarginBottom(10)
+                .scaleToFit(300, 100);
+
+        document.add(pdfImage);
+    }
+    private void addPDFFooter(Document document, PdfFont font) {
+        try {
+            document.add(new Paragraph()
+                    .setFont(font)
+                    .setFontSize(SMALL_SIZE)
+                    .setTextAlignment(TextAlignment.RIGHT)
+                    .add("Генерирано на: " +
+                            LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm"))));
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to add PDF footer", e);
+        }
+    }
     @Override
-    public ByteArrayResource generateWord(Test test) {
+    public ResponseEntity<ByteArrayResource> generateWord(Test test) {
         try (XWPFDocument document = new XWPFDocument()) {
             addWordHeader(document, test);
             addWordInstructions(document);
@@ -183,23 +340,24 @@ public class TestExportServiceImpl implements TestExportService {
 
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             document.write(baos);
-            return new ByteArrayResource(baos.toByteArray());
+            ByteArrayResource resource = new ByteArrayResource(baos.toByteArray());
+
+            return buildResponse(resource, test.getTitle(), "docx");
         } catch (Exception e) {
             throw new RuntimeException("Failed to generate Word document", e);
         }
     }
 
     private void addWordHeader(XWPFDocument document, Test test) {
-        // Add title
         XWPFParagraph titleParagraph = document.createParagraph();
         titleParagraph.setAlignment(ParagraphAlignment.CENTER);
         XWPFRun titleRun = titleParagraph.createRun();
         titleRun.setText(test.getTitle());
         titleRun.setBold(true);
-        titleRun.setFontSize(16);
+        titleRun.setFontSize((int)TITLE_SIZE);
+        titleRun.setFontFamily("Arial");
         titleRun.addBreak();
 
-        // Add description if exists
         if (test.getDescription() != null && !test.getDescription().isEmpty()) {
             XWPFParagraph descParagraph = document.createParagraph();
             XWPFRun descRun = descParagraph.createRun();
@@ -208,66 +366,135 @@ public class TestExportServiceImpl implements TestExportService {
             descRun.addBreak();
         }
 
-        // Add metadata
-        XWPFParagraph metadataParagraph = document.createParagraph();
-        XWPFRun metadataRun = metadataParagraph.createRun();
-        metadataRun.setText("Time limit: " + test.getTimeLimit() + " minutes");
-        metadataRun.addBreak();
-        metadataRun.setText("Total points: " + calculateTotalPoints(test));
-        metadataRun.addBreak();
-        metadataRun.setText("Number of questions: " + test.getNumQuestions());
-        metadataRun.addBreak();
-        metadataRun.addBreak();
+        XWPFParagraph metaParagraph = document.createParagraph();
+        XWPFRun metaRun = metaParagraph.createRun();
+        metaRun.setText("Времетраење: " + test.getTimeLimit() + " минути");
+        metaRun.addBreak();
+        metaRun.setText("Вкупно поени: " + calculateTotalPoints(test));
+        metaRun.addBreak();
+        metaRun.addBreak();
     }
 
     private void addWordInstructions(XWPFDocument document) {
-        XWPFParagraph instructionsParagraph = document.createParagraph();
-        XWPFRun instructionsRun = instructionsParagraph.createRun();
-        instructionsRun.setText("Instructions:");
-        instructionsRun.setBold(true);
-        instructionsRun.addBreak();
+        XWPFParagraph titleParagraph = document.createParagraph();
+        XWPFRun titleRun = titleParagraph.createRun();
+        titleRun.setText("Инструкции:");
+        titleRun.setBold(true);
+        titleRun.setFontSize((int)HEADER_SIZE);
+        titleRun.addBreak();
 
         String[] instructions = {
-                "- Read each question carefully before answering",
-                "- Multiple choice questions: Select the best answer",
-                "- True/False questions: Mark your choice clearly",
-                "- Fill-in-the-blank: Write your answer in the space provided"
+                "• Внимателно прочитајте го секое прашање",
+                "• За прашања со повеќе избори: Одберете ЕДЕН точен одговор",
+                "• За точно/неточно прашања: Означете ја вашата одлука",
+                "• За нумерички прашања: Запишете го одговорот во дадениот простор"
         };
 
         for (String instruction : instructions) {
-            instructionsRun.setText(instruction);
-            instructionsRun.addBreak();
+            XWPFParagraph instrParagraph = document.createParagraph();
+            instrParagraph.setIndentationLeft(INDENT * 20);
+            XWPFRun instrRun = instrParagraph.createRun();
+            instrRun.setText(instruction);
         }
-        instructionsRun.addBreak();
+
+        document.createParagraph().createRun().addBreak();
     }
 
     private void addWordQuestions(XWPFDocument document, Test test) {
-        for (int i = 0; i < test.getQuestionBank().size(); i++) {
-            Question question = test.getQuestionBank().get(i);
-
+        int questionNum = 1;
+        for (Question question : test.getQuestionBank()) {
             XWPFParagraph questionParagraph = document.createParagraph();
             XWPFRun questionRun = questionParagraph.createRun();
 
-            // Add question text with points
-            String questionText = String.format("%d. %s [%d points]",
-                    (i + 1), question.getDescription(), question.getPoints());
+            String questionText = String.format("%d. %s", questionNum++, question.getDescription());
+            String pointsText = String.format(" [%d поени]", question.getPoints());
             if (question.getNegativePointsPerAnswer() > 0) {
-                questionText += String.format(" [-%d points per wrong answer]",
+                pointsText += String.format(" [-%d за неточен одговор]",
                         question.getNegativePointsPerAnswer());
             }
-            questionRun.setText(questionText);
 
-            // Add hint if exists
-            if (question.getHint() != null && !question.getHint().isEmpty()) {
-                XWPFParagraph hintParagraph = document.createParagraph();
-                hintParagraph.setIndentationLeft(720);
-                XWPFRun hintRun = hintParagraph.createRun();
-                hintRun.setText("Hint: " + question.getHint());
-                hintRun.setItalic(true);
-                hintRun.setColor("808080");
+            questionRun.setText(questionText + pointsText);
+            questionRun.addBreak();
+            if (question.getImage() != null) {
+                addWordImage(document, question.getImage());
+            }
+            if (question.getFormula() != null && !question.getFormula().isEmpty()) {
+                addWordLatexFormula(document, question.getFormula());
             }
 
             addWordAnswers(document, question);
+            document.createParagraph().createRun().addBreak();
+        }
+    }
+    private void addWordImage(XWPFDocument document, File imageFile) {
+        try {
+            Resource imageResource = fileStorageService.loadFileAsResource(imageFile.getFileName());
+            byte[] imageBytes = imageResource.getContentAsByteArray();
+
+            // Create buffered image to get dimensions
+            BufferedImage bimg = ImageIO.read(new ByteArrayInputStream(imageBytes));
+            int width = bimg.getWidth();
+            int height = bimg.getHeight();
+
+            // Scale dimensions while maintaining aspect ratio
+            double aspectRatio = (double) width / height;
+            int targetWidth = 400;  // Max width in points
+            int targetHeight = (int) (targetWidth / aspectRatio);
+
+            // Ensure height is not too large
+            if (targetHeight > 300) {  // Max height in points
+                targetHeight = 300;
+                targetWidth = (int) (targetHeight * aspectRatio);
+            }
+
+            XWPFParagraph imageParagraph = document.createParagraph();
+            imageParagraph.setIndentationLeft(INDENT * 20);
+            XWPFRun imageRun = imageParagraph.createRun();
+
+            imageRun.addPicture(
+                    new ByteArrayInputStream(imageBytes),
+                    XWPFDocument.PICTURE_TYPE_PNG,  // Adjust based on actual image type
+                    imageFile.getFileName(),
+                    Units.toEMU(targetWidth),
+                    Units.toEMU(targetHeight)
+            );
+            imageRun.addBreak();
+        } catch (Exception e) {
+            // Log error and continue without image
+            System.err.println("Failed to add image: " + e.getMessage());
+        }
+    }
+    private void addWordLatexFormula(XWPFDocument document, String latex) {
+        try {
+            TeXFormula formula = new TeXFormula(latex);
+            BufferedImage image = (BufferedImage) formula.createBufferedImage(TeXConstants.STYLE_DISPLAY,
+                    16, Color.BLACK, Color.WHITE);
+
+            double aspectRatio = (double) image.getWidth() / image.getHeight();
+            int targetWidth = 150;
+            int targetHeight = (int) (targetWidth / aspectRatio);
+
+            ByteArrayOutputStream imgBytes = new ByteArrayOutputStream();
+            ImageIO.write(image, "PNG", imgBytes);
+
+            XWPFParagraph formulaParagraph = document.createParagraph();
+            formulaParagraph.setIndentationLeft(INDENT * 20);
+
+            XWPFRun formulaRun = formulaParagraph.createRun();
+            formulaRun.addPicture(
+                    new ByteArrayInputStream(imgBytes.toByteArray()),
+                    XWPFDocument.PICTURE_TYPE_PNG,
+                    "formula.png",
+                    Units.toEMU(targetWidth),
+                    Units.toEMU(targetHeight)
+            );
+            formulaRun.addBreak();
+        } catch (Exception e) {
+            XWPFParagraph fallbackParagraph = document.createParagraph();
+            fallbackParagraph.setIndentationLeft(INDENT * 20);
+            XWPFRun fallbackRun = fallbackParagraph.createRun();
+            fallbackRun.setText("Formula: " + latex);
+            fallbackRun.setItalic(true);
         }
     }
 
@@ -276,72 +503,80 @@ public class TestExportServiceImpl implements TestExportService {
             case MULTIPLE_CHOICE -> {
                 for (Answer answer : question.getAnswers()) {
                     XWPFParagraph answerParagraph = document.createParagraph();
-                    answerParagraph.setIndentationLeft(720);
+                    answerParagraph.setIndentationLeft(INDENT * 20);
                     XWPFRun answerRun = answerParagraph.createRun();
-                    answerRun.setText("□ " + answer.getAnswerText());
+                    answerRun.setText(CHECKBOX + " " + answer.getAnswerText());
                 }
             }
             case TRUE_FALSE -> {
                 XWPFParagraph trueParagraph = document.createParagraph();
-                trueParagraph.setIndentationLeft(720);
-                trueParagraph.createRun().setText("□ True");
+                trueParagraph.setIndentationLeft(INDENT * 20);
+                trueParagraph.createRun().setText(CHECKBOX + " Точно");
 
                 XWPFParagraph falseParagraph = document.createParagraph();
-                falseParagraph.setIndentationLeft(720);
-                falseParagraph.createRun().setText("□ False");
+                falseParagraph.setIndentationLeft(INDENT * 20);
+                falseParagraph.createRun().setText(CHECKBOX + " Неточно");
             }
             case NUMERIC -> {
-                if (question.getFormula() != null && !question.getFormula().isEmpty()) {
-                    XWPFParagraph formulaParagraph = document.createParagraph();
-                    formulaParagraph.setIndentationLeft(720);
-                    XWPFRun formulaRun = formulaParagraph.createRun();
-                    formulaRun.setText("Formula: " + question.getFormula());
-                    formulaRun.setItalic(true);
-                }
                 XWPFParagraph answerParagraph = document.createParagraph();
-                answerParagraph.setIndentationLeft(720);
-                answerParagraph.createRun().setText("Answer: _________________");
+                answerParagraph.setIndentationLeft(INDENT * 20);
+                answerParagraph.createRun().setText("Одговор: ________________________");
             }
             case ESSAY -> {
                 XWPFParagraph labelParagraph = document.createParagraph();
-                labelParagraph.setIndentationLeft(720);
-                labelParagraph.createRun().setText("Answer:");
+                labelParagraph.setIndentationLeft(INDENT * 20);
+                labelParagraph.createRun().setText("Одговор:");
 
-                // Add multiple lines for essay response
                 for (int i = 0; i < 5; i++) {
                     XWPFParagraph lineParagraph = document.createParagraph();
-                    lineParagraph.setIndentationLeft(720);
+                    lineParagraph.setIndentationLeft(INDENT * 20);
                     lineParagraph.createRun().setText("_________________________________");
                 }
             }
-            default -> {
-                XWPFParagraph answerParagraph = document.createParagraph();
-                answerParagraph.setIndentationLeft(720);
-                answerParagraph.createRun().setText("Answer: _________________");
+            case FILL_IN_THE_BLANK -> {
+                XWPFParagraph blankParagraph = document.createParagraph();
+                blankParagraph.setIndentationLeft(INDENT * 20);
+                blankParagraph.createRun().setText("Празно место: ________________________");
             }
         }
-        // Add spacing after question
-        XWPFParagraph spacingParagraph = document.createParagraph();
-        spacingParagraph.createRun().addBreak();
     }
 
     private void addWordFooter(XWPFDocument document) {
         XWPFParagraph footerParagraph = document.createParagraph();
         footerParagraph.setAlignment(ParagraphAlignment.RIGHT);
         XWPFRun footerRun = footerParagraph.createRun();
-        footerRun.setText("Generated on: " +
-                LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")));
-        footerRun.setFontSize(10);
+        footerRun.setText("Генерирано на: " +
+                LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")));
+        footerRun.setFontSize((int)SMALL_SIZE);
+    }
+
+    private ResponseEntity<ByteArrayResource> buildResponse(
+            ByteArrayResource resource, String filename, String extension) {
+
+        String safeFilename = filename.replaceAll("[^a-zA-Zа-яА-Я0-9.-]", "_")
+                .replaceAll("\\s+", "_");
+
+        String contentType = extension.equals("pdf")
+                ? MediaType.APPLICATION_PDF_VALUE
+                : "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+
+        try {
+            String encodedFilename = java.net.URLEncoder.encode(safeFilename + "." + extension, "UTF-8")
+                    .replace("+", "%20");
+
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION,
+                            "attachment; filename*=UTF-8''" + encodedFilename)
+                    .contentType(MediaType.parseMediaType(contentType))
+                    .body(resource);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to encode filename", e);
+        }
     }
 
     private int calculateTotalPoints(Test test) {
         return test.getQuestionBank().stream()
                 .mapToInt(Question::getPoints)
                 .sum();
-    }
-
-    private boolean hasNegativePoints(Test test) {
-        return test.getQuestionBank().stream()
-                .anyMatch(q -> q.getNegativePointsPerAnswer() > 0);
     }
 }

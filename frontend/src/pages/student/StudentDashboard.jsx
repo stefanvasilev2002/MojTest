@@ -145,7 +145,7 @@ const StudentDashboard = () => {
             });
         });
     }, [tests, filters, user?.grade]);
-
+    console.log("test:",filteredTests[0]);
     if (!user) {
         return (
             <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -181,6 +181,7 @@ const StudentDashboard = () => {
                     </h1>
                     <div className="text-gray-600">
                         {t('studentDashboard.grade')}
+                        <span> </span>
                         <span className="font-semibold">
                             {getTranslatedMetadata('Grade', user.grade, i18n.language)}
                         </span>
@@ -202,17 +203,39 @@ const StudentDashboard = () => {
                             {filteredTests.map(test => (
                                 <div
                                     key={test.id}
-                                    className="bg-white rounded-lg shadow hover:shadow-lg transition-shadow p-6"
+                                    className="bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden"
                                 >
-                                    <h2 className="text-xl font-semibold mb-4">{test.title}</h2>
-                                    <div className="space-y-4">
-                                        <p className="text-gray-600">{test.description}</p>
+                                    <div className="p-6">
+                                        <div className="flex items-center justify-between mb-4">
+                                            <h2 className="text-xl font-bold text-gray-900 line-clamp-1">{test.title}</h2>
+                                        </div>
 
-                                        <div className="flex flex-wrap gap-2">
+                                        <p className="text-gray-600 mb-4 line-clamp-2">{test.description}</p>
+
+                                        <div className="flex items-center space-x-4 mb-4">
+                                            <div className="flex items-center text-gray-500">
+                                                <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                                </svg>
+                                                <span className="text-sm">
+                                                    {test.numQuestions} {t('studentDashboard.testCard.questions')}
+                                                </span>
+                                            </div>
+                                            <div className="flex items-center text-gray-500">
+                                                <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                </svg>
+                                                <span className="text-sm">
+                                                    {test.timeLimit} {t('studentDashboard.testCard.minutes')}
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        <div className="flex flex-wrap gap-2 mb-6">
                                             {test.metadata?.map(meta => (
                                                 <span
                                                     key={`${meta.key}-${meta.value}`}
-                                                    className="inline-block px-2 py-1 text-xs font-semibold bg-blue-100 text-blue-800 rounded"
+                                                    className="px-3 py-1 text-xs font-medium bg-gray-100 text-gray-800 rounded-full"
                                                 >
                                                     {t(`metadata.${meta.key}`)}: {
                                                     getTranslatedMetadata(meta.key, meta.value, i18n.language)
@@ -221,22 +244,16 @@ const StudentDashboard = () => {
                                             ))}
                                         </div>
 
-                                        <div className="text-gray-500">
-                                            <span>
-                                                {test.numQuestions} {t('studentDashboard.testCard.questions')}
-                                            </span>
-                                        </div>
-
-                                        <div className="flex justify-between gap-2">
+                                        <div className="flex justify-between gap-3">
                                             <button
                                                 onClick={() => handleStartTest(test.id)}
-                                                className="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors"
+                                                className="flex-1 bg-blue-600 text-white py-2.5 px-4 rounded-lg hover:bg-blue-700 transition-colors duration-200 font-medium"
                                             >
                                                 {t('studentDashboard.testCard.buttons.startTest')}
                                             </button>
                                             <button
                                                 onClick={() => setSelectedTestId(test.id)}
-                                                className="bg-gray-600 text-white py-2 px-4 rounded-lg hover:bg-gray-700 transition-colors"
+                                                className="bg-gray-300 text-gray-700 py-2.5 px-4 rounded-lg hover:bg-gray-200 transition-colors duration-200 font-medium"
                                             >
                                                 {t('studentDashboard.testCard.buttons.viewAttempts')}
                                             </button>

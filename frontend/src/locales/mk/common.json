@@ -284,7 +284,9 @@
       "buttons": {
         "startTest": "Започни Тест",
         "viewAttempts": "Прегледај Обиди"
-      }
+      },
+      "minutes": "минути"
+
     },
     "activeTest": {
       "continuePrompt": "Имате тест во тек. Дали сакате да продолжите со тој тест? Со кликнување на Откажи ќе го напуштите претходниот тест и ќе започнете нов.",
@@ -447,7 +449,11 @@
     "roleStudent": "Студент",
     "loggingIn": "Најавувам...",
     "roleAdmin": "Админ",
-    "login": "Најава"
+    "login": "Најава",
+    "errors": {
+      "Invalid username or password": "Невалидно корисничко име или лозинка"
+    }
+
   },
   "subjects": {
     "elementary": {

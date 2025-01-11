@@ -186,7 +186,7 @@ const TeacherDashboard = () => {
     const renderTest = (test, isOwner) => (
         <div key={test.id} className="bg-white rounded-lg shadow p-4 sm:p-6">
             <div className="flex flex-col sm:flex-row justify-between">
-                <div className="flex-grow">
+                <div className="flex-grow mb-2">
                     <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-2">
                         <h2 className="text-xl font-semibold">{test.title}</h2>
                         {!isOwner && (

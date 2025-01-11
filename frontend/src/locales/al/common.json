@@ -110,7 +110,10 @@
     "roleStudent": "Student",
     "loggingIn": "Po hyni...",
     "roleAdmin": "Administrator",
-    "login": "Identifikimi"
+    "login": "Identifikimi",
+    "errors":{
+      "Invalid username or password": "Emri i përdoruesit ose fjalëkalimi i gabuar"
+    }
   },
   "dashboard": {
     "questions": "Pyetjet",
@@ -367,7 +370,8 @@
       "buttons": {
         "startTest": "Fillo Testin",
         "viewAttempts": "Shiko Përpjekjet"
-      }
+      },
+      "minutes": "minuta"
     },
     "activeTest": {
       "continuePrompt": "Keni një test në vazhdim. Dëshironi të vazhdoni atë test? Duke klikuar Anulo do të braktisni testin e mëparshëm dhe do të filloni një të ri.",

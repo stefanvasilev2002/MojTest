@@ -195,7 +195,9 @@
       "buttons": {
         "startTest": "Start Test",
         "viewAttempts": "View Attempts"
-      }
+      },
+      "minutes": "minutes"
+
     },
     "activeTest": {
       "continuePrompt": "You have an ongoing test. Would you like to continue that test? Clicking Cancel will abandon the previous test and start a new one.",
@@ -529,7 +531,8 @@
       "default": "Invalid username or password",
       "INVALID_CREDENTIALS": "Invalid username or password",
       "SERVER_ERROR": "Server error occurred",
-      "NETWORK_ERROR": "Network error occurred"
+      "NETWORK_ERROR": "Network error occurred",
+      "Invalid username or password": "Invalid username or password"
     }
   },
   "subjects": {
