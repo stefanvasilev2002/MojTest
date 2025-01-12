@@ -156,9 +156,10 @@ public class TestExportServiceImpl implements TestExportService {
 
             String[] instructions = {
                     "• Внимателно прочитајте го секое прашање",
-                    "• За прашања со повеќе избори: Одберете ЕДЕН точен одговор",
+                    "• За прашања со повеќе избори: Одберете еден или повеќе точни одговори",
                     "• За точно/неточно прашања: Означете ја вашата одлука",
-                    "• За нумерички прашања: Запишете го одговорот во дадениот простор"
+                    "• За нумерички прашања: Запишете го одговорот во дадениот простор",
+                    "• За есејски прашања: Запишете го образложението во дадениот простор"
             };
 
             for (String instruction : instructions) {
@@ -387,9 +388,10 @@ public class TestExportServiceImpl implements TestExportService {
 
         String[] instructions = {
                 "• Внимателно прочитајте го секое прашање",
-                "• За прашања со повеќе избори: Одберете ЕДЕН точен одговор",
+                "• За прашања со повеќе избори: Одберете еден или повеќе точни одговори",
                 "• За точно/неточно прашања: Означете ја вашата одлука",
-                "• За нумерички прашања: Запишете го одговорот во дадениот простор"
+                "• За нумерички прашања: Запишете го одговорот во дадениот простор",
+                "• За есејски прашања: Запишете го образложението во дадениот простор"
         };
 
         for (String instruction : instructions) {
@@ -512,17 +514,17 @@ public class TestExportServiceImpl implements TestExportService {
                     XWPFParagraph answerParagraph = document.createParagraph();
                     answerParagraph.setIndentationLeft(INDENT * 20);
                     XWPFRun answerRun = answerParagraph.createRun();
-                    answerRun.setText(CHECKBOX + " " + answer.getAnswerText());
+                    answerRun.setText(CHECKBOX + "  " + answer.getAnswerText());
                 }
             }
             case TRUE_FALSE -> {
                 XWPFParagraph trueParagraph = document.createParagraph();
                 trueParagraph.setIndentationLeft(INDENT * 20);
-                trueParagraph.createRun().setText(CHECKBOX + " Точно");
+                trueParagraph.createRun().setText(CHECKBOX + "  " + "Точно");
 
                 XWPFParagraph falseParagraph = document.createParagraph();
                 falseParagraph.setIndentationLeft(INDENT * 20);
-                falseParagraph.createRun().setText(CHECKBOX + " Неточно");
+                falseParagraph.createRun().setText(CHECKBOX + "  " + "Неточно");
             }
             case NUMERIC -> {
                 XWPFParagraph answerParagraph = document.createParagraph();
@@ -537,7 +539,7 @@ public class TestExportServiceImpl implements TestExportService {
                 for (int i = 0; i < 5; i++) {
                     XWPFParagraph lineParagraph = document.createParagraph();
                     lineParagraph.setIndentationLeft(INDENT * 20);
-                    lineParagraph.createRun().setText("_________________________________");
+                    lineParagraph.createRun().setText("__________________________________________________________________________");
                 }
             }
             case FILL_IN_THE_BLANK -> {
