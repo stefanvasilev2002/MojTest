@@ -10,6 +10,10 @@ const selectStyles = {
         boxShadow: 'none',
         padding: '0 12px',
     }),
+    menuPortal: (provided) => ({
+        ...provided,
+        zIndex: 9999
+    }),
     valueContainer: (provided) => ({
         ...provided,
         padding: '0 10px',
@@ -26,6 +30,8 @@ const selectStyles = {
         borderColor: '#2563eb',
         width: '100%',
         boxSizing: 'border-box',
+        zIndex: 9999,  // Ensure dropdown is above other content
+        position: 'relative'
     }),
     option: (provided, state) => ({
         ...provided,

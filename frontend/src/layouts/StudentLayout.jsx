@@ -3,6 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import AuthenticatedNavBarStudent from "../components/navbar/AuthenticatedNavBarStudent.jsx";
 import PublicNavBarStudent from "../components/navbar/PublicNavBarStudent.jsx";
 import { Outlet } from 'react-router-dom';
+import Footer from "../components/navbar/Footer.jsx";
 
 const StudentLayout = () => {
     const { user } = useAuth();  // Get the user state from AuthContext
@@ -18,6 +19,8 @@ const StudentLayout = () => {
             <main className="p-4">
                 <Outlet />  {/* This is where child routes will be rendered */}
             </main>
+            <Footer />
+
         </div>
     );
 };

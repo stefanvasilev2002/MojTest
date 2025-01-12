@@ -68,6 +68,21 @@
     }
   },
   "landingPage": {
+    "creators": {
+      "title": "Запознајте ги нашите програмери",
+      "stefan": {
+        "name": "Стефан Василев",
+        "role": "Lead Developer"
+      },
+      "andrej": {
+        "name": "Андреј Генчовски",
+        "role": "Frontend Architect"
+      },
+      "aleksandar": {
+        "name": "Александар Сандев",
+        "role": "Backend Specialist"
+      }
+    },
     "welcomeTitle": "Добредојдовте во",
     "platformName": "МојТест",
     "description": "Вашата паметна платформа за креирање и полагање тестови",
@@ -389,6 +404,27 @@
     "noQuestionsAvailable": "Нема достапни прашања",
     "actions": {
       "edit": "Измени"
+    }
+  },
+  "footer": {
+    "about": {
+      "title": "За Проектот",
+      "description": "Иновативна образовна платформа создадена од студентти програмери, за револуционизирање на онлајн учењето."
+    },
+    "quickLinks": {
+      "title": "Брзи Линкови",
+      "about": "За Нас",
+      "contact": "Контакт",
+      "sourceCode": "Изворен Код"
+    },
+    "connect": {
+      "title": "Контактирајте Нѐ",
+      "questions": "Имате прашања? Контактирајте го нашиот тим на:",
+      "email": "contact@example.com"
+    },
+    "copyright": {
+      "rights": "Вашата Платформа. Сите права се задржани.",
+      "creators": "Создадено од ❤️ од Стефан Василев, Андреј Генчовски и Александар Сандев"
     }
   },
   "dashboard": {

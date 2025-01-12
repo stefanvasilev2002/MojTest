@@ -92,6 +92,27 @@
     "previous": "Previous",
     "next": "Next"
   },
+  "footer": {
+    "about": {
+      "title": "About the Project",
+      "description": "An innovative educational platform created by passionate developers to revolutionize online learning."
+    },
+    "quickLinks": {
+      "title": "Quick Links",
+      "about": "About Us",
+      "contact": "Contact",
+      "sourceCode": "Source Code"
+    },
+    "connect": {
+      "title": "Connect With Us",
+      "questions": "Have questions? Reach out to our team at:",
+      "email": "contact@example.com"
+    },
+    "copyright": {
+      "rights": "Your Platform Name. All rights reserved.",
+      "creators": "Created with ❤️ by Stefan Vasilev, Andrej Gencovski, and Aleksandar Sandev"
+    }
+  },
   "dashboard": {
     "questions": "Questions",
     "createNewQuestion": "Create New Question",
@@ -404,6 +425,21 @@
     }
   },
   "landingPage": {
+    "creators": {
+      "title": "Meet Our Creators",
+      "stefan": {
+        "name": "Stefan Vasilev",
+        "role": "Lead Developer"
+      },
+      "andrej": {
+        "name": "Andrej Gencovski",
+        "role": "Frontend Architect"
+      },
+      "aleksandar": {
+        "name": "Aleksandar Sandev",
+        "role": "Backend Specialist"
+      }
+    },
     "welcomeTitle": "Welcome to",
     "platformName": "MojTest",
     "description": "Your smart platform for creating and taking tests",

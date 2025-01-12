@@ -68,6 +68,21 @@
     }
   },
   "landingPage": {
+    "creators": {
+      "title": "Njihuni me Krijuesit Tanë",
+      "stefan": {
+        "name": "Stefan Vasilev",
+        "role": "Zhvillues Kryesor"
+      },
+      "andrej": {
+        "name": "Andrej Gencovski",
+        "role": "Arkitekt Frontend"
+      },
+      "aleksandar": {
+        "name": "Aleksandar Sandev",
+        "role": "Specialist Backend"
+      }
+    },
     "welcomeTitle": "Mirë se vini në",
     "platformName": "MojTest",
     "description": "Platforma juaj e mençur për krijimin dhe dhënien e testeve",
@@ -139,6 +154,27 @@
         "delete": "Fshi",
         "deleteConfirm": "A jeni i sigurt që dëshironi ta fshini këtë test? Kjo do të fshijë edhe të gjitha pyetjet e lidhura."
       }
+    }
+  },
+  "footer": {
+    "about": {
+      "title": "Rreth Projektit",
+      "description": "Një platformë inovative arsimore e krijuar nga zhvillues të pasionuar për të revolucionarizuar mësimin online."
+    },
+    "quickLinks": {
+      "title": "Lidhje të Shpejta",
+      "about": "Rreth Nesh",
+      "contact": "Kontakt",
+      "sourceCode": "Kodi Burimor"
+    },
+    "connect": {
+      "title": "Lidhuni Me Ne",
+      "questions": "Keni pyetje? Kontaktoni ekipin tonë në:",
+      "email": "contact@example.com"
+    },
+    "copyright": {
+      "rights": "Platforma Juaj. Të gjitha të drejtat e rezervuara.",
+      "creators": "Krijuar me ❤️ nga Stefan Vasilev, Andrej Gencovski, dhe Aleksandar Sandev"
     }
   },
   "questionsPage": {
