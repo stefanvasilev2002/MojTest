@@ -392,6 +392,7 @@
     }
   },
   "dashboard": {
+    "noTestsMatchFilters": "Нема тестови кои одговараат на вашите филтри",
     "questions": "Прашања",
     "createNewQuestion": "Креирај Ново Прашање",
     "myTests": "Мои Тестови",
@@ -447,7 +448,7 @@
     "selectRole": "Изберете улога",
     "roleTeacher": "Наставник",
     "roleStudent": "Студент",
-    "loggingIn": "Најавувам...",
+    "loggingIn": "Најавување...",
     "roleAdmin": "Админ",
     "login": "Најава",
     "errors": {
@@ -555,7 +556,8 @@
       "emailRequired": "Е-поштата е задолжителна",
       "emailInvalid": "Ве молиме внесете валидна е-пошта",
       "fullNameRequired": "Целосното име е задолжително",
-      "roleRequired": "Ве молиме изберете улога"
+      "roleRequired": "Ве молиме изберете улога",
+      "gradeRequired": "Ве молиме изберете одделение"
     }
   },
   "crudHub": {

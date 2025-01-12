@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useTest from '../../hooks/crud/useTest.js';
 import { useAuth } from '../../context/AuthContext.jsx';
 import { useTranslation } from 'react-i18next';
 import { getTranslatedMetadata } from "../../config/translatedMetadata.js";
 import DeleteTestModal from "../../components/teacher/DeleteTestModal.jsx";
+import TestFilters from '../../components/TestFilters.jsx';
 import { ChevronDown, Edit, Plus, Trash2, HelpCircle } from 'lucide-react';
 import TestExport from "./TestExport.jsx";
 
@@ -17,11 +18,38 @@ const TeacherDashboard = () => {
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
     const [testToDelete, setTestToDelete] = useState(null);
     const [expandedTest, setExpandedTest] = useState(null);
+    const [filters, setFilters] = useState({
+        'Subject': '',
+        'Difficulty': '',
+        'Part of Year': '',
+        'Test Type': ''
+    });
     const itemsPerPage = 4;
     const { t, i18n } = useTranslation("common");
 
-    const myTests = tests.filter(test => test.creatorId === user.id);
-    const allTests = tests;
+    const handleFilterChange = (key, value) => {
+        setFilters(prev => ({
+            ...prev,
+            [key]: value
+        }));
+        setCurrentPage(1); // Reset to first page when filters change
+    };
+
+    const filteredTests = useMemo(() => {
+        const initialTests = activeTab === 'myTests'
+            ? tests.filter(test => test.creatorId === user.id)
+            : tests;
+
+        return initialTests.filter(test => {
+            return Object.entries(filters).every(([key, value]) => {
+                if (!value) return true;
+                return test.metadata?.some(meta =>
+                    meta.key === key && meta.value === value
+                );
+            });
+        });
+    }, [tests, filters, activeTab, user.id]);
+
     const handleDeleteClick = (test) => {
         setTestToDelete(test);
         setDeleteModalOpen(true);
@@ -38,18 +66,16 @@ const TeacherDashboard = () => {
             }
         }
     };
+
     // Get current tests based on pagination
     const getCurrentTests = () => {
-        const currentTests = activeTab === 'myTests' ? myTests : allTests;
         const indexOfLastItem = currentPage * itemsPerPage;
         const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-        return currentTests.slice(indexOfFirstItem, indexOfLastItem);
+        return filteredTests.slice(indexOfFirstItem, indexOfLastItem);
     };
 
     // Calculate total pages
-    const totalPages = Math.ceil(
-        (activeTab === 'myTests' ? myTests.length : allTests.length) / itemsPerPage
-    );
+    const totalPages = Math.ceil(filteredTests.length / itemsPerPage);
 
     // Handle page changes
     const handlePageChange = (pageNumber) => {
@@ -76,70 +102,12 @@ const TeacherDashboard = () => {
         navigate(`/teacher-dashboard/edit-test/${testId}`);
     };
 
-    const handleDeleteTest = async (testId) => {
-        if (window.confirm(t('dashboard.testDetails.actions.deleteConfirm'))) {
-            try {
-                await deleteTest(testId);
-            } catch (error) {
-                console.error('Error deleting test:', error);
-                alert('Failed to delete test: ' + error.message);
-            }
-        }
-    };
-
     const handleQuestionsClick = (testId) => {
         navigate(`/teacher-dashboard/test/${testId}/questions`);
     };
 
     const handleCreateQuestion = (testId) => {
         navigate(`/teacher-dashboard/test/${testId}/questions/create`);
-    };
-
-    const renderPagination = () => {
-        const pages = [];
-        for (let i = 1; i <= totalPages; i++) {
-            pages.push(
-                <button
-                    key={i}
-                    onClick={() => handlePageChange(i)}
-                    className={`px-3 py-1 mx-1 rounded ${
-                        currentPage === i
-                            ? 'bg-blue-600 text-white'
-                            : 'bg-white text-blue-600 hover:bg-blue-50'
-                    }`}
-                >
-                    {i}
-                </button>
-            );
-        }
-
-        return (
-            <div className="flex justify-center items-center mt-6 space-x-2">
-                <button
-                    onClick={() => handlePageChange(currentPage - 1)}
-                    disabled={currentPage === 1}
-                    className={`px-4 py-2 rounded ${
-                        currentPage === 1
-                            ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                            : 'bg-white text-blue-600 hover:bg-blue-50'
-                    }`}
-                >
-                    {t('pagination.previous')}
-                </button>
-                {pages}
-                <button
-                    onClick={() => handlePageChange(currentPage + 1)}
-                    disabled={currentPage === totalPages}
-                    className={`px-4 py-2 rounded ${
-                        currentPage === totalPages
-                            ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                            : 'bg-white text-blue-600 hover:bg-blue-50'
-                    }`}
-                >
-                    {t('pagination.next')}
-                </button>
-            </div>
-        );
     };
 
     const TestActions = ({ test, isOwner }) => (
@@ -183,6 +151,7 @@ const TeacherDashboard = () => {
             )}
         </div>
     );
+
     const renderTest = (test, isOwner) => (
         <div key={test.id} className="bg-white rounded-lg shadow p-4 sm:p-6">
             <div className="flex flex-col sm:flex-row justify-between">
@@ -289,8 +258,14 @@ const TeacherDashboard = () => {
                     </div>
                 </div>
 
+                {/* Filters Section */}
+                <TestFilters
+                    filters={filters}
+                    onFilterChange={handleFilterChange}
+                />
+
                 {/* Tests Grid */}
-                <div className="grid gap-4 sm:gap-6">
+                <div className="grid gap-4 sm:gap-6 mt-6">
                     {getCurrentTests().length === 0 ? (
                         <div className="bg-white rounded-lg shadow p-6 text-center">
                             <p className="text-gray-600">
@@ -307,7 +282,7 @@ const TeacherDashboard = () => {
                 </div>
 
                 {/* Pagination */}
-                {(activeTab === 'myTests' ? myTests : allTests).length > itemsPerPage && (
+                {filteredTests.length > itemsPerPage && (
                     <div className="flex justify-center items-center mt-6 space-x-2 overflow-x-auto p-2">
                         <button
                             onClick={() => handlePageChange(currentPage - 1)}

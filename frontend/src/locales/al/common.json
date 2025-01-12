@@ -116,6 +116,7 @@
     }
   },
   "dashboard": {
+    "noTestsMatchFilters": "Nuk ka teste që përputhen me filtrat tuaj.",
     "questions": "Pyetjet",
     "myTests": "Testet e Mia",
     "allTests": "Të Gjitha Testet",
@@ -600,7 +601,8 @@
       "emailRequired": "Emaili është i detyrueshëm",
       "emailInvalid": "Ju lutem shkruani një email të vlefshëm",
       "fullNameRequired": "Emri i plotë është i detyrueshëm",
-      "roleRequired": "Ju lutem zgjidhni një rol"
+      "roleRequired": "Ju lutem zgjidhni një rol",
+      "gradeRequired": "Ju lutem zgjidhni një klasë"
     }
   },
   "crudHub": {

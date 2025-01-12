@@ -102,6 +102,7 @@
     "error": "Error: ",
     "noTestsAvailable": "No tests available.",
     "noMyTestsAvailable": "No tests available. Create your first test!",
+    "noTestsMatchFilters": "No tests available matching your criteria.",
     "testDetails": {
       "error": {
         "message": "Error loading test details",
@@ -642,7 +643,8 @@
       "emailRequired": "Email is required",
       "emailInvalid": "Please enter a valid email address",
       "fullNameRequired": "Full name is required",
-      "roleRequired": "Please select a role"
+      "roleRequired": "Please select a role",
+      "gradeRequired": "Please select a grade"
     }
   },
   "crudHub": {
