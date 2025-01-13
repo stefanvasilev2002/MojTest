@@ -10,15 +10,13 @@ export const AuthProvider = ({ children }) => {
         if (storedToken) {
             try {
                 const decodedToken = jwt_decode.jwtDecode(storedToken);
-                // First, get basic user info from token
                 const userInfo = {
                     id: decodedToken.userId,
                     username: decodedToken.sub,
                     token: storedToken,
-                    fullName: decodedToken.fullName,  // Add these if they're in your JWT
+                    fullName: decodedToken.fullName,
                 };
 
-                // Immediately fetch additional user details if token exists
                 fetch(endpoints.users.getById(decodedToken.userId), {
                     headers: {
                         'Authorization': `Bearer ${storedToken}`
@@ -26,13 +24,12 @@ export const AuthProvider = ({ children }) => {
                 })
                     .then(response => response.json())
                     .then(data => {
-                        // Update user state with all information
                         const updatedUser = {
                             ...userInfo,
                             username: data.username,
                             grade: data.grade,
                             email: data.email,
-                            fullName: data.fullName || decodedToken.fullName,  // Prefer API data, fallback to token
+                            fullName: data.fullName || decodedToken.fullName,
                         };
                         setUser(updatedUser);
                     })
@@ -66,7 +63,6 @@ export const AuthProvider = ({ children }) => {
             localStorage.setItem('token', token);
             localStorage.setItem('role', userRole);
 
-            // Fetch full user details after login
             const response = await fetch(endpoints.users.getById(decodedToken.userId), {
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -79,14 +75,13 @@ export const AuthProvider = ({ children }) => {
 
             const userData = await response.json();
 
-            // Set user with all details
             setUser({
                 id: decodedToken.userId,
                 username: decodedToken.sub,
                 token: token,
                 grade: userData.grade,
                 email: userData.email,
-                fullName: userData.fullName || decodedToken.fullName  // Prefer API data, fallback to token
+                fullName: userData.fullName || decodedToken.fullName
             });
 
             setRole(userRole);

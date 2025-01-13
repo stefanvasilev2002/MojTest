@@ -6,9 +6,7 @@ import { Outlet } from 'react-router-dom';
 import Footer from "../components/navbar/Footer.jsx";
 
 const StudentLayout = () => {
-    const { user } = useAuth();  // Get the user state from AuthContext
-
-    console.log("Student layout loaded")
+    const { user } = useAuth();
 
     return (
         <div>
@@ -16,7 +14,7 @@ const StudentLayout = () => {
             {user ? <AuthenticatedNavBarStudent /> : <PublicNavBarStudent />}
 
             {/* Main content will be rendered here using Outlet */}
-            <main className="p-4">
+            <main id="main-content" className="p-4">
                 <Outlet />  {/* This is where child routes will be rendered */}
             </main>
             <Footer />

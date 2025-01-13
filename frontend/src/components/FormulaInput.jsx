@@ -1,15 +1,14 @@
 import React from 'react';
 
 const FormulaInput = ({ formula, setFormula }) => {
-    // Handle change of input field and set the formula value
     const handleChange = (event) => {
-        setFormula(event.target.value);  // Update the formula state with new input
+        setFormula(event.target.value);
     };
 
     return (
         <div>
 
-            {/* New Formula input field (styled like the original one) */}
+            {}
             <input
                 type="text"
                 name="formula"

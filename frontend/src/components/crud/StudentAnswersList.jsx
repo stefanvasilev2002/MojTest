@@ -5,10 +5,9 @@ import Alert from "../Alert.jsx";
 import CrudActionTable from "../CrudActionTable.jsx";
 
 const StudentAnswersList = () => {
-    const { items: studentAnswers, loading, error, remove } = useStudentAnswers(); // Fetch student answers and remove method
+    const { items: studentAnswers, loading, error, remove } = useStudentAnswers();
     const navigate = useNavigate();
 
-    // Handle delete action
     const handleDelete = async (id) => {
         if (window.confirm("Are you sure you want to delete this student answer?")) {
             await remove(id);

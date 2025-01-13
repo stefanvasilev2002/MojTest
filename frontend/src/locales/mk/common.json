@@ -141,7 +141,7 @@
   "questionsPage": {
     "loading": "Вчитување прашања...",
     "error": "Грешка: ",
-    "backToDashboard": "← Назад кон Таблата",
+    "backToDashboard": "Назад кон Таблата",
     "title": "Прашања од Тестот",
     "viewingQuestionsBy": "Преглед на прашања за тест креиран од Наставник",
     "addNewQuestion": "Додади Ново Прашање",
@@ -203,7 +203,7 @@
       "update": "Ажурирај прашање"
     }
   },  "createQuestion": {
-    "backToQuestions": "← Назад кон Прашања",
+    "backToQuestions": "Назад кон Прашања",
     "pageTitle": "Креирај Ново Прашање",
     "error": {
       "title": "Грешка",
@@ -360,7 +360,7 @@
     }
   },
   "questionManager": {
-    "backToQuestions": "← Назад кон Прашања",
+    "backToQuestions": "Назад кон Прашања",
     "pageTitle": "Управување со Прашања",
     "tabs": {
       "createNew": "Креирај Ново Прашање",
@@ -423,7 +423,7 @@
       "email": "contact@example.com"
     },
     "copyright": {
-      "rights": "Вашата Платформа. Сите права се задржани.",
+      "rights": "Мој Тест. Сите права се задржани.",
       "creators": "Создадено од ❤️ од Стефан Василев, Андреј Генчовски и Александар Сандев"
     }
   },
@@ -623,8 +623,8 @@
     "MULTIPLE_CHOICE": "Повеќекратен избор",
     "TRUE_FALSE": "Точно/Неточно",
     "FILL_IN_THE_BLANK": "Пополни го празното место",
-    "ESSAY": "Есеј",
-    "NUMERIC": "Нумерички"
+    "ESSAY": "Есејско прашање",
+    "NUMERIC": "Нумеричко прашање"
   },
   "trueFalse": {
     "true": "Точно",

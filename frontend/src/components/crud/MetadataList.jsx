@@ -5,19 +5,14 @@ import Alert from "../Alert.jsx";
 import CrudActionTable from "../CrudActionTable.jsx";
 
 const MetadataList = () => {
-    const { items: metadataList, loading, error, remove } = useMetadata(); // Fetch metadata and remove method
+    const { items: metadataList, loading, error, remove } = useMetadata();
     const navigate = useNavigate();
 
-    console.log("Metadata List:", JSON.stringify(metadataList, null, 2));  // Pretty-print the list
-
-    // Handle delete action
     const handleDelete = async (id) => {
         if (window.confirm("Are you sure you want to delete this metadata?")) {
-            console.log("Deleting item with ID:", id);  // Log the ID here
-            await remove(id); // Call the remove method from the hook
+            await remove(id);
         }
     };
-
 
     if (loading) {
         return (
@@ -53,8 +48,8 @@ const MetadataList = () => {
                         item.key,
                         item.value,
                     ])}
-                    onEdit={(id) => navigate(`/crud/metadata/edit/${id}`)}  // Pass the ID directly
-                    onDelete={(id) => handleDelete(id)}  // Pass the ID directly
+                    onEdit={(id) => navigate(`/crud/metadata/edit/${id}`)}
+                    onDelete={(id) => handleDelete(id)}
 
                 />
             )}

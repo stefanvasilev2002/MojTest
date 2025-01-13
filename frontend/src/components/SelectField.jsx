@@ -1,4 +1,3 @@
-// SelectField.js
 import React from "react";
 import ReactSelect from "react-select";
 
@@ -16,7 +15,5 @@ const SelectField = ({ id, name, options, value, onChange, label, isMulti }) => 
         />
     </div>
 );
-
-
 
 export default SelectField;

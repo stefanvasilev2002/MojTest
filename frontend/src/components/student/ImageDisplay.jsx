@@ -20,7 +20,7 @@ const ImageDisplay = ({ imageId }) => {
                     }
 
                     const blob = await response.blob();
-                    const objectUrl = URL.createObjectURL(blob); // Create an object URL for the blob
+                    const objectUrl = URL.createObjectURL(blob);
                     setImageUrl(objectUrl);
                     setLoading(false);
                 } catch (err) {
@@ -32,10 +32,9 @@ const ImageDisplay = ({ imageId }) => {
 
             fetchImage();
         }
-    }, [imageId]); // Only run when imageId changes
+    }, [imageId]);
 
     if (!imageId) {
-        // If imageId does not exist, we hide the component
         return null;
     }
 

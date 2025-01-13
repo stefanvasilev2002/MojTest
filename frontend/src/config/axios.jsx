@@ -13,12 +13,10 @@ axios.interceptors.request.use(
     }
 );
 
-// Add a response interceptor
 axios.interceptors.response.use(
     (response) => response,
     async (error) => {
         if (error.response?.status === 401) {
-            // Handle token expiration
             localStorage.removeItem('token');
             localStorage.removeItem('user');
             localStorage.removeItem('role');

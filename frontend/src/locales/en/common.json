@@ -109,7 +109,7 @@
       "email": "contact@example.com"
     },
     "copyright": {
-      "rights": "Your Platform Name. All rights reserved.",
+      "rights": "Moj Test. All rights reserved.",
       "creators": "Created with ❤️ by Stefan Vasilev, Andrej Gencovski, and Aleksandar Sandev"
     }
   },
@@ -306,7 +306,7 @@
     }
   },
   "questionManager": {
-    "backToQuestions": "← Back to Questions",
+    "backToQuestions": "Back to Questions",
     "pageTitle": "Manage Questions",
     "tabs": {
       "createNew": "Create New Question",
@@ -314,7 +314,7 @@
     }
   },
   "createQuestion": {
-    "backToQuestions": "← Back to Questions",
+    "backToQuestions": "Back to Questions",
     "pageTitle": "Create New Question",
     "error": {
       "title": "Error",
@@ -324,7 +324,7 @@
   "questionsPage": {
     "loading": "Loading questions...",
     "error": "Error: ",
-    "backToDashboard": "← Back to Dashboard",
+    "backToDashboard": "Back to Dashboard",
     "title": "Test Questions",
     "viewingQuestionsBy": "Viewing questions for test created by Teacher",
     "addNewQuestion": "Add New Question",

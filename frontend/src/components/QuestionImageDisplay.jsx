@@ -32,7 +32,6 @@ const QuestionImageDisplay = ({ fileId, className = '' }) => {
 
         fetchImage();
 
-        // Cleanup function
         return () => {
             if (imageUrl) {
                 URL.revokeObjectURL(imageUrl);

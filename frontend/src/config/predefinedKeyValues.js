@@ -1,55 +1,65 @@
 export const predefinedKeyValues = {
     "Subject": [
         "Mathematics",
-        "Science",
+        "Macedonian Language",
+        "English Language",
+        "German Language",
+        "French Language",
         "Physics",
         "Chemistry",
         "Biology",
-        "History",
         "Geography",
-        "Literature",
-        "Language Arts",
-        "Computer Science",
-        "Foreign Language",
+        "History",
+        "Civic Education",
+        "Ethics",
+        "Information Technology",
+        "Technical Education",
+        "Art Education",
+        "Music Education",
         "Physical Education",
-        "Art",
-        "Music"
+        "Society",
+        "Nature",
+        "Nature and Society"
     ],
     "Part of Year": [
-        "1st Quarter",
-        "2nd Quarter",
-        "3rd Quarter",
-        "4th Quarter",
+        "First Trimester",
+        "Second Trimester",
+        "Third Trimester",
         "First Semester",
         "Second Semester"
     ],
     "Grade": [
-        "1st Elementary Grade",
-        "2nd Elementary Grade",
-        "3rd Elementary Grade",
-        "4th Elementary Grade",
-        "5th Elementary Grade",
-        "6th Elementary Grade",
-        "7th Elementary Grade",
-        "8th Elementary Grade",
-        "9th Elementary Grade",
-        "1st High School Year",
-        "2nd High School Year",
-        "3rd High School Year",
-        "4th High School Year"
+        // Primary Education (1-9)
+        "1st Grade",
+        "2nd Grade",
+        "3rd Grade",
+        "4th Grade",
+        "5th Grade",
+        "6th Grade",
+        "7th Grade",
+        "8th Grade",
+        "9th Grade",
+        // Secondary Education (1-4)
+        "1st Year Secondary",
+        "2nd Year Secondary",
+        "3rd Year Secondary",
+        "4th Year Secondary"
     ],
     "Difficulty": [
-        "Beginner",
+        "Basic",
         "Intermediate",
         "Advanced",
-        "Expert"
+        "Competition"
     ],
     "Test Type": [
         "Practice",
-        "Quiz",
-        "Midterm",
-        "Final",
-        "Placement",
-        "Assessment"
+        "Daily Assessment",
+        "Written Test",
+        "Theme/Essay",
+        "Project",
+        "Trimester Test",
+        "Final Test",
+        "External Assessment",
+        "State Matura"
     ]
 };

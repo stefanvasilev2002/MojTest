@@ -6,7 +6,7 @@ import FormulaDisplay from "../FormulaDisplay.jsx";
 import { useTranslation } from 'react-i18next';
 import {getTranslatedMetadata} from "../../config/translatedMetadata.js";
 import ImageUploader from "../ImageUploader.jsx";
-import { Plus, Minus, Check, X, ArrowLeft } from 'lucide-react';
+import { Plus, Minus, Check, ArrowLeft } from 'lucide-react';
 
 const QuestionForm = ({ onSubmit, isEditing = false, initialData = {}, mode = 'create', loading = false }) => {
     const { t , i18n} = useTranslation("common");
@@ -128,7 +128,6 @@ const QuestionForm = ({ onSubmit, isEditing = false, initialData = {}, mode = 'c
                 ...answer,
                 isCorrect: i === index ? Boolean(isChecked) : Boolean(answer.isCorrect)
             }));
-            console.log('Updated answers:', newAnswers); // Debug log
             return {
                 ...prev,
                 answers: newAnswers
@@ -142,7 +141,6 @@ const QuestionForm = ({ onSubmit, isEditing = false, initialData = {}, mode = 'c
                 ...answer,
                 isCorrect: Boolean(i === index)
             }));
-            console.log('Updated true/false answers:', newAnswers); // Debug log
             return {
                 ...prev,
                 answers: newAnswers
@@ -179,63 +177,51 @@ const QuestionForm = ({ onSubmit, isEditing = false, initialData = {}, mode = 'c
     }, [formData.answers.length]);
 
     const compareMetadata = (formData, originalData) => {
-        // Convert metadata to key-value pairs if it's an object
         const metadata1 = Array.isArray(formData.metadata)
             ? formData.metadata
-            : Object.entries(formData.metadata || {});  // Convert to an array if it's an object
+            : Object.entries(formData.metadata || {});
 
         const metadata2 = Array.isArray(originalData.metadata)
             ? originalData.metadata
-            : Object.entries(originalData.metadata || {});  // Convert to an array if it's an object
+            : Object.entries(originalData.metadata || {});
 
-        // Sort both metadata arrays by key for normalization
         metadata1.sort((a, b) => a[0].localeCompare(b[0]));
         metadata2.sort((a, b) => a[0].localeCompare(b[0]));
 
-        // Check if lengths are different
         if (metadata1.length !== metadata2.length) return false;
 
-        // Compare each key-value pair
         for (let i = 0; i < metadata1.length; i++) {
             const [key1, value1] = metadata1[i];
             const [key2, value2] = metadata2[i];
 
-            // Ensure both items have the same key and value
             if (key1 !== key2 || value1 !== value2) {
                 return false;
             }
         }
 
-        // Return true if no differences were found
         return true;
     };
     const compareAnswers = (formData, originalData) => {
         const answers1 = Array.isArray(formData.answers) ? formData.answers : [];
         const answers2 = Array.isArray(originalData.answers) ? originalData.answers : [];
 
-        // Sort the answers by their 'id' to ensure consistent ordering
         answers1.sort((a, b) => a.id - b.id);  // Sorting by 'id' field
         answers2.sort((a, b) => a.id - b.id);  // Sorting by 'id' field
 
-        // Check if lengths are different
         if (answers1.length !== answers2.length) return false;
 
-        // Compare each answer
         for (let i = 0; i < answers1.length; i++) {
             const a1 = answers1[i];
             const a2 = answers2[i];
 
-            // Map 'correct' to 'isCorrect' before comparison
             const isCorrect1 = a1.correct !== undefined ? a1.correct : a1.isCorrect;
             const isCorrect2 = a2.correct !== undefined ? a2.correct : a2.isCorrect;
 
-            // Ensure both answers have the same text, id, and correctness
             if (a1.answerText !== a2.answerText || a1.id !== a2.id || isCorrect1 !== isCorrect2) {
                 return false;
             }
         }
 
-        // Return true if no differences were found
         return true;
     };
     const compareOtherFields = (formData, originalData) => {
@@ -248,14 +234,13 @@ const QuestionForm = ({ onSubmit, isEditing = false, initialData = {}, mode = 'c
             'type'
         ];
 
-        // Check if the field values in both formData and originalData are equal
         for (let field of fieldsToCompare) {
             if (formData[field] !== originalData[field]) {
                 return false; // If any field does not match, return false
             }
         }
 
-        return true; // All fields are the same
+        return true;
     };
 
     const handleImageUploadComplete = (uploadedFile) => {
@@ -270,8 +255,6 @@ const QuestionForm = ({ onSubmit, isEditing = false, initialData = {}, mode = 'c
         setError(null);
 
         try {
-            console.log("Form Data at Submit Start:", JSON.stringify(formData, null, 2));
-
             if (!formData.description.trim()) {
                 throw new Error('Question description is required');
             }
@@ -286,7 +269,6 @@ const QuestionForm = ({ onSubmit, isEditing = false, initialData = {}, mode = 'c
                     ...rest,
                     correct: isCorrect
                 }));
-            console.log("Valid Answers After Processing:", JSON.stringify(validAnswers, null, 2));
 
             if (selectedType !== 'ESSAY' && validAnswers.length === 0) {
                 throw new Error('At least one answer is required');
@@ -309,22 +291,16 @@ const QuestionForm = ({ onSubmit, isEditing = false, initialData = {}, mode = 'c
                 metadata: metadataArray,
             };
 
-            // Check if copying and detect changes in metadata, answers, and other fields
             if (mode === 'copy' || (mode === 'edit' && initialData.isCopy)) {
-                const metadataUnchanged = compareMetadata(formData, originalData); // Check metadata
-                const answersUnchanged = compareAnswers(formData, originalData);  // Check answers
-                const otherFieldsUnchanged = compareOtherFields(formData, originalData);  // Check other fields
-                questionData.isCopy = metadataUnchanged && answersUnchanged && otherFieldsUnchanged; // If all are unchanged, mark as copy
+                const metadataUnchanged = compareMetadata(formData, originalData);
+                const answersUnchanged = compareAnswers(formData, originalData);
+                const otherFieldsUnchanged = compareOtherFields(formData, originalData);
+                questionData.isCopy = metadataUnchanged && answersUnchanged && otherFieldsUnchanged;
 
-                console.log("Metadata Unchanged?", metadataUnchanged);
-                console.log("Answers Unchanged?", answersUnchanged);
-                console.log("Other Fields Unchanged?", otherFieldsUnchanged);
-                console.log("Final isCopy:", questionData.isCopy);
             } else {
                 questionData.isCopy = false;
             }
 
-            console.log("Final Data to Submit:", JSON.stringify(questionData, null, 2));
             await onSubmit(questionData);
 
         } catch (err) {

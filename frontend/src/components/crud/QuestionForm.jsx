@@ -1,32 +1,30 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import useQuestion from "../../hooks/crud/useQuestion"; // Custom hook for question CRUD operations
-import useTeacher from "../../hooks/crud/useTeacher"; // Custom hook for teacher CRUD operations
-import useTest from "../../hooks/crud/useTest"; // Custom hook for test CRUD operations
-import useMetadata from "../../hooks/crud/useMetadata"; // Custom hook for metadata CRUD operations
-import useAnswers from "../../hooks/crud/useAnswers"; // Custom hook for answer CRUD operations
-import formConfigs from "../../config/formConfigs"; // Import form configurations
-import CrudForm from "./CrudForm.jsx"; // Reusable CrudForm component
-import Alert from "../Alert.jsx"; // Alert component for error messages
-import { useTranslation } from "react-i18next";
+import React, {useEffect, useState} from "react";
+import {useNavigate, useParams} from "react-router-dom";
+import useQuestion from "../../hooks/crud/useQuestion";
+import useTeacher from "../../hooks/crud/useTeacher";
+import useTest from "../../hooks/crud/useTest";
+import useMetadata from "../../hooks/crud/useMetadata";
+import useAnswers from "../../hooks/crud/useAnswers";
+import formConfigs from "../../config/formConfigs";
+import CrudForm from "./CrudForm.jsx";
+import Alert from "../Alert.jsx";
+import {useTranslation} from "react-i18next";
 import {questionTypeLabels} from "../../config/questionTypeLabels.js";
 
 const QuestionForm = () => {
-    const { t } = useTranslation('common'); // Use the 'common' namespace for translations
+    const { t } = useTranslation('common');
 
     const navigate = useNavigate();
-    const { id } = useParams(); // Get question ID for edit mode
+    const { id } = useParams();
     const { create, update, fetchById, loading, error } = useQuestion();
-    const { items: teacherList } = useTeacher(); // Fetch teachers
-    const { items: testList } = useTest(); // Fetch tests
-    const { items: metadataList } = useMetadata(); // Fetch metadata
-    const { items: answerList } = useAnswers(); // Fetch answers
+    const { items: teacherList } = useTeacher();
+    const { items: testList } = useTest();
+    const { items: metadataList } = useMetadata();
+    const { items: answerList } = useAnswers();
 
-    // State for the fetched question item
     const [question, setQuestion] = useState(null);
     const [isInitialValuesSet, setIsInitialValuesSet] = useState(false); // Ensure values are set once
 
-    // Fetch question for editing if ID is provided
     useEffect(() => {
         if (!isInitialValuesSet) {
             if (id) {
@@ -54,14 +52,13 @@ const QuestionForm = () => {
                     setIsInitialValuesSet(true);
                 });
             } else {
-                setQuestion(null); // No initial question for creation
+                setQuestion(null);
                 setIsInitialValuesSet(true);
             }
         }
     }, [id, fetchById, isInitialValuesSet]);
 
 
-    // Related data for select and multi-select fields
     const relatedData = {
         Teacher: Array.isArray(teacherList) ? teacherList.map((t) => ({
             value: t.id,
@@ -85,10 +82,6 @@ const QuestionForm = () => {
         })),
     };
 
-
-
-
-    // Handle form submission
     const handleSubmit = async (values) => {
         const payload = {
             ...values,
@@ -96,11 +89,11 @@ const QuestionForm = () => {
             testIds: values.testIds.map((test) => test.value), // Extract test IDs
             metadataIds: values.metadataIds.map((meta) => meta.value), // Extract metadata IDs
             answerIds: values.answerIds.map((answer) => answer.value), // Extract answer IDs
-            type: values.type ? values.type.value : null,  // Ensure type is a string (extract value)
+            type: values.type ? values.type.value : null,
 
         };
         if (values.image) {
-            const fileDTO = {
+            payload.image = {
                 id: values.image.id,
                 file: null,
                 filePath: values.image.fileDownloadUri,
@@ -109,21 +102,18 @@ const QuestionForm = () => {
                 fileType: values.image.fileType,
                 relatedEntityId: values.id || null,
             };
-
-            payload.image = fileDTO;  // Include the mapped file data in the payload
         }
         try {
             if (id) {
-                await update(id, payload); // Update existing question
+                await update(id, payload);
             } else {
-                await create(payload); // Create new question
+                await create(payload);
             }
             navigate("/crud/question");
         } catch (err) {
             console.error("Error submitting question:", err);
         }
     };
-
 
     if (loading || !isInitialValuesSet) {
         return <p>Loading...</p>;
@@ -137,9 +127,9 @@ const QuestionForm = () => {
             <CrudForm
                 entity="Question"
                 formConfigs={formConfigs}
-                initialData={question || {}} // Pass either fetched question or empty object
+                initialData={question || {}}
                 onSubmit={handleSubmit}
-                relatedData={relatedData} // Pass the related data (teachers, tests, metadata, answers)
+                relatedData={relatedData}
             />
         </div>
     );

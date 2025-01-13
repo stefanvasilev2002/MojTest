@@ -18,7 +18,6 @@ const AddExistingQuestionPage = ({ onSelectQuestion }) => {
                 const questions = await testQuestionService.getAllQuestionsNotInTest(testId);
                 setAllQuestions(questions);
                 setFilteredQuestions(questions);
-                console.log("Fetched Questions:", JSON.stringify(questions, null, 2));
             } catch (err) {
                 console.error(t('addExistingQuestion.error.fetchQuestions'), err);
             }

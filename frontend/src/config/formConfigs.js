@@ -13,8 +13,8 @@ const formConfigs = {
     },
     Metadata: {
         fields: [
-            { name: "key", label: "Key", type: "select", relation: "Key" }, // key field
-            { name: "value", label: "Value", type: "select", relation: "Value" }, // value field
+            { name: "key", label: "Key", type: "select", relation: "Key" },
+            { name: "value", label: "Value", type: "select", relation: "Value" },
             {
                 name: "questions",
                 label: "Questions",
@@ -32,12 +32,11 @@ const formConfigs = {
 
     Question: {
         fields: [
-            // Change the 'type' field to use 'select' type and reference the related data for options
             {
                 name: "type",
                 label: "question.type",
-                type: "select", // Change to 'select' for dropdown
-                relation: "Type", // Reference to 'Type' in relatedData
+                type: "select",
+                relation: "Type",
             },
             { name: "description", label: "question.description", type: "textarea" },
             { name: "points", label: "question.points", type: "number" },
@@ -46,26 +45,26 @@ const formConfigs = {
             { name: "image", label: "question.imageUrl", type: "image" },
             { name: "hint", label: "question.hint", type: "textarea" },
             {
-                name: "testIds", // Match with the DTO field
-                label: "question.tests", // Translation key
+                name: "testIds",
+                label: "question.tests",
                 type: "multi-select",
                 relation: "Test",
             },
             {
-                name: "metadataIds", // Match with the DTO field
-                label: "question.metadata", // Translation key
+                name: "metadataIds",
+                label: "question.metadata",
                 type: "multi-select",
                 relation: "Metadata",
             },
             {
-                name: "answerIds", // Match with the DTO field
-                label: "question.answers", // Translation key
+                name: "answerIds",
+                label: "question.answers",
                 type: "multi-select",
                 relation: "Answer",
             },
             {
-                name: "creatorId", // Match with the DTO field
-                label: "question.creator", // Translation key
+                name: "creatorId",
+                label: "question.creator",
                 type: "select",
                 relation: "Teacher",
             },
@@ -140,13 +139,13 @@ const formConfigs = {
             {
                 name: "testQuestionIds",
                 label: "Test Question IDs",
-                type: "multi-select", // You can adjust this if you have specific test question data
+                type: "multi-select",
                 relation: "TestQuestion"
             },
             {
                 name: "studentTestIds",
                 label: "Student Test IDs",
-                type: "multi-select", // Adjust if needed for actual student test data
+                type: "multi-select",
                 relation: "StudentTest"
             }
         ]
@@ -177,17 +176,17 @@ const formConfigs = {
         ],
     },
     Student: {
-        extends: "User", // Inherits fields from User
+        extends: "User",
         fields: [
             { name: "grade", label: "Grade", type: "text" },
         ],
     },
     Teacher: {
-        extends: "User", // Inherits fields from User
+        extends: "User",
         fields: [],
     },
     Admin: {
-        extends: "User", // Inherits fields from User
+        extends: "User",
         fields: [],
     },
 };

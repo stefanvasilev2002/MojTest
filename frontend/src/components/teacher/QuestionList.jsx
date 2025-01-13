@@ -4,14 +4,12 @@ import { useTranslation } from 'react-i18next';
 const QuestionList = ({ questions, onEdit, onRemove, onDelete, onAddToTest }) => {
     const { t } = useTranslation("common");
     const [currentPage, setCurrentPage] = useState(1);
-    const itemsPerPage = 4; // Number of questions per page
+    const itemsPerPage = 4;
 
-    // Get current questions
     const indexOfLastQuestion = currentPage * itemsPerPage;
     const indexOfFirstQuestion = indexOfLastQuestion - itemsPerPage;
     const currentQuestions = questions.slice(indexOfFirstQuestion, indexOfLastQuestion);
 
-    // Calculate total pages
     const totalPages = Math.ceil(questions.length / itemsPerPage);
 
     const handlePageChange = (pageNumber) => {

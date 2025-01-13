@@ -15,8 +15,6 @@ const useAuthActions = () => {
 
             if (response.success) {
                 setError(null);
-                console.log(response.data)
-                console.log(response.data.roles)
                 contextLogin(response.data.token, response.data.role);
                 return {
                     success: true,
@@ -91,7 +89,6 @@ const useAuthActions = () => {
             if (response.success) {
                 const decodedToken = jwt_decode.jwtDecode(response.data);
 
-                console.log("RESPONSE: "+decodedToken);
                 const role = decodedToken.roles[0].replace("ROLE_", "").toLowerCase();
                 contextLogin(response.data, role);
                 return {
@@ -131,7 +128,6 @@ const useAuthActions = () => {
             if (response.success) {
                 const decodedToken = jwt_decode.jwtDecode(response.data);
 
-                console.log("RESPONSE: "+decodedToken);
                 const role = decodedToken.roles[0].replace("ROLE_", "").toLowerCase();
                 contextLogin(response.data, role);
                 return {

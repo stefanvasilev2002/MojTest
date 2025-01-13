@@ -145,7 +145,7 @@ const StudentDashboard = () => {
             });
         });
     }, [tests, filters, user?.grade]);
-    console.log("test:",filteredTests[0]);
+
     if (!user) {
         return (
             <div className="min-h-screen bg-gray-50 flex items-center justify-center">

@@ -1,4 +1,3 @@
-//api.config.jsx
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api';
 
 export const endpoints = {
@@ -9,7 +8,7 @@ export const endpoints = {
     export:{
         test: (testId, format) => `${API_BASE_URL}/export/${testId}?format=${format}`
     },
-    // In api.config.jsx, add to the existing endpoints object:
+
     questions: {
         create: `${API_BASE_URL}/questions/create`,
         getById: (id) => `${API_BASE_URL}/questions/${id}`,

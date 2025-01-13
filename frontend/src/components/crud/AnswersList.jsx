@@ -1,17 +1,16 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import useAnswers from "../../hooks/crud/useAnswers.js"; // Import the custom hook
-import Alert from "../Alert.jsx"; // Import the Alert component
-import CrudActionTable from "../CrudActionTable.jsx"; // Import the reusable table
+import useAnswers from "../../hooks/crud/useAnswers.js";
+import Alert from "../Alert.jsx";
+import CrudActionTable from "../CrudActionTable.jsx";
 
 const AnswersList = () => {
     const { items: answersList, loading, error, remove } = useAnswers();
     const navigate = useNavigate();
 
-    // Handle delete action
     const handleDelete = async (id) => {
         if (window.confirm("Are you sure you want to delete this answer?")) {
-            await remove(id); // Call the remove method from the hook
+            await remove(id);
         }
     };
 

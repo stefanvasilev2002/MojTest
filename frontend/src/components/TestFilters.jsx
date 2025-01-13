@@ -5,12 +5,6 @@ import {getTranslatedMetadata} from "../config/translatedMetadata.js";
 
 const TestFilters = ({ filters, onFilterChange }) => {
     const { t, i18n } = useTranslation("common");
-    const keyMapping = {
-        'subject': 'Subject',
-        'difficulty': 'Difficulty',
-        'partOfYear': 'Part of Year',
-        'testType': 'Test Type'
-    };
 
     return (
         <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200">

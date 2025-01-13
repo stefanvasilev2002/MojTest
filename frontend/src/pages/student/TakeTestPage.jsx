@@ -34,7 +34,6 @@ const TakeTestPage = () => {
     const [showNavigation, setShowNavigation] = useState(false);
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
 
-    // Initialize answers and hints from localStorage
     const [answers, setAnswers] = useState(() => {
         const savedAnswers = localStorage.getItem(`test_${studentTestId}_answers`);
         return savedAnswers ? JSON.parse(savedAnswers) : {};
@@ -45,7 +44,6 @@ const TakeTestPage = () => {
         return savedHints ? JSON.parse(savedHints) : {};
     });
 
-    // Navigation handlers
     const handleNextQuestion = () => {
         if (currentQuestionIndex < testData.questions.length - 1) {
             setCurrentQuestionIndex(prev => prev + 1);
@@ -70,7 +68,6 @@ const TakeTestPage = () => {
         }, 2000);
     };
 
-    // Local storage effects
     useEffect(() => {
         localStorage.setItem(`test_${studentTestId}_answers`, JSON.stringify(answers));
     }, [answers, studentTestId]);
@@ -79,9 +76,7 @@ const TakeTestPage = () => {
         localStorage.setItem(`test_${studentTestId}_hints`, JSON.stringify(hintsUsed));
     }, [hintsUsed, studentTestId]);
 
-    // Test data initialization effect
     useEffect(() => {
-        console.log('testData:', testData);
         if (testData == null) {
             const savedTestData = localStorage.getItem(`test_${studentTestId}_data`);
             if (savedTestData) {
@@ -103,7 +98,6 @@ const TakeTestPage = () => {
         }
     }, [studentTestId, testData]);
 
-    // Storage management functions
     const clearLocalStorage = () => {
         localStorage.removeItem(`test_${studentTestId}_start_time`);
         localStorage.removeItem(`test_${studentTestId}_time`);
@@ -132,7 +126,6 @@ const TakeTestPage = () => {
             alert('Failed to cancel test: ' + err.message);
         }
     };
-    // Data fetching and answer handling
     const fetchTestData = async () => {
         try {
             const response = await fetch(endpoints.studentTests.take(studentTestId), {
@@ -140,7 +133,6 @@ const TakeTestPage = () => {
                     'Authorization': `Bearer ${user.token}`,
                 },
             });
-            console.log('response:', response);
             if (!response.ok) {
                 throw new Error('Failed to fetch test data');
             }
@@ -393,12 +385,7 @@ const TakeTestPage = () => {
                                             onAnswerChange={handleAnswerChange}
                                         />
                                     )}
-                                    <HintButton
-                                        hint={currentQuestion.hint}
-                                        questionId={currentQuestion.questionId}
-                                        hintsUsed={hintsUsed}
-                                        onHintTaken={handleHintUsed}
-                                    />
+
                                 </div>
 
                                 <HintButton

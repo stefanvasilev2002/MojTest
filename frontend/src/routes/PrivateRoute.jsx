@@ -5,9 +5,6 @@ import { useAuth } from '../context/AuthContext';
 const PrivateRoute = ({ children, requiredRoles }) => {
     const { user, role } = useAuth();
     const location = useLocation();
-    console.log(user);
-    console.log("role ", role);
-    console.log("requiredRole: ", requiredRoles);
 
     // If user is not authenticated, redirect to login
     if (!user) {
@@ -30,7 +27,6 @@ const PrivateRoute = ({ children, requiredRoles }) => {
         }
     }
 
-    console.log("hasPermission: ", hasPermission);
 
     if (!hasPermission) {
         // Get appropriate redirect path based on role

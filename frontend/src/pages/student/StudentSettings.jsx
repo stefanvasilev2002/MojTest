@@ -11,7 +11,6 @@ const StudentSettings = () => {
     const { user } = useAuth();  // Get the logged-in user
     const { handleUpdate, loading, error } = useAuthActions();
     const navigate = useNavigate();
-console.log("LANG "+i18n.language);
     const [formData, setFormData] = useState({
         username: "",
         email: "",

@@ -11,7 +11,6 @@ const TestQuestionsPage = () => {
     const navigate = useNavigate();
     const { user } = useAuth();
 
-    // Fetch test questions and question bank separately
     const {
         items: testQuestions,
         loading: testQuestionsLoading,
@@ -21,10 +20,7 @@ const TestQuestionsPage = () => {
     } = useQuestion(testId);
 
     useEffect(()=>{
-        console.log("Fetched Questions:", JSON.stringify(testQuestions, null, 2));
     }, [testQuestions, testQuestionsLoading])
-
-    console.log("Fetched Questions:", JSON.stringify(testQuestions, null, 2));
 
     // State for question bank
     const [questionBank, setQuestionBank] = useState([]);

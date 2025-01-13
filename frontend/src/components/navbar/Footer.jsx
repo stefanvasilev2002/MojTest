@@ -26,12 +26,12 @@ const Footer = () => {
                         </h3>
                         <ul className="space-y-2">
                             <li>
-                                <Link to="/about" className="text-gray-400 hover:text-white transition-colors">
+                                <Link to="#" className="text-gray-400 hover:text-white transition-colors">
                                     {t('footer.quickLinks.about')}
                                 </Link>
                             </li>
                             <li>
-                                <Link to="/contact" className="text-gray-400 hover:text-white transition-colors">
+                                <Link to="#" className="text-gray-400 hover:text-white transition-colors">
                                     {t('footer.quickLinks.contact')}
                                 </Link>
                             </li>

@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext.jsx';
 import testQuestionService from '../../services/testQuestionService';
 import QuestionForm from "../../components/teacher/QuestionForm.jsx";
+import {ArrowLeft} from "lucide-react";
 
 const CreateQuestionPage = ({ selectedQuestion, mode }) => {
     const { t } = useTranslation("common");
@@ -37,6 +38,7 @@ const CreateQuestionPage = ({ selectedQuestion, mode }) => {
                         to={`/teacher-dashboard/test/${testId}/questions`}
                         className="text-blue-600 hover:text-blue-800 flex items-center"
                     >
+                        <ArrowLeft className="w-4 h-4" />
                         {t('createQuestion.backToQuestions')}
                     </Link>
                 </div>

@@ -45,7 +45,6 @@ const ImageUploader = ({ label, onUploadComplete, initialFile }) => {
             setImageId(uploadedFile.fileId);
             setUploading(false);
 
-            console.log("Uploaded file:", uploadedFile);
             if (onUploadComplete) {
                 onUploadComplete(uploadedFile);
             }

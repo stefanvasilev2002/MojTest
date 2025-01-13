@@ -86,12 +86,7 @@ const TestForm = () => {
         })) : [],
     };
 
-    // Handle form submission
     const handleSubmit = async (values) => {
-        // Log the form values to see what is passed into the submit function
-        console.log("Form Values:", values);
-
-        // Prepare the payload with the correct transformations
         const payload = {
             ...values,
             creatorId: values.creator ? values.creator.value : null, // Extract creatorId from creator
@@ -102,14 +97,11 @@ const TestForm = () => {
         };
 
         // Log the prepared payload to verify the data being sent to the backend
-        console.log("Prepared Payload:", payload);
 
         try {
             if (id) {
-                console.log("Updating Test with ID:", id); // Log when updating
                 await update(id, payload); // Update existing test
             } else {
-                console.log("Creating new Test"); // Log when creating
                 await create(payload); // Create new test
             }
             navigate("/crud/test");

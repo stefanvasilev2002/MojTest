@@ -1,21 +1,20 @@
 import React from 'react';
 import { useLocation } from 'react-router-dom';
-import LandingNavBar from "../components/navbar/LandingNavBar.jsx";  // Assuming you have this
-import PublicNavBarStudent from "../components/navbar/PublicNavBarStudent.jsx"; // Your public student nav
+import LandingNavBar from "../components/navbar/LandingNavBar.jsx";
+import PublicNavBarStudent from "../components/navbar/PublicNavBarStudent.jsx";
 import PublicNavBarTeacher from "../components/navbar/PublicNavBarTeacher.jsx";
-import Footer from "../components/navbar/Footer.jsx";  // Your public teacher nav
+import Footer from "../components/navbar/Footer.jsx";
 
 const PublicLayout = ({ children }) => {
-    const location = useLocation();  // To get the current route
+    const location = useLocation();
 
-    // Determine which NavBar to use based on the current route
     const getNavBar = () => {
         if (location.pathname === '/about-student') {
             return <PublicNavBarStudent />;
         } else if (location.pathname === '/about-teacher') {
             return <PublicNavBarTeacher />;
         }
-        return <LandingNavBar />;  // Default to LandingNavBar
+        return <LandingNavBar />;
     };
 
     return (

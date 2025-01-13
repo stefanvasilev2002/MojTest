@@ -173,14 +173,14 @@
       "email": "contact@example.com"
     },
     "copyright": {
-      "rights": "Platforma Juaj. Të gjitha të drejtat e rezervuara.",
+      "rights": "Moj Test. Të gjitha të drejtat e rezervuara.",
       "creators": "Krijuar me ❤️ nga Stefan Vasilev, Andrej Gencovski, dhe Aleksandar Sandev"
     }
   },
   "questionsPage": {
     "loading": "Duke ngarkuar pyetjet...",
     "error": "Gabim: ",
-    "backToDashboard": "← Kthehu në Panel",
+    "backToDashboard": "Kthehu në Panel",
     "title": "Pyetjet e Testit",
     "viewingQuestionsBy": "Duke shikuar pyetjet për testin e krijuar nga Mësuesi",
     "addNewQuestion": "Shto Pyetje të Re",
@@ -236,7 +236,7 @@
     }
   },
   "createQuestion": {
-    "backToQuestions": "← Kthehu tek Pyetjet",
+    "backToQuestions": "Kthehu tek Pyetjet",
     "pageTitle": "Krijo Pyetje të Re",
     "error": {
       "title": "Gabim",
@@ -266,7 +266,7 @@
     "allTypes": "Të gjitha llojet"
   },
   "questionManager": {
-    "backToQuestions": "← Kthehu tek Pyetjet",
+    "backToQuestions": "Kthehu tek Pyetjet",
     "pageTitle": "Menaxho Pyetjet",
     "tabs": {
       "createNew": "Krijo Pyetje të Re",

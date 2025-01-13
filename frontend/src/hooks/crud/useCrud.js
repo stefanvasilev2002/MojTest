@@ -21,7 +21,6 @@ const useCrud = (entity) => {
     };
 
     const fetchById = async (id) => {
-        console.log("Fetching data for ID:", id);  // Log the ID here
         setLoading(true);
         try {
             const response = await service.fetchById(id);
@@ -45,7 +44,6 @@ const useCrud = (entity) => {
     };
 
     const update = async (id, data) => {
-        console.log("Updating item with ID:", id, "and data:", data);  // Log the ID and data
         try {
             const response = await service.update(id, data);
             setItems((prev) =>
@@ -59,12 +57,10 @@ const useCrud = (entity) => {
     };
 
     const remove = async (id) => {
-        console.log("Attempting to delete item with ID:", id);  // Log the ID here
         try {
             await service.delete(id);
             setItems((prev) => prev.filter((item) => item.id !== id));
         } catch (err) {
-            console.log("Error deleting item:", err);  // Log error if deletion fails
             setError(err.message);
             throw err;
         }

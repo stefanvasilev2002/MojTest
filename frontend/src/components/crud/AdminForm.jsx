@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import useAdmin from "../../hooks/crud/useAdmin"; // Custom hook to handle admin CRUD operations
-import formConfigs from "../../config/formConfigs"; // Import form configurations
-import CrudForm from "./CrudForm.jsx"; // Reusable CrudForm component
-import Alert from "../Alert.jsx"; // Alert component for error messages
+import useAdmin from "../../hooks/crud/useAdmin";
+import formConfigs from "../../config/formConfigs";
+import CrudForm from "./CrudForm.jsx";
+import Alert from "../Alert.jsx";
 
 const AdminForm = () => {
     const navigate = useNavigate();
@@ -17,7 +17,7 @@ const AdminForm = () => {
             if (id) {
                 fetchById(id).then((data) => {
                     if (data) {
-                        setAdmin(data); // Set the admin data for editing
+                        setAdmin(data);
                     }
                     setIsInitialValuesSet(true);
                 });

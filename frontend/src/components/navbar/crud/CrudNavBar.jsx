@@ -1,4 +1,3 @@
-// src/components/CrudNavBar.jsx
 import React from "react";
 import NavBar from "../NavBar.jsx";
 

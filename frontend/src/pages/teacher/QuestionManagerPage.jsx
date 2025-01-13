@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import CreateQuestionPage from './CreateQuestionsPage.jsx';
 import AddExistingQuestionPage from './AddExistingQuestionPage.jsx';
+import {ArrowLeft} from "lucide-react";
 
 const QuestionManagerPage = () => {
     const { t } = useTranslation("common");
@@ -12,7 +13,6 @@ const QuestionManagerPage = () => {
     const [mode, setMode] = useState('create');
 
     const handleSelectExistingQuestion = (question) => {
-        console.log('Selected question:', JSON.stringify(question, null, 2));
         setSelectedQuestion(question);
         setMode('copy');
         setActiveTab('create');
@@ -26,6 +26,7 @@ const QuestionManagerPage = () => {
                         to={`/teacher-dashboard/test/${testId}/questions`}
                         className="text-blue-600 hover:text-blue-800 flex items-center"
                     >
+                        <ArrowLeft className="w-4 h-4" />
                         {t('questionManager.backToQuestions')}
                     </Link>
                 </div>
