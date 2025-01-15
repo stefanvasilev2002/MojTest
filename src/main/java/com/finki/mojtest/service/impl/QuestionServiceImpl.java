@@ -33,6 +33,7 @@ public class QuestionServiceImpl implements QuestionService {
     private final StudentAnswerRepository studentAnswerRepository;
     private final TestQuestionRepository testQuestionRepository;
     private final FileRepository fileRepository;
+    private final StudentTestRepository studentTestRepository;
 
     @Override
     public Question createQuestion(Question question) {
@@ -137,8 +138,25 @@ public class QuestionServiceImpl implements QuestionService {
 
             if (questionDTO.getAnswers() != null) {
                 try {
-                    // Remove old answers
-                    answerRepository.deleteAll(existingQuestion.getAnswers());
+                    Question question = questionRepository.findById(id)
+                            .orElseThrow(() -> new EntityNotFoundException("Question not found with id: " + id));
+
+                    // 1. First find and delete all StudentAnswers that reference this question's TestQuestions
+                    List<TestQuestion> testQuestions = testQuestionRepository.findByQuestionId(id);
+                    List<StudentAnswer> studentAnswers = studentAnswerRepository.findAllByTestQuestionIn(testQuestions);
+                    studentAnswerRepository.deleteAll(studentAnswers);
+
+                    // 2. Delete the TestQuestion associations
+                    testQuestionRepository.deleteTestQuestionsByQuestionId(id);
+
+                    // 3. Remove the question from all tests it belongs to
+                    question.getTests().forEach(test -> {
+                        test.getQuestionBank().remove(question);
+                        testRepository.save(test);
+                    });
+
+                    // 4. Delete all answers associated with the question
+                    answerRepository.deleteAll(question.getAnswers());
 
                     // Create new answers
                     List<Answer> newAnswers = questionDTO.getAnswers().stream()
