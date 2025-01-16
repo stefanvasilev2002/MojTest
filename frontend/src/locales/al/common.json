@@ -332,9 +332,12 @@
   },
   "questionNavigation": {
     "title": "Pyetjet",
-    "questionNumber": "Pyetja {{number}}",
     "points": "{{count}} pikë",
-    "points_plural": "{{count}} pikë"
+    "points_plural": "{{count}} pikë",
+    "progress": "{{answered}} nga {{total}} të përgjigjura",
+    "questionNumber": "Pyetja {{number}} ({{points}} pikë)",
+    "prev": "E mëparshme",
+    "next": "Tjetër"
   },
   "exitModal": {
     "title": "Dilni nga testi?",

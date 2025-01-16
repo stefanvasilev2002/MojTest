@@ -254,7 +254,7 @@ const TakeTestPage = () => {
 
     return (
         <div className="min-h-screen bg-gray-50">
-            {/* Modals */}
+            {/* Modals remain the same */}
             <TimeUpModal isOpen={showTimeUpModal} onClose={() => setShowTimeUpModal(false)} />
             <ExitConfirmationModal
                 isOpen={showExitModal}
@@ -269,9 +269,9 @@ const TakeTestPage = () => {
                 answers={answers}
             />
 
-            {/* Timer */}
+            {/* Timer - Adjusted positioning */}
             {testData && (
-                <div className="sticky top-0 z-50 bg-white shadow">
+                <div className="sticky top-16 z-20 bg-white shadow">
                     <Timer
                         timeLimit={testData.timeLimit}
                         onTimeUp={handleTimeUp}
@@ -280,7 +280,7 @@ const TakeTestPage = () => {
                 </div>
             )}
 
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pt-24">
                 {/* Header Section */}
                 <div className="flex justify-between items-center mb-6">
                     <h1 className="text-2xl sm:text-3xl font-bold text-blue-600">{testData?.testTitle}</h1>
@@ -298,28 +298,18 @@ const TakeTestPage = () => {
 
                 {/* Main Content */}
                 <div className="flex flex-col md:flex-row gap-6 relative">
-                    {/* Question Navigation - Mobile Drawer */}
-                    <div className={`
-                        fixed md:relative inset-0 bg-white md:bg-transparent z-40
-                        transform ${showNavigation ? 'translate-x-0' : '-translate-x-full'} 
-                        md:transform-none transition-transform duration-200 ease-in-out
-                        md:block md:w-64 overflow-y-auto
-                    `}>
-                        <div className="p-4 md:p-0">
-                            <QuestionNavigation
-                                questions={testData?.questions}
-                                currentQuestion={currentQuestionIndex}
-                                onQuestionChange={(index) => {
-                                    setCurrentQuestionIndex(index);
-                                    setShowNavigation(false);
-                                }}
-                                answers={answers}
-                            />
-                        </div>
+                    {/* Desktop Question Navigation */}
+                    <div className="hidden md:block md:w-auto md:sticky md:top-32">
+                        <QuestionNavigation
+                            questions={testData?.questions}
+                            currentQuestion={currentQuestionIndex}
+                            onQuestionChange={setCurrentQuestionIndex}
+                            answers={answers}
+                        />
                     </div>
 
                     {/* Question Content */}
-                    <div className="flex-1">
+                    <div className="flex-1 mb-20 md:mb-0">
                         <div className="bg-white p-4 sm:p-6 rounded-lg shadow">
                             <div className="flex justify-between items-center mb-4 flex-wrap gap-2">
                                 <h2 className="text-lg sm:text-xl font-semibold">
@@ -329,7 +319,7 @@ const TakeTestPage = () => {
                                     })}
                                 </h2>
                                 <span className="text-gray-500">
-                                    {t('takeTest.points', { points: currentQuestion?.points })}
+                                    {t('takeTest.points', {points: currentQuestion?.points})}
                                 </span>
                             </div>
 
@@ -339,7 +329,7 @@ const TakeTestPage = () => {
 
                                 {currentQuestion?.imageId && (
                                     <div className="max-w-full overflow-x-auto">
-                                        <ImageDisplay imageId={currentQuestion.imageId} />
+                                        <ImageDisplay imageId={currentQuestion.imageId}/>
                                     </div>
                                 )}
 
@@ -415,8 +405,8 @@ const TakeTestPage = () => {
                             </div>
                         </div>
 
-                        {/* Submit/Exit Buttons */}
-                        <div className="flex gap-4 mt-6 sticky bottom-0 bg-gray-50 p-4 border-t">
+                        {/* Submit/Exit Buttons - Adjusted for mobile */}
+                        <div className="flex gap-4 mt-6 md:sticky md:bottom-4 bg-gray-50 p-4 border-t">
                             <button
                                 className="flex-1 sm:flex-none bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors"
                                 onClick={() => setShowSubmitModal(true)}
@@ -430,6 +420,23 @@ const TakeTestPage = () => {
                                 {t('takeTest.buttons.exit')}
                             </button>
                         </div>
+                    </div>
+
+                    {/* Mobile Question Navigation */}
+                    <div className={`
+                        fixed md:hidden inset-x-0 bottom-0 z-30 
+                        transform transition-transform duration-200 ease-in-out
+                        ${showNavigation ? 'translate-y-0' : 'translate-y-full'}
+                    `}>
+                        <QuestionNavigation
+                            questions={testData?.questions}
+                            currentQuestion={currentQuestionIndex}
+                            onQuestionChange={(index) => {
+                                setCurrentQuestionIndex(index);
+                                setShowNavigation(false);
+                            }}
+                            answers={answers}
+                        />
                     </div>
                 </div>
             </div>

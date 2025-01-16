@@ -642,9 +642,12 @@
   },
   "questionNavigation": {
     "title": "Прашања",
-    "questionNumber": "Прашање {{number}}",
     "points": "{{count}} поен",
-    "points_plural": "{{count}} поени"
+    "points_plural": "{{count}} поени",
+    "progress": "{{answered}} од {{total}} одговорени",
+    "questionNumber": "Прашање {{number}} ({{points}} поени)",
+    "prev": "Претходно",
+    "next": "Следно"
   },
   "timer": {
     "remaining": "Преостанато време",

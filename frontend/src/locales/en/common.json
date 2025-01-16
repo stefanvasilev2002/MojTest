@@ -22,9 +22,12 @@
   },
   "questionNavigation": {
     "title": "Questions",
-    "questionNumber": "Question {{number}}",
     "points": "{{count}} point",
-    "points_plural": "{{count}} points"
+    "points_plural": "{{count}} points",
+    "progress": "{{answered}} of {{total}} answered",
+    "questionNumber": "Question {{number}} ({{points}} points)",
+    "prev": "Previous",
+    "next": "Next"
   },
   "export": {
     "title": "Export Test",
