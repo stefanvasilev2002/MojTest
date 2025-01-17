@@ -14,9 +14,6 @@ const PublicLayout = ({ children }) => {
         } else if (location.pathname === '/about-teacher') {
             return <PublicNavBarTeacher />;
         }
-        else if (location.pathname === '/reset-password' || location.pathname === '/register') {
-            return;
-        }
         return <LandingNavBar />;
     };
 
