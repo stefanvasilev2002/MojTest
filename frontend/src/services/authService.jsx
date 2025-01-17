@@ -12,6 +12,52 @@ const axiosInstance = axios.create({
 });
 
 const authService = {
+    forgotPassword: async (email, language) => {
+        try {
+            const response = await axiosInstance.post('/forgot-password',
+                { email },
+                {
+                    headers: {
+                        'Accept-Language': language || 'en'
+                    }
+                }
+            );
+
+            return {
+                success: true,
+                data: response.data
+            };
+        } catch (error) {
+            return authService.handleError(error, 'Failed to send reset password email');
+        }
+    },
+
+    validateResetToken: async (token) => {
+        try {
+            const response = await axiosInstance.get(`/reset-password/validate/${token}`);
+            return {
+                success: true,
+                data: response.data
+            };
+        } catch (error) {
+            return authService.handleError(error, 'Invalid or expired reset token');
+        }
+    },
+
+    resetPassword: async (token, newPassword) => {
+        try {
+            const response = await axiosInstance.post('/reset-password', {
+                token,
+                newPassword
+            });
+            return {
+                success: true,
+                data: response.data
+            };
+        } catch (error) {
+            return authService.handleError(error, 'Failed to reset password');
+        }
+    },
     login: async (username, password) => {
         try {
             const response = await axiosInstance.post('/login', {

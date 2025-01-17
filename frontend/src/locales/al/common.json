@@ -126,6 +126,7 @@
     "loggingIn": "Po hyni...",
     "roleAdmin": "Administrator",
     "login": "Identifikimi",
+    "forgotPassword": "Keni harruar fjalëkalimin?",
     "errors":{
       "Invalid username or password": "Emri i përdoruesit ose fjalëkalimi i gabuar"
     }

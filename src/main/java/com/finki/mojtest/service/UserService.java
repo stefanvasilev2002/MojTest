@@ -1,7 +1,6 @@
 package com.finki.mojtest.service;
 
 import com.finki.mojtest.model.dtos.UserDTO;
-import com.finki.mojtest.model.dtos.auth.UserResponse;
 import com.finki.mojtest.model.dtos.auth.UserUpdateRequest;
 import com.finki.mojtest.model.users.User;
 
@@ -21,5 +20,11 @@ public interface UserService {
     Optional<User> findById(Long id);
     User findByEmail(String email);
     User changePassword(Long userId, String oldPassword, String newPassword);
+
+    void initiatePasswordReset(String email, String language);
+
+    boolean validateResetToken(String token);
+
+    boolean resetPassword(String token, String newPassword);
 }
 

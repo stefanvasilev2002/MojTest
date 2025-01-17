@@ -130,7 +130,74 @@ public class AuthController {
             return ResponseEntity.status(500).body("Updating user data failed: " + e.getMessage());
         }
     }
+    @PostMapping("/forgot-password")
+    public ResponseEntity<?> forgotPassword(@RequestBody Map<String, String> request,
+                                            @RequestHeader(value = "Accept-Language", defaultValue = "en") String language) {
+        try {
+            String email = request.get("email");
+            if (email == null || email.isEmpty()) {
+                return ResponseEntity
+                        .status(HttpStatus.BAD_REQUEST)
+                        .body(Map.of("message", "Email is required"));
+            }
 
+            userService.initiatePasswordReset(email, language);
+
+            return ResponseEntity.ok(Map.of(
+                    "message", "If an account exists with this email, a password reset link will be sent"));
+
+        } catch (Exception e) {
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("message", "Failed to process password reset request"));
+        }
+    }
+
+    @GetMapping("/reset-password/validate/{token}")
+    public ResponseEntity<?> validateResetToken(@PathVariable String token) {
+        try {
+            boolean isValid = userService.validateResetToken(token);
+            if (isValid) {
+                return ResponseEntity.ok(Map.of("message", "Token is valid"));
+            } else {
+                return ResponseEntity
+                        .status(HttpStatus.BAD_REQUEST)
+                        .body(Map.of("message", "Invalid or expired token"));
+            }
+        } catch (Exception e) {
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("message", "Failed to validate reset token"));
+        }
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(@RequestBody Map<String, String> request) {
+        try {
+            String token = request.get("token");
+            String newPassword = request.get("newPassword");
+
+            if (token == null || newPassword == null) {
+                return ResponseEntity
+                        .status(HttpStatus.BAD_REQUEST)
+                        .body(Map.of("message", "Token and new password are required"));
+            }
+
+            boolean success = userService.resetPassword(token, newPassword);
+            if (success) {
+                return ResponseEntity.ok(Map.of("message", "Password successfully reset"));
+            } else {
+                return ResponseEntity
+                        .status(HttpStatus.BAD_REQUEST)
+                        .body(Map.of("message", "Invalid or expired token"));
+            }
+
+        } catch (Exception e) {
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("message", "Failed to reset password"));
+        }
+    }
     private String getJwt(UserDetails userDetails) {
         User user = userService.findByUsername(userDetails.getUsername());
         return jwtUtil.generateToken(userDetails, user.getId(), user.getFullName());

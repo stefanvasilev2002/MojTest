@@ -15,13 +15,14 @@ target/
 application-h2.properties
 application-mysql.properties
 application-postgres.properties
+application-local.properties
+application.properties
 ### IntelliJ IDEA ###
 .idea
 *.iws
 *.iml
 *.ipr
 
-application-local.properties
 
 ### NetBeans ###
 /nbproject/private/

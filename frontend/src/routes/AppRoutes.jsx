@@ -45,6 +45,8 @@ import AllQuestionsPage from "../pages/teacher/AllQuestionsPage.jsx";
 import StudentSettings from "../pages/student/StudentSettings.jsx";
 import TeacherSettings from "../pages/teacher/TeacherSettings.jsx";
 import ChangePassword from "../pages/teacher/ChangePassword.jsx";
+import ForgotPasswordPage from "../pages/auth/ForgotPasswordPage.jsx";
+import ResetPasswordPage from "../pages/auth/ResetPasswordPage.jsx";
 
 const AppRoutes = () => {
     return (
@@ -61,9 +63,12 @@ const AppRoutes = () => {
                            element={<PublicRoute><PublicLayout><LoginPage/></PublicLayout></PublicRoute>}/>
                     <Route path="/register"
                            element={<PublicRoute><PublicLayout><RegisterPage/></PublicLayout></PublicRoute>}/>
+                    <Route path="/forgot-password"
+                           element={<PublicRoute><PublicLayout><ForgotPasswordPage/></PublicLayout></PublicRoute>}/>
+                    <Route path="/reset-password/:token"
+                           element={<PublicRoute><PublicLayout><ResetPasswordPage/></PublicLayout></PublicRoute>}/>
 
-                    <Route path="/question/:questionId" element={<QuestionDetails/>}/> {/* New route */}
-
+                    <Route path="/question/:questionId" element={<QuestionDetails/>}/>
 
                     {/* Teacher Routes */}
                     <Route path="/teacher-dashboard" element={

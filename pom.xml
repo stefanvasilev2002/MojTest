@@ -32,6 +32,10 @@
         <maven.compiler.target>22</maven.compiler.target>
     </properties>
     <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-mail</artifactId>
+        </dependency>
         <!-- iText7 specific modules -->
         <dependency>
             <groupId>com.itextpdf</groupId>
