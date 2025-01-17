@@ -16,7 +16,6 @@ application-h2.properties
 application-mysql.properties
 application-postgres.properties
 application-local.properties
-application.properties
 ### IntelliJ IDEA ###
 .idea
 *.iws
