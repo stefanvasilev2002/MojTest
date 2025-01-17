@@ -47,6 +47,7 @@ import TeacherSettings from "../pages/teacher/TeacherSettings.jsx";
 import ChangePassword from "../pages/teacher/ChangePassword.jsx";
 import ForgotPasswordPage from "../pages/auth/ForgotPasswordPage.jsx";
 import ResetPasswordPage from "../pages/auth/ResetPasswordPage.jsx";
+import AboutUs from "../pages/AboutUs.jsx";
 
 const AppRoutes = () => {
     return (
@@ -61,6 +62,8 @@ const AppRoutes = () => {
                            element={<PublicRoute><PublicLayout><AboutStudentPage/></PublicLayout></PublicRoute>}/>
                     <Route path="/login"
                            element={<PublicRoute><PublicLayout><LoginPage/></PublicLayout></PublicRoute>}/>
+                    <Route path="/about-us"
+                           element={<PublicRoute><PublicLayout><AboutUs/></PublicLayout></PublicRoute>}/>
                     <Route path="/register"
                            element={<PublicRoute><PublicLayout><RegisterPage/></PublicLayout></PublicRoute>}/>
                     <Route path="/forgot-password"

@@ -171,11 +171,44 @@
     "connect": {
       "title": "Lidhuni Me Ne",
       "questions": "Keni pyetje? Kontaktoni ekipin tonë në:",
-      "email": "contact@example.com"
+      "email": "platforma.moj.test@gmail.com"
     },
     "copyright": {
       "rights": "Moj Test. Të gjitha të drejtat e rezervuara.",
       "creators": "Krijuar me ❤️ nga Stefan Vasilev, Andrej Gencovski, dhe Aleksandar Sandev"
+    }
+  },
+  "aboutUs": {
+    "title": "Rreth MojTest",
+    "subtitle": "Duke fuqizuar arsimin përmes zgjidhjeve inovative të testimit online",
+    "mission": {
+      "title": "Misioni Ynë",
+      "description": "Të revolucionarizojmë vlerësimin arsimor duke ofruar një platformë të qasshme, efikase dhe të lehtë për përdorim për studentët dhe mësuesit."
+    },
+    "values": {
+      "education": {
+        "title": "Arsim Cilësor",
+        "description": "Jemi të përkushtuar në përmirësimin e përvojës së të mësuarit përmes mjeteve efektive të vlerësimit."
+      },
+      "community": {
+        "title": "Komunitet i Fortë",
+        "description": "Ndërtimi i lidhjeve midis studentëve dhe edukatorëve për rezultate më të mira të të mësuarit."
+      },
+      "innovation": {
+        "title": "Inovacion i Vazhdueshëm",
+        "description": "Përmirësim i vazhdueshëm i platformës sonë me teknologjitë më të fundit arsimore."
+      },
+      "technology": {
+        "title": "Teknologji Moderne",
+        "description": "Përdorimi i mjeteve më të avancuara për të krijuar përvojën më të mirë të mundshme të testimit."
+      }
+    },
+    "team": {
+      "title": "Njihuni me Ekipin Tonë",
+      "subtitle": "Zhvilluesit e pasionuar pas MojTest",
+      "stefan": "Zhvillues kryesor i fokusuar në krijimin e zgjidhjeve intuitive dhe të fuqishme të testimit.",
+      "andrej": "Specialist i Frontend-it i përkushtuar në krijimin e ndërfaqeve të bukura dhe të lehta për përdorim.",
+      "aleksandar": "Ekspert i Backend-it që siguron performancë të besueshme dhe të shkallëzueshme të platformës."
     }
   },
   "questionsPage": {
@@ -613,6 +646,8 @@
     "edit": "Ndrysho Pyetje"
   },
   "registerPage": {
+    "ChooseGrade": "Zgjidhni Klasën",
+    "ifStudent": "Nëse jeni student, zgjidhni klasën tuaj",
     "title": "Regjistrohu",
     "username": "Emri i përdoruesit",
     "password": "Fjalëkalimi",

@@ -96,13 +96,13 @@ const RegisterPage = () => {
     };
 
     return (
-        <div className="flex justify-center items-center min-h-screen bg-gray-100">
-            <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
-                <h2 className="text-2xl font-semibold text-center mb-4">
+        <div className="flex justify-center items-center min-h-screen bg-gray-100 py-20 px-4">
+            <div className="bg-white p-4 sm:p-8 rounded-lg shadow-lg w-full max-w-md my-4">
+                <h2 className="text-xl sm:text-2xl font-semibold text-center mb-4">
                     {t('registerPage.title')}
                 </h2>
 
-                <form onSubmit={handleSubmit} className="space-y-4">
+                <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
                     {/* Username field */}
                     <div>
                         <label className="block mb-2 text-gray-600">
@@ -204,21 +204,24 @@ const RegisterPage = () => {
                     </div>
 
                     {/* Grade Selection */}
+                    {/* Grade Selection */}
                     <div>
                         <label className="block mb-2 text-gray-600">
-                            {t('Choose grade')}
+                            {t('registerPage.ChooseGrade')}
                         </label>
                         <select
                             name="grade"
                             value={formData.grade}
                             onChange={handleChange}
-                            className={`w-full p-3 border rounded-lg ${
-                                validationErrors.grade ? 'border-red-500' : ''
-                            }`}
+                            className={`w-full p-3 border rounded-lg text-sm text-gray-400 overflow-hidden
+            ${validationErrors.grade ? 'border-red-500' : 'border-gray-300'}
+             bg-white
+            hover:border-gray-400 focus:border-blue-500 focus:outline-none`}
+                            style={{ textOverflow: 'ellipsis' }}
                         >
-                            <option value="">Choose your grade if you are a student</option>
+                            <option value="" className="text-gray-300">{t('registerPage.ifStudent')}</option>
                             {predefinedKeyValues.Grade.map((grade) => (
-                                <option key={grade} value={grade}>
+                                <option key={grade} value={grade} className="text-gray-800">
                                     {grade}
                                 </option>
                             ))}
@@ -227,7 +230,6 @@ const RegisterPage = () => {
                             <p className="text-red-500 text-sm mt-1">{validationErrors.grade}</p>
                         )}
                     </div>
-
                     {/* Error Display */}
                     {error && (
                         <div className="p-3 bg-red-50 text-red-500 rounded-lg">

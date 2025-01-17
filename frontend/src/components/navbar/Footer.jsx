@@ -26,13 +26,8 @@ const Footer = () => {
                         </h3>
                         <ul className="space-y-2">
                             <li>
-                                <Link to="#" className="text-gray-400 hover:text-white transition-colors">
+                                <Link to="/about-us" className="text-gray-400 hover:text-white transition-colors">
                                     {t('footer.quickLinks.about')}
-                                </Link>
-                            </li>
-                            <li>
-                                <Link to="#" className="text-gray-400 hover:text-white transition-colors">
-                                    {t('footer.quickLinks.contact')}
                                 </Link>
                             </li>
                             <li>
@@ -55,7 +50,7 @@ const Footer = () => {
                         </h3>
                         <p className="text-gray-400">
                             {t('footer.connect.questions')}<br />
-                            <a href="mailto:contact@example.com" className="hover:text-white transition-colors">
+                            <a href="mailto:platforma.moj.test@gmail.com" className="hover:text-white transition-colors">
                                 {t('footer.connect.email')}
                             </a>
                         </p>

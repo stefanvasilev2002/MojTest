@@ -109,11 +109,44 @@
     "connect": {
       "title": "Connect With Us",
       "questions": "Have questions? Reach out to our team at:",
-      "email": "contact@example.com"
+      "email": "platforma.moj.test@gmail.com"
     },
     "copyright": {
       "rights": "Moj Test. All rights reserved.",
       "creators": "Created with ❤️ by Stefan Vasilev, Andrej Gencovski, and Aleksandar Sandev"
+    }
+  },
+  "aboutUs": {
+    "title": "About My Test",
+    "subtitle": "Empowering education through innovative online testing solutions",
+    "mission": {
+      "title": "Our Mission",
+      "description": "To revolutionize educational assessment by providing an accessible, efficient, and user-friendly platform for both students and teachers."
+    },
+    "values": {
+      "education": {
+        "title": "Quality Education",
+        "description": "We're committed to enhancing the learning experience through effective assessment tools."
+      },
+      "community": {
+        "title": "Strong Community",
+        "description": "Building connections between students and educators for better learning outcomes."
+      },
+      "innovation": {
+        "title": "Continuous Innovation",
+        "description": "Constantly improving our platform with the latest educational technologies."
+      },
+      "technology": {
+        "title": "Modern Technology",
+        "description": "Using cutting-edge tools to create the best possible testing experience."
+      }
+    },
+    "team": {
+      "title": "Meet Our Team",
+      "subtitle": "The passionate developers behind MojTest",
+      "stefan": "Lead developer focused on creating intuitive and powerful testing solutions.",
+      "andrej": "Frontend specialist dedicated to crafting beautiful and user-friendly interfaces.",
+      "aleksandar": "Backend expert ensuring reliable and scalable platform performance."
     }
   },
   "dashboard": {
@@ -444,7 +477,7 @@
       }
     },
     "welcomeTitle": "Welcome to",
-    "platformName": "MojTest",
+    "platformName": "MyTest",
     "description": "Your smart platform for creating and taking tests",
     "getStarted": "Get Started",
     "registerNow": "Register Now",
@@ -680,6 +713,8 @@
     "edit": "Edit Question"
   },
   "registerPage": {
+    "ChooseGrade": "Choose Grade",
+    "ifStudent": "If you are a student, please choose your grade",
     "title": "Register",
     "username": "Username",
     "password": "Password",
