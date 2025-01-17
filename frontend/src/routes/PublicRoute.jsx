@@ -16,7 +16,7 @@ const PublicRoute = ({ children }) => {
     let redirectPath;
     switch(role?.toLowerCase()) {
         case 'admin':
-            redirectPath = '/crud/hub';
+            redirectPath = '/admin';
             break;
         case 'teacher':
             redirectPath = '/teacher-dashboard';

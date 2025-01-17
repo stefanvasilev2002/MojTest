@@ -16,7 +16,7 @@ import TeacherLayout from "../layouts/TeacherLayout.jsx";
 import StudentLayout from "../layouts/StudentLayout.jsx";
 import PublicLayout from "../layouts/PublicLayout.jsx";
 import CrudLayout from "../layouts/crud/CrudLayout.jsx";
-import CrudHubPage from "../pages/crud/CrudHubPage.jsx";
+import CrudHubPage from "../pages/crud/AdminDashboard.jsx";
 import MetadataList from "../components/crud/MetadataList.jsx";
 import AnswersList from "../components/crud/AnswersList.jsx";
 import TestList from "../components/crud/TestList.jsx";
@@ -152,131 +152,135 @@ const AppRoutes = () => {
                         {/* Use relative path here */}
                         <Route index element={<TestDetailsPage/>}/>
                     </Route>
+
+
                     {/* Admin Routes */}
-                    <Route path="/crud/hub" element={
-                        <PrivateRoute requiredRoles="admin">
+                    <Route path="/admin" element={
+                        <PrivateRoute requiredRoles={["admin"]}>
                             <CrudLayout>
                                 <CrudHubPage/>
                             </CrudLayout>
                         </PrivateRoute>
                     }/>
 
-                    {/* Protected CRUD Routes */}
+                    {/* Protected Admin Routes */}
                     {/* Metadata Routes */}
-                    <Route path="/crud/metadata" element={
-                        <PrivateRoute requiredRoles="admin">
+                    <Route path="/admin/metadata" element={
+                        <PrivateRoute requiredRoles={["admin"]}>
                             <CrudLayout><MetadataList/></CrudLayout>
                         </PrivateRoute>
                     }/>
-                    <Route path="/crud/metadata/new" element={
-                        <PrivateRoute requiredRoles="admin">
+                    <Route path="/admin/metadata/new" element={
+                        <PrivateRoute requiredRoles={["admin"]}>
                             <CrudLayout><MetadataForm/></CrudLayout>
                         </PrivateRoute>
                     }/>
-                    <Route path="/crud/metadata/edit/:id" element={
-                        <PrivateRoute requiredRoles="admin">
+                    <Route path="/admin/metadata/edit/:id" element={
+                        <PrivateRoute requiredRoles={["admin"]}>
                             <CrudLayout><MetadataForm/></CrudLayout>
                         </PrivateRoute>
                     }/>
 
                     {/* Answer Routes */}
-                    <Route path="/crud/answer" element={
-                        <PrivateRoute requiredRoles="admin">
+                    <Route path="/admin/answer" element={
+                        <PrivateRoute requiredRoles={["admin"]}>
                             <CrudLayout><AnswersList/></CrudLayout>
                         </PrivateRoute>
                     }/>
 
                     {/* Test Routes */}
-                    <Route path="/crud/test" element={
-                        <PrivateRoute requiredRoles="admin">
+                    <Route path="/admin/test" element={
+                        <PrivateRoute requiredRoles={["admin"]}>
                             <CrudLayout><TestList/></CrudLayout>
                         </PrivateRoute>
                     }/>
-                    <Route path="/crud/test/new" element={
-                        <PrivateRoute requiredRoles="admin">
+                    <Route path="/admin/test/new" element={
+                        <PrivateRoute requiredRoles={["admin"]}>
                             <CrudLayout><TestForm/></CrudLayout>
                         </PrivateRoute>
                     }/>
-                    <Route path="/crud/test/edit/:id" element={
-                        <PrivateRoute requiredRoles="admin">
+                    <Route path="/admin/test/edit/:id" element={
+                        <PrivateRoute requiredRoles={["admin"]}>
                             <CrudLayout><TestForm/></CrudLayout>
                         </PrivateRoute>
                     }/>
 
                     {/* Question Routes */}
-                    <Route path="/crud/question" element={
-                        <PrivateRoute requiredRoles="admin">
+                    <Route path="/admin/question" element={
+                        <PrivateRoute requiredRoles={["admin"]}>
                             <CrudLayout><QuestionList/></CrudLayout>
                         </PrivateRoute>
                     }/>
-                    <Route path="/crud/question/new" element={
-                        <PrivateRoute requiredRoles="admin">
+                    <Route path="/admin/question/new" element={
+                        <PrivateRoute requiredRoles={["admin"]}>
                             <CrudLayout><QuestionForm/></CrudLayout>
                         </PrivateRoute>
                     }/>
-                    <Route path="/crud/question/edit/:id" element={
-                        <PrivateRoute requiredRoles="admin">
+                    <Route path="/admin/question/edit/:id" element={
+                        <PrivateRoute requiredRoles={["admin"]}>
                             <CrudLayout><QuestionForm/></CrudLayout>
                         </PrivateRoute>
                     }/>
 
                     {/* User Management Routes */}
-                    <Route path="/crud/user" element={
-                        <PrivateRoute requiredRoles="admin">
+                    <Route path="/admin/user" element={
+                        <PrivateRoute requiredRoles={["admin"]}>
                             <CrudLayout><UsersList/></CrudLayout>
                         </PrivateRoute>
                     }/>
 
                     {/* Admin User Routes */}
-                    <Route path="/crud/users/admin" element={
-                        <PrivateRoute requiredRoles="admin">
+                    <Route path="/admin/users/admin" element={
+                        <PrivateRoute requiredRoles={["admin"]}>
                             <CrudLayout><AdminList/></CrudLayout>
                         </PrivateRoute>
                     }/>
-                    <Route path="/crud/users/admin/new" element={
-                        <PrivateRoute requiredRoles="admin">
+                    <Route path="/admin/users/admin/new" element={
+                        <PrivateRoute requiredRoles={["admin"]}>
                             <CrudLayout><AdminForm/></CrudLayout>
                         </PrivateRoute>
                     }/>
-                    <Route path="/crud/users/admin/edit/:id" element={
-                        <PrivateRoute requiredRoles="admin">
+                    <Route path="/admin/users/admin/edit/:id" element={
+                        <PrivateRoute requiredRoles={["admin"]}>
                             <CrudLayout><AdminForm/></CrudLayout>
                         </PrivateRoute>
                     }/>
 
                     {/* Teacher User Routes */}
-                    <Route path="/crud/users/teacher" element={
-                        <PrivateRoute requiredRoles="admin">
+                    <Route path="/admin/users/teacher" element={
+                        <PrivateRoute requiredRoles={["admin"]}>
                             <CrudLayout><TeacherList/></CrudLayout>
                         </PrivateRoute>
                     }/>
-                    <Route path="/crud/users/teacher/new" element={
-                        <PrivateRoute requiredRoles="admin">
+                    <Route path="/admin/users/teacher/new" element={
+                        <PrivateRoute requiredRoles={["admin"]}>
                             <CrudLayout><TeacherForm/></CrudLayout>
                         </PrivateRoute>
                     }/>
-                    <Route path="/crud/users/teacher/edit/:id" element={
-                        <PrivateRoute requiredRoles="admin">
+                    <Route path="/admin/users/teacher/edit/:id" element={
+                        <PrivateRoute requiredRoles={["admin"]}>
                             <CrudLayout><TeacherForm/></CrudLayout>
                         </PrivateRoute>
                     }/>
 
                     {/* Student User Routes */}
-                    <Route path="/crud/users/student" element={
-                        <PrivateRoute requiredRoles="admin">
+                    <Route path="/admin/users/student" element={
+                        <PrivateRoute requiredRoles={["admin"]}>
                             <CrudLayout><StudentList/></CrudLayout>
                         </PrivateRoute>
                     }/>
-                    <Route path="/crud/users/student/new" element={
-                        <PrivateRoute requiredRoles="admin">
+                    <Route path="/admin/users/student/new" element={
+                        <PrivateRoute requiredRoles={["admin"]}>
                             <CrudLayout><StudentForm/></CrudLayout>
                         </PrivateRoute>
                     }/>
-                    <Route path="/crud/users/student/edit/:id" element={
-                        <PrivateRoute requiredRoles="admin">
+                    <Route path="/admin/users/student/edit/:id" element={
+                        <PrivateRoute requiredRoles={["admin"]}>
                             <CrudLayout><StudentForm/></CrudLayout>
                         </PrivateRoute>
                     }/>
+
+
                     <Route path="/debug" element={<DebugPage/>}></Route>
                     {/* Catch-all route - redirect to appropriate dashboard */}
                     <Route path="*" element={<Navigate to="/login" replace/>}/>

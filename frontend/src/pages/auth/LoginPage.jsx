@@ -35,7 +35,7 @@ const LoginPage = () => {
             const routes = {
                 'teacher': '/teacher-dashboard',
                 'student': '/student-dashboard',
-                'admin': '/crud/hub'
+                'admin': '/admin/hub'
             };
             navigate(routes[userRole] || '/student-dashboard');
         }

@@ -11,38 +11,23 @@ const PrivateRoute = ({ children, requiredRoles }) => {
         return <Navigate to="/login" replace state={{ from: location }} />;
     }
 
+    // Convert requiredRoles to array if it's a string
+    const requiredRolesArray = Array.isArray(requiredRoles) ? requiredRoles : [requiredRoles];
+    const userRole = role?.toLowerCase();
+
     // If user is admin, allow access to everything
-    if (role?.toLowerCase() === 'admin') {
+    if (userRole === 'admin') {
         return children;
     }
 
     // Check if user has required role
-
-    const userRoles = [role];
-    let hasPermission = false;
-
-    for(let i = 0; i < userRoles.length; i++) {
-        if (requiredRoles.includes(userRoles[i])) {
-            hasPermission = true;
-        }
-    }
-
+    const hasPermission = requiredRolesArray.includes(userRole);
 
     if (!hasPermission) {
-        // Get appropriate redirect path based on role
-        let redirectPath;
-        switch(role?.toLowerCase()) {
-            case 'teacher':
-                redirectPath = '/teacher-dashboard';
-                break;
-            case 'student':
-                redirectPath = '/student-dashboard';
-                break;
-            default:
-                redirectPath = '/login';
-        }
+        // Determine redirect path based on role
+        const redirectPath = getRedirectPath(userRole);
 
-        // Don't redirect if already on the target path
+        // Don't redirect if already on the target path to prevent loops
         if (location.pathname === redirectPath) {
             return children;
         }
@@ -51,6 +36,17 @@ const PrivateRoute = ({ children, requiredRoles }) => {
     }
 
     return children;
+};
+
+const getRedirectPath = (role) => {
+    switch(role) {
+        case 'teacher':
+            return '/teacher-dashboard';
+        case 'student':
+            return '/student-dashboard';
+        default:
+            return '/login';
+    }
 };
 
 export default PrivateRoute;
