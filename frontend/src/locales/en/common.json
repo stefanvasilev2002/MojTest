@@ -75,7 +75,8 @@
     "of": "of",
     "cancel": "Cancel",
     "delete": "Delete",
-    "back": "Back"
+    "back": "Back",
+    "edit": "Edit"
   },
   "metadata": {
     "Subject": "Subject",
@@ -314,10 +315,6 @@
       "answerTemplate": "Answer Template (Optional)",
       "correct": "Correct",
       "metadata": "Question Metadata"
-    },
-    "common": {
-      "cancel": "Cancel",
-      "delete": "Delete"
     },
     "types": {
       "multipleChoice": "Multiple Choice",
@@ -658,6 +655,53 @@
       "NETWORK_ERROR": "Network error occurred",
       "Invalid username or password": "Invalid username or password"
     }
+  },
+  "userManagement": {
+    "title": "User Management",
+    "createNew": "Create New User",
+    "createNewUser": "Create New User",
+    "editUser": "Edit User"
+  },
+  "userTypes": {
+    "all": "All Users",
+    "admin": "Admins",
+    "teacher": "Teachers",
+    "student": "Students"
+  },
+  "userForm": {
+    "username": "Username",
+    "usernamePlaceholder": "Enter username",
+    "createButton": "Create User",
+    "updateButton": "Update User",
+    "password": "Password",
+    "passwordOptional": " (leave empty to keep current)",
+    "passwordPlaceholder": "Enter password",
+    "email": "Email",
+    "emailPlaceholder": "Enter email",
+    "fullName": "Full Name",
+    "fullNamePlaceholder": "Enter full name",
+    "type": "User Type",
+    "grade": "Grade",
+    "selectGrade": "Select Grade"
+  },
+  "userTable": {
+    "username": "Username",
+    "fullName": "Full Name",
+    "email": "Email",
+    "type": "Type",
+    "grade": "Grade",
+    "actions": "Actions",
+    "noUsers": "No users found for the selected type."
+  },
+  "validation": {
+    "usernameRequired": "Username is required",
+    "usernameTooShort": "Username must be at least 3 characters",
+    "passwordRequired": "Password is required for new users",
+    "passwordTooShort": "Password must be at least 6 characters",
+    "emailRequired": "Email is required",
+    "emailInvalid": "Please enter a valid email",
+    "fullNameRequired": "Full name is required",
+    "gradeRequired": "Grade is required for students"
   },
   "subjects": {
     "elementary": {

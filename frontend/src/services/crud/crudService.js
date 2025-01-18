@@ -11,6 +11,7 @@ const crudService = (entity) => ({
         return api.post(`/${entity}`, data);
     },
     update: (id, data) => {
+        console.log(`/${entity}/${id}`, data);
         return api.put(`/${entity}/${id}`, data);
     },
     delete: (id) => {

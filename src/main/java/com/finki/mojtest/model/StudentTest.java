@@ -26,7 +26,7 @@ public class StudentTest {
 
     @JsonIgnore
     @ManyToOne
-    @JoinColumn(name = "student_id")
+    @JoinColumn(name = "student_id", nullable = true)
     private Student student;
 
     @JsonIgnore

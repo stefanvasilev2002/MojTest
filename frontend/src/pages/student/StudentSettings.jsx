@@ -5,6 +5,7 @@ import { useAuth } from '../../context/AuthContext.jsx';
 import useAuthActions from "../../hooks/useAuthActions";
 import { predefinedKeyValues } from "../../config/predefinedKeyValues";
 import {getTranslatedMetadata} from "../../config/translatedMetadata.js";
+import {ArrowLeft} from "lucide-react";
 
 const StudentSettings = () => {
     const { t, i18n } = useTranslation('common');
@@ -100,6 +101,13 @@ const StudentSettings = () => {
     return (
         <div className="flex justify-center items-center min-h-screen bg-gray-100">
             <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
+                <button
+                    onClick={() => navigate(-1)}
+                    className="mb-6 text-gray-600 hover:text-gray-900 flex items-center gap-2 text-sm"
+                > {/* Removed absolute positioning, added mb-6 */}
+                    <ArrowLeft className="w-4 h-4"/>
+                    {t('common.back')}
+                </button>
                 <h2 className="text-2xl font-semibold text-center mb-4">
                     {t('settings.title')}
                 </h2>
@@ -118,7 +126,7 @@ const StudentSettings = () => {
                             className={`w-full p-3 border rounded-lg ${
                                 validationErrors.username ? 'border-red-500' : ''
                             }`}
-                            placeholder= {t('settings.username')}
+                            placeholder={t('settings.username')}
                         />
                         {validationErrors.username && (
                             <p className="text-red-500 text-sm mt-1">{validationErrors.username}</p>
@@ -138,7 +146,7 @@ const StudentSettings = () => {
                             className={`w-full p-3 border rounded-lg ${
                                 validationErrors.email ? 'border-red-500' : ''
                             }`}
-                            placeholder= {t('settings.email')}
+                            placeholder={t('settings.email')}
                         />
                         {validationErrors.email && (
                             <p className="text-red-500 text-sm mt-1">{validationErrors.email}</p>
@@ -180,7 +188,7 @@ const StudentSettings = () => {
                         >
                             {predefinedKeyValues.Grade.map((grade) => (
                                 <option key={grade} value={grade}>
-                                    {getTranslatedMetadata("Grade",grade,i18n.language)}
+                                    {getTranslatedMetadata("Grade", grade, i18n.language)}
                                 </option>
                             ))}
                         </select>
@@ -204,7 +212,7 @@ const StudentSettings = () => {
                             disabled:bg-blue-300 disabled:cursor-not-allowed
                             hover:bg-blue-600 transition-colors"
                     >
-                        {loading ? t('settings.updating'):  t('settings.update')}
+                        {loading ? t('settings.updating') : t('settings.update')}
                     </button>
                 </form>
                 <button

@@ -3,11 +3,11 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useAuth } from '../../context/AuthContext.jsx';
 import useAuthActions from "../../hooks/useAuthActions";
-import { predefinedKeyValues } from "../../config/predefinedKeyValues";
+import {ArrowLeft} from "lucide-react";
 
 const TeacherSettings = () => {
     const { t } = useTranslation('common');
-    const { user } = useAuth();  // Get the logged-in user
+    const { user , role} = useAuth();  // Get the logged-in user
     const { handleUpdate, loading, error } = useAuthActions();
     const navigate = useNavigate();
 
@@ -90,12 +90,18 @@ const TeacherSettings = () => {
     const handleChangePasswordClick = () => {
         navigate("/change-password");
     };
-
     return (
         <div className="flex justify-center items-center min-h-screen bg-gray-100">
             <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
+                <button
+                    onClick={() => navigate(-1)}
+                    className="mb-6 text-gray-600 hover:text-gray-900 flex items-center gap-2 text-sm"
+                > {/* Removed absolute positioning, added mb-6 */}
+                    <ArrowLeft className="w-4 h-4"/>
+                    {t('common.back')}
+                </button>
                 <h2 className="text-2xl font-semibold text-center mb-4">
-                    {t('settings.teacherTitle')}
+                    {role === "teacher" ? t('settings.teacherTitle') : "Admin"}
                 </h2>
 
                 <form onSubmit={handleSubmit} className="space-y-4">
@@ -112,7 +118,7 @@ const TeacherSettings = () => {
                             className={`w-full p-3 border rounded-lg ${
                                 validationErrors.username ? 'border-red-500' : ''
                             }`}
-                            placeholder= {t('settings.username')}
+                            placeholder={t('settings.username')}
                         />
                         {validationErrors.username && (
                             <p className="text-red-500 text-sm mt-1">{validationErrors.username}</p>
@@ -152,7 +158,7 @@ const TeacherSettings = () => {
                             className={`w-full p-3 border rounded-lg ${
                                 validationErrors.fullName ? 'border-red-500' : ''
                             }`}
-                            placeholder= {t('settings.fullName')}
+                            placeholder={t('settings.fullName')}
                         />
                         {validationErrors.fullName && (
                             <p className="text-red-500 text-sm mt-1">{validationErrors.fullName}</p>
@@ -175,7 +181,7 @@ const TeacherSettings = () => {
                             disabled:bg-blue-300 disabled:cursor-not-allowed
                             hover:bg-blue-600 transition-colors"
                     >
-                        {loading ? t('settings.updating'):  t('settings.update')}
+                        {loading ? t('settings.updating') : t('settings.update')}
                     </button>
                 </form>
                 <button

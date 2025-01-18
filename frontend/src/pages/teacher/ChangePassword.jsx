@@ -9,7 +9,7 @@ const ChangePassword = () => {
     const { t } = useTranslation('common');
     const navigate = useNavigate();
     const { handlePasswordChange, loading, error } = useAuthActions();
-    const { user,role } = useAuth(); // Get the logged-in user
+    const { user, role } = useAuth();
 
     const [formData, setFormData] = useState({
         currentPassword: "",
@@ -70,7 +70,6 @@ const ChangePassword = () => {
             newPassword: formData.newPassword,
         };
 
-        // Perform password update logic here
         const { success } = await handlePasswordChange(updatedData);
         if (success && role === "teacher") {
             navigate("/teacher-settings");
@@ -84,7 +83,7 @@ const ChangePassword = () => {
             <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
                 <button
                     onClick={() => navigate(-1)}
-                    className="absolute left-8 top-8 text-gray-600 hover:text-gray-900 flex items-center gap-2 text-sm"
+                    className="mb-6 text-gray-600 hover:text-gray-900 flex items-center gap-2 text-sm"
                 >
                     <ArrowLeft className="w-4 h-4"/>
                     {t('common.back')}

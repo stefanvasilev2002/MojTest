@@ -4,18 +4,19 @@ import com.finki.mojtest.model.PasswordResetToken;
 import com.finki.mojtest.model.dtos.UserDTO;
 import com.finki.mojtest.model.dtos.auth.UserUpdateRequest;
 import com.finki.mojtest.model.exceptions.DuplicateFieldException;
-import com.finki.mojtest.model.users.Admin;
-import com.finki.mojtest.model.users.Student;
-import com.finki.mojtest.model.users.Teacher;
-import com.finki.mojtest.model.users.User;
+import com.finki.mojtest.model.users.*;
 import com.finki.mojtest.repository.PasswordResetTokenRepository;
+import com.finki.mojtest.repository.QuestionRepository;
+import com.finki.mojtest.repository.StudentTestRepository;
+import com.finki.mojtest.repository.TestRepository;
+import com.finki.mojtest.repository.users.AdminRepository;
 import com.finki.mojtest.repository.users.StudentRepository;
+import com.finki.mojtest.repository.users.TeacherRepository;
 import com.finki.mojtest.repository.users.UserRepository;
 import com.finki.mojtest.service.UserService;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.persistence.Transient;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
@@ -49,12 +50,23 @@ public class UserServiceImpl implements UserService {
 
     @Value("classpath:email-templates/reset-password-al.html")
     private Resource resetTemplateAl;
-    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, StudentRepository studentRepository, JavaMailSender emailSender, PasswordResetTokenRepository passwordResetTokenRepository) {
+    private final StudentTestRepository studentTestRepository;
+    private final AdminRepository adminRepository;
+    private final TeacherRepository teacherRepository;
+    private final TestRepository testRepository;
+    private final QuestionRepository questionRepository;
+
+    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, StudentRepository studentRepository, JavaMailSender emailSender, PasswordResetTokenRepository passwordResetTokenRepository, StudentTestRepository studentTestRepository, AdminRepository adminRepository, TeacherRepository teacherRepository, TestRepository testRepository, QuestionRepository questionRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.studentRepository = studentRepository;
         this.emailSender = emailSender;
         this.passwordResetTokenRepository = passwordResetTokenRepository;
+        this.studentTestRepository = studentTestRepository;
+        this.adminRepository = adminRepository;
+        this.teacherRepository = teacherRepository;
+        this.testRepository = testRepository;
+        this.questionRepository = questionRepository;
     }
 
     @Override
@@ -306,9 +318,9 @@ public class UserServiceImpl implements UserService {
                 case "Student" -> {
                     String grade = null;
                     try {
-                        grade = (String) PropertyUtils.getProperty(updatedUser, "grade");
+                        grade = updatedUser.getGrade();
                     } catch (Exception e) {
-                        grade = ""; // Handle missing grade gracefully
+                        grade = "";
                     }
 
                     newUser = new Student(
@@ -364,20 +376,74 @@ public class UserServiceImpl implements UserService {
             existingUser.setPassword(passwordEncoder.encode(updatedUser.getPassword())); // Encrypt password if provided
         }
 
+        // Update grade if the user is a student
+        if (existingUser instanceof Student student) {
+
+            // Check if grade is not empty
+            if (updatedUser.getGrade() != null && !updatedUser.getGrade().isEmpty()) {
+                student.setGrade(updatedUser.getGrade());
+            }
+        }
         return userRepository.save(existingUser);
     }
 
-
-
-
-
-
     @Override
+    @Transactional
     public void deleteUser(Long id) {
         User toBeDeletedUser = userRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("User not found with id " + id));
 
-        userRepository.deleteById(id);
+        switch (toBeDeletedUser.getDtype()) {
+            case "Student" -> {
+                Student student = (Student) toBeDeletedUser;
+                if (student.getTakenTests() != null && !student.getTakenTests().isEmpty()) {
+                    student.getTakenTests().forEach(test -> {
+                        test.setStudent(null);
+                        studentTestRepository.save(test);
+                    });
+                }
+                studentRepository.deleteById(id);
+            }
+            case "Teacher" -> {
+                Teacher teacher = (Teacher) toBeDeletedUser;
+                // Get default admin for content transfer
+                Admin admin = adminRepository.findFirstByOrderById()
+                        .orElseThrow(() -> new EntityNotFoundException("No admin found in the system"));
+
+                transferContent(teacher, admin);
+                teacherRepository.deleteById(id);
+            }
+            case "Admin" -> {
+                Admin admin = (Admin) toBeDeletedUser;
+                if (adminRepository.count() <= 1) {
+                    throw new IllegalStateException("Cannot delete the last admin");
+                }
+
+                Admin otherAdmin = adminRepository.findFirstByIdNot(admin.getId())
+                        .orElseThrow(() -> new EntityNotFoundException("No other admin found"));
+
+                transferContent(admin, otherAdmin);
+                adminRepository.deleteById(id);
+            }
+        }
+    }
+
+    private void transferContent(ContentCreator from, ContentCreator to) {
+        User toUser = (User) to;
+
+        if (from.getCreatedTests() != null && !from.getCreatedTests().isEmpty()) {
+            from.getCreatedTests().forEach(test -> {
+                test.setCreator(toUser);
+                testRepository.save(test);
+            });
+        }
+
+        if (from.getCreatedQuestions() != null && !from.getCreatedQuestions().isEmpty()) {
+            from.getCreatedQuestions().forEach(question -> {
+                question.setCreator(toUser);
+                questionRepository.save(question);
+            });
+        }
     }
 
     @Override

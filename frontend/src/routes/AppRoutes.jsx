@@ -128,9 +128,10 @@ const AppRoutes = () => {
                     </Route>
                     <Route path="/admin/settings" element={
                         <PrivateRoute requiredRoles={["admin"]}>
-                            <TeacherSettings/>
+                            <TeacherLayout/>
                         </PrivateRoute>
                     }>
+                        <Route index element={<TeacherSettings/>}/>
                     </Route>
 
                     <Route path="/take-test/:studentTestId" element={

@@ -16,7 +16,7 @@ import java.util.List;
 @NoArgsConstructor
 @Entity
 @DiscriminatorValue("Teacher")
-public class Teacher extends User {
+public class Teacher extends User implements ContentCreator{
     @OneToMany(mappedBy = "creator")
     private List<Test> createdTests;
 

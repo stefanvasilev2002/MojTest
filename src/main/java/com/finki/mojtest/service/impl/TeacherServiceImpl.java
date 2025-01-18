@@ -44,7 +44,10 @@ public class TeacherServiceImpl implements TeacherService {
 
     @Override
     public void deleteTeacher(Long id) {
-        getTeacherById(id);
+        Teacher teacher = getTeacherById(id);
+
+        //If teacher has created tests or questions, set the creator to null
+
         teacherRepository.deleteById(id);
     }
 }

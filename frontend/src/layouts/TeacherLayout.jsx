@@ -4,14 +4,17 @@ import AuthenticatedNavBarTeacher from "../components/navbar/AuthenticatedNavBar
 import PublicNavBarTeacher from "../components/navbar/PublicNavBarTeacher.jsx";
 import { Outlet } from 'react-router-dom';
 import Footer from "../components/navbar/Footer.jsx";
+import AdminNavBar from "../components/navbar/crud/CrudNavBar.jsx";
 
 const TeacherLayout = () => {
-    const { user } = useAuth();
+    const { user, role} = useAuth();
 
     return (
         <div>
             {/* Conditionally render NavBar based on user authentication */}
-            {user ? <AuthenticatedNavBarTeacher /> : <PublicNavBarTeacher />}
+            {role === 'teacher' ? <AuthenticatedNavBarTeacher /> : (role === 'admin'
+                ? <AdminNavBar /> : <PublicNavBarTeacher />)}
+
 
             {/* Main content will be rendered here using Outlet */}
             <main id="main-content" className="p-4">

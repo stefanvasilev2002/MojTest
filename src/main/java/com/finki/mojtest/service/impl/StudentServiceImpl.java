@@ -1,6 +1,7 @@
 package com.finki.mojtest.service.impl;
 
 import com.finki.mojtest.model.users.Student;
+import com.finki.mojtest.repository.StudentTestRepository;
 import com.finki.mojtest.repository.users.StudentRepository;
 import com.finki.mojtest.service.StudentService;
 import com.finki.mojtest.service.UserService;
@@ -15,6 +16,7 @@ import java.util.List;
 public class StudentServiceImpl implements StudentService {
     private final StudentRepository studentRepository;
     private final UserService userService;
+    private final StudentTestRepository studentTestRepository;
 
 
     @Override
@@ -48,7 +50,15 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public void deleteStudent(Long id) {
-        getStudentById(id);
+        Student student = getStudentById(id);
+
+        if (student.getTakenTests() != null && !student.getTakenTests().isEmpty()) {
+            student.getTakenTests().forEach(test -> {
+                test.setStudent(null);
+                studentTestRepository.save(test);
+            });
+        }
+
         studentRepository.deleteById(id);
     }
 

@@ -2,6 +2,7 @@ package com.finki.mojtest.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.finki.mojtest.model.users.Teacher;
+import com.finki.mojtest.model.users.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -34,7 +35,7 @@ public class Test {
     @ManyToOne
     @JoinColumn(name = "creator_id")
     @JsonIgnore
-    private Teacher creator;
+    private User creator;
 
     @OneToMany(mappedBy = "test")
     @JsonIgnore

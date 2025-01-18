@@ -709,6 +709,53 @@
     "testQuestion": "Pyetjet nga Testet",
     "user": "Përdoruesit"
   },
+  "userManagement": {
+    "title": "Menaxhimi i përdoruesve",
+    "createNew": "Krijo përdorues të ri",
+    "createNewUser": "Krijo përdorues të ri",
+    "editUser": "Ndrysho përdoruesin"
+  },
+  "userTypes": {
+    "all": "Të gjithë përdoruesit",
+    "admin": "Administratorët",
+    "teacher": "Mësuesit",
+    "student": "Studentët"
+  },
+  "userForm": {
+    "username": "Emri i përdoruesit",
+    "usernamePlaceholder": "Shkruani emrin e përdoruesit",
+    "createButton": "Krijo përdorues",
+    "updateButton": "Përditëso përdorues",
+    "password": "Fjalëkalimi",
+    "passwordOptional": " (lëreni bosh për të mbajtur aktualin)",
+    "passwordPlaceholder": "Shkruani fjalëkalimin",
+    "email": "Email",
+    "emailPlaceholder": "Shkruani email-in",
+    "fullName": "Emri i plotë",
+    "fullNamePlaceholder": "Shkruani emrin e plotë",
+    "type": "Lloji i përdoruesit",
+    "grade": "Klasa",
+    "selectGrade": "Zgjidhni klasën"
+  },
+  "userTable": {
+    "username": "Emri i përdoruesit",
+    "fullName": "Emri i plotë",
+    "email": "Email",
+    "type": "Lloji",
+    "grade": "Klasa",
+    "actions": "Veprimet",
+    "noUsers": "Nuk u gjetën përdorues për llojin e zgjedhur."
+  },
+  "validation": {
+    "usernameRequired": "Emri i përdoruesit është i detyrueshëm",
+    "usernameTooShort": "Emri i përdoruesit duhet të ketë të paktën 3 karaktere",
+    "passwordRequired": "Fjalëkalimi është i detyrueshëm për përdoruesit e rinj",
+    "passwordTooShort": "Fjalëkalimi duhet të ketë të paktën 6 karaktere",
+    "emailRequired": "Email-i është i detyrueshëm",
+    "emailInvalid": "Ju lutemi shkruani një email të vlefshëm",
+    "fullNameRequired": "Emri i plotë është i detyrueshëm",
+    "gradeRequired": "Klasa është e detyrueshme për studentët"
+  },
   "adminList": {
     "title": "Administratorë",
     "loading": "Duke ngarkuar administratorët...",

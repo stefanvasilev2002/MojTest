@@ -632,6 +632,53 @@
       "comparativeLiterature": "Компаративна книжевност"
     }
   },
+  "userManagement": {
+    "title": "Управување со корисници",
+    "createNew": "Креирај нов корисник",
+    "createNewUser": "Креирај нов корисник",
+    "editUser": "Уреди корисник"
+  },
+  "userTypes": {
+    "all": "Сите корисници",
+    "admin": "Администратори",
+    "teacher": "Наставници",
+    "student": "Ученици"
+  },
+  "userForm": {
+    "username": "Корисничко име",
+    "usernamePlaceholder": "Внесете корисничко име",
+    "createButton": "Креирај корисник",
+    "updateButton": "Ажурирај корисник",
+    "password": "Лозинка",
+    "passwordOptional": " (оставете празно за да ја задржите тековната)",
+    "passwordPlaceholder": "Внесете лозинка",
+    "email": "Е-пошта",
+    "emailPlaceholder": "Внесете е-пошта",
+    "fullName": "Целосно име",
+    "fullNamePlaceholder": "Внесете целосно име",
+    "type": "Тип на корисник",
+    "grade": "Одделение",
+    "selectGrade": "Изберете одделение"
+  },
+  "userTable": {
+    "username": "Корисничко име",
+    "fullName": "Целосно име",
+    "email": "Е-пошта",
+    "type": "Тип",
+    "grade": "Одделение",
+    "actions": "Акции",
+    "noUsers": "Нема пронајдени корисници за избраниот тип."
+  },
+  "validation": {
+    "usernameRequired": "Корисничкото име е задолжително",
+    "usernameTooShort": "Корисничкото име мора да има најмалку 3 карактери",
+    "passwordRequired": "Лозинката е задолжителна за нови корисници",
+    "passwordTooShort": "Лозинката мора да има најмалку 6 карактери",
+    "emailRequired": "Е-поштата е задолжителна",
+    "emailInvalid": "Ве молиме внесете валидна е-пошта",
+    "fullNameRequired": "Целосното име е задолжително",
+    "gradeRequired": "Одделението е задолжително за ученици"
+  },
   "question": {
     "type": "Тип",
     "description": "Опис",
@@ -774,7 +821,8 @@
     "next": "Следно",
     "page": "Страна",
     "of": "од",
-    "back": "Назад"
+    "back": "Назад",
+    "edit": "Уреди"
   },
   "adminDashboard": {
     "title": "Панел за Администратори",

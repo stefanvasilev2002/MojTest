@@ -3,6 +3,7 @@ package com.finki.mojtest.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.finki.mojtest.model.enumerations.QuestionType;
 import com.finki.mojtest.model.users.Teacher;
+import com.finki.mojtest.model.users.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -53,7 +54,7 @@ public class Question {
     @ManyToOne
     @JoinColumn(name = "teacher_id", nullable = false)
     @JsonIgnore
-    private Teacher creator;
+    private User creator;
 
     @Override
     public boolean equals(Object o) {

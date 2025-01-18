@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import useAuthActions from "../../hooks/useAuthActions.js";
 import {predefinedKeyValues} from "../../config/predefinedKeyValues.js";
+import {getTranslatedMetadata} from "../../config/translatedMetadata.js";
+import i18n from "i18next";
 
 const RegisterPage = () => {
     const { t } = useTranslation('common');
@@ -222,7 +224,7 @@ const RegisterPage = () => {
                             <option value="" className="text-gray-300">{t('registerPage.ifStudent')}</option>
                             {predefinedKeyValues.Grade.map((grade) => (
                                 <option key={grade} value={grade} className="text-gray-800">
-                                    {grade}
+                                    {getTranslatedMetadata('Grade', grade, i18n.language)}
                                 </option>
                             ))}
                         </select>
