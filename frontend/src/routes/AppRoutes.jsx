@@ -49,6 +49,7 @@ import ForgotPasswordPage from "../pages/auth/ForgotPasswordPage.jsx";
 import ResetPasswordPage from "../pages/auth/ResetPasswordPage.jsx";
 import AboutUs from "../pages/AboutUs.jsx";
 import UserManagement from "../pages/admin/UserManagement.jsx";
+import AnalyticsDashboard from "../pages/admin/AnalyticsDashboard.jsx";
 
 const AppRoutes = () => {
     return (
@@ -170,7 +171,13 @@ const AppRoutes = () => {
                             </CrudLayout>
                         </PrivateRoute>
                     }/>
-
+                    <Route path="/admin/analytics" element={
+                        <PrivateRoute requiredRoles={["admin"]}>
+                            <CrudLayout>
+                                <AnalyticsDashboard/>
+                            </CrudLayout>
+                        </PrivateRoute>
+                    }/>
                     {/* Protected Admin Routes */}
                     {/* Metadata Routes */}
                     <Route path="/admin/metadata" element={

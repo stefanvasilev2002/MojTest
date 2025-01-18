@@ -644,6 +644,39 @@
     "teacher": "Наставници",
     "student": "Ученици"
   },
+  "analytics": {
+    "title": "Табла за аналитика",
+    "totalTests": "Вкупно тестови",
+    "activeStudents": "Активни студенти",
+    "avgScore": "Просечен резултат",
+    "avgCompletionTime": "Просечно време на завршување",
+    "tabs": {
+      "overview": "Преглед",
+      "students": "Студенти",
+      "tests": "Тестови",
+      "questions": "Прашања"
+    },
+    "charts": {
+      "testPerformance": "Тренд на изведба на тестот",
+      "questionTypes": "Дистрибуција на типови прашања",
+      "studentProgress": "Напредок на студентите низ време",
+      "studentActivity": "Дистрибуција на активности на студентите",
+      "testCompletion": "Стапки на завршување на тестот",
+      "testTime": "Просечно време по тест",
+      "questionDifficulty": "Дистрибуција на тежина на прашања",
+      "mostUsedQuestions": "Најкористени прашања",
+      "questionSuccessRate": "Стапка на успех на прашања"
+    },
+    "metrics": {
+      "avgScore": "Просечен резултат",
+      "totalTests": "Вкупно тестови",
+      "activeUsers": "Активни корисници",
+      "completionRate": "Стапка на завршување",
+      "avgTime": "Просечно време",
+      "timesUsed": "Пати користено",
+      "successRate": "Стапка на успех"
+    }
+  },
   "userForm": {
     "username": "Корисничко име",
     "usernamePlaceholder": "Внесете корисничко име",

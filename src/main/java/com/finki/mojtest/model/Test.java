@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Data
@@ -53,4 +54,9 @@ public class Test {
     )
     @JsonIgnore
     private List<Metadata> metadata;
+    private LocalDate createdDate;
+    @PrePersist
+    protected void onCreate() {
+        createdDate = LocalDate.now();
+    }
 }

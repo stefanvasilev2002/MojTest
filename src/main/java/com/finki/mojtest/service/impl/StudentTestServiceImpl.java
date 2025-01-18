@@ -14,6 +14,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -30,6 +31,8 @@ public class StudentTestServiceImpl implements StudentTestService {
     public StudentTest createStudentTest(StudentTest studentTest) {
         studentTest.setDateTaken(LocalDate.now());
         studentTest.setTimeTaken(LocalTime.now());
+        studentTest.setStartTime(LocalDateTime.now());
+
         int score = calculateScore(studentTest.getAnswers());
         studentTest.setScore(score);
 
@@ -53,6 +56,7 @@ public class StudentTestServiceImpl implements StudentTestService {
         studentTest.setScore(updatedStudentTest.getScore()); // Optionally recalculate score
         studentTest.setDateTaken(updatedStudentTest.getDateTaken());
         studentTest.setTimeTaken(updatedStudentTest.getTimeTaken());
+
         return studentTestRepository.save(studentTest);
     }
 
@@ -153,9 +157,12 @@ public class StudentTestServiceImpl implements StudentTestService {
         StudentTest studentTest = studentTestRepository.findById(studentTestId)
                 .orElseThrow(() -> new EntityNotFoundException("Student test not found"));
 
+
         if (studentTest.getTimeTaken() == null) {
             throw new IllegalStateException("Test hasn't been started");
         }
+
+        studentTest.setEndTime(LocalDateTime.now());
 
         Map<Long, AnswerSubmissionDTO> submissionMap = answers.stream()
                 .collect(Collectors.toMap(

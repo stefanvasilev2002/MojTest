@@ -9,6 +9,39 @@
     "dashboard": "Paneli",
     "manageQuizzes": "Menaxho Kuizet"
   },
+  "analytics": {
+    "title": "Paneli i Analizës",
+    "totalTests": "Totali i Testeve",
+    "activeStudents": "Studentë Aktivë",
+    "avgScore": "Rezultati Mesatar",
+    "avgCompletionTime": "Koha Mesatare e Përfundimit",
+    "tabs": {
+      "overview": "Përmbledhje",
+      "students": "Studentët",
+      "tests": "Testet",
+      "questions": "Pyetjet"
+    },
+    "charts": {
+      "testPerformance": "Trendi i Performancës së Testit",
+      "questionTypes": "Shpërndarja e Llojeve të Pyetjeve",
+      "studentProgress": "Progresi i Studentëve me Kalimin e Kohës",
+      "studentActivity": "Shpërndarja e Aktivitetit të Studentëve",
+      "testCompletion": "Shkalla e Përfundimit të Testit",
+      "testTime": "Koha Mesatare për Test",
+      "questionDifficulty": "Shpërndarja e Vështirësisë së Pyetjeve",
+      "mostUsedQuestions": "Pyetjet më të Përdorura",
+      "questionSuccessRate": "Shkalla e Suksesit të Pyetjeve"
+    },
+    "metrics": {
+      "avgScore": "Rezultati Mesatar",
+      "totalTests": "Totali i Testeve",
+      "activeUsers": "Përdorues Aktivë",
+      "completionRate": "Shkalla e Përfundimit",
+      "avgTime": "Koha Mesatare",
+      "timesUsed": "Herë të Përdorura",
+      "successRate": "Shkalla e Suksesit"
+    }
+  },
   "studentPage": {
     "hero": {
       "title": "Transformoni Udhëtimin Tuaj të Mësimit",

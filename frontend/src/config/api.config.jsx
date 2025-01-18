@@ -52,7 +52,14 @@ export const endpoints = {
     },
     files: {
         download: (id) => `${API_BASE_URL}/files/download/${id}/inline`
-    }
+    },
+    analytics: {
+        overview: `${API_BASE_URL}/analytics/overview`,
+        studentPerformance: `${API_BASE_URL}/analytics/student-performance`,
+        testStatistics: `${API_BASE_URL}/analytics/test-statistics`,
+        questionAnalytics: `${API_BASE_URL}/analytics/question-statistics`,
+        teacherStatistics: `${API_BASE_URL}/analytics/teacher-statistics`,
+    },
 };
 
 export default API_BASE_URL;

@@ -8,7 +8,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @Data
@@ -37,6 +39,13 @@ public class StudentTest {
     @JsonIgnore
     @OneToMany(mappedBy = "studentTest")
     private List<StudentAnswer> answers;
+    private LocalDateTime startTime;
+    private LocalDateTime endTime;
 
+    @Transient
+    public Long getDurationInMinutes() {
+        if (startTime == null || endTime == null) return null;
+        return ChronoUnit.MINUTES.between(startTime, endTime);
+    }
 }
 

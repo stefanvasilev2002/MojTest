@@ -9,6 +9,7 @@
     "dashboard": "Dashboard",
     "manageQuizzes": "Manage Quizzes"
   },
+
   "testAttempts": {
     "title": "Test Attempts",
     "loading": "Loading attempts...",
@@ -19,6 +20,39 @@
   },
   "hint": {
     "show": "Show Hint"
+  },
+  "analytics": {
+    "title": "Analytics Dashboard",
+    "totalTests": "Total Tests",
+    "activeStudents": "Active Students",
+    "avgScore": "Average Score",
+    "avgCompletionTime": "Average Completion Time",
+    "tabs": {
+      "overview": "Overview",
+      "students": "Students",
+      "tests": "Tests",
+      "questions": "Questions"
+    },
+    "charts": {
+      "testPerformance": "Test Performance Trend",
+      "questionTypes": "Question Type Distribution",
+      "studentProgress": "Student Progress Over Time",
+      "studentActivity": "Student Activity Distribution",
+      "testCompletion": "Test Completion Rates",
+      "testTime": "Average Time per Test",
+      "questionDifficulty": "Question Difficulty Distribution",
+      "mostUsedQuestions": "Most Used Questions",
+      "questionSuccessRate": "Question Success Rate"
+    },
+    "metrics": {
+      "avgScore": "Average Score",
+      "totalTests": "Total Tests",
+      "activeUsers": "Active Users",
+      "completionRate": "Completion Rate",
+      "avgTime": "Average Time",
+      "timesUsed": "Times Used",
+      "successRate": "Success Rate"
+    }
   },
   "questionNavigation": {
     "title": "Questions",

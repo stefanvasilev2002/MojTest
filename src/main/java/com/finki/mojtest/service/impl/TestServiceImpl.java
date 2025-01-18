@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -284,6 +285,7 @@ public class TestServiceImpl implements TestService {
         studentTest.setScore(0);
         studentTest.setDateTaken(LocalDate.now());
         studentTest.setTimeTaken(LocalTime.now());
+        studentTest.setStartTime(LocalDateTime.now());
 
         studentTest = studentTestRepository.save(studentTest);
 
