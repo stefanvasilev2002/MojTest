@@ -16,7 +16,7 @@ import TeacherLayout from "../layouts/TeacherLayout.jsx";
 import StudentLayout from "../layouts/StudentLayout.jsx";
 import PublicLayout from "../layouts/PublicLayout.jsx";
 import CrudLayout from "../layouts/crud/CrudLayout.jsx";
-import CrudHubPage from "../pages/crud/AdminDashboard.jsx";
+import CrudHubPage from "../pages/admin/AdminDashboard.jsx";
 import MetadataList from "../components/crud/MetadataList.jsx";
 import AnswersList from "../components/crud/AnswersList.jsx";
 import TestList from "../components/crud/TestList.jsx";
@@ -48,6 +48,7 @@ import ChangePassword from "../pages/teacher/ChangePassword.jsx";
 import ForgotPasswordPage from "../pages/auth/ForgotPasswordPage.jsx";
 import ResetPasswordPage from "../pages/auth/ResetPasswordPage.jsx";
 import AboutUs from "../pages/AboutUs.jsx";
+import UserManagement from "../pages/admin/UserManagement.jsx";
 
 const AppRoutes = () => {
     return (
@@ -125,6 +126,12 @@ const AppRoutes = () => {
                     }>
                         <Route index element={<TeacherSettings/>}/>
                     </Route>
+                    <Route path="/admin/settings" element={
+                        <PrivateRoute requiredRoles={["admin"]}>
+                            <TeacherSettings/>
+                        </PrivateRoute>
+                    }>
+                    </Route>
 
                     <Route path="/take-test/:studentTestId" element={
                         <PrivateRoute requiredRoles={["student", "admin"]}>
@@ -189,9 +196,19 @@ const AppRoutes = () => {
                     }/>
 
                     {/* Test Routes */}
-                    <Route path="/admin/test" element={
+                    <Route path="/admin/tests" element={
                         <PrivateRoute requiredRoles={["admin"]}>
-                            <CrudLayout><TestList/></CrudLayout>
+                            <CrudLayout>
+                                <div className="mt-20">
+                                    <TeacherDashboard
+                                        showAllTests={true}
+                                        showTabs={false}
+                                        allowCreate={true}
+                                        overrideOwnerCheck={true} // Admin sees all tests as editable
+                                    />
+                                </div>
+
+                            </CrudLayout>
                         </PrivateRoute>
                     }/>
                     <Route path="/admin/test/new" element={
@@ -223,16 +240,16 @@ const AppRoutes = () => {
                     }/>
 
                     {/* User Management Routes */}
-                    <Route path="/admin/user" element={
+                    <Route path="/admin/users" element={
                         <PrivateRoute requiredRoles={["admin"]}>
-                            <CrudLayout><UsersList/></CrudLayout>
+                            <CrudLayout><UserManagement/></CrudLayout>
                         </PrivateRoute>
                     }/>
 
                     {/* Admin User Routes */}
-                    <Route path="/admin/users/admin" element={
+                    <Route path="/admin/users/admins" element={
                         <PrivateRoute requiredRoles={["admin"]}>
-                            <CrudLayout><AdminList/></CrudLayout>
+                            <CrudLayout><UserManagement defaultType="Admin"/></CrudLayout>
                         </PrivateRoute>
                     }/>
                     <Route path="/admin/users/admin/new" element={
@@ -247,9 +264,9 @@ const AppRoutes = () => {
                     }/>
 
                     {/* Teacher User Routes */}
-                    <Route path="/admin/users/teacher" element={
+                    <Route path="/admin/users/teachers" element={
                         <PrivateRoute requiredRoles={["admin"]}>
-                            <CrudLayout><TeacherList/></CrudLayout>
+                            <CrudLayout><UserManagement defaultType="Teacher"/></CrudLayout>
                         </PrivateRoute>
                     }/>
                     <Route path="/admin/users/teacher/new" element={
@@ -264,9 +281,9 @@ const AppRoutes = () => {
                     }/>
 
                     {/* Student User Routes */}
-                    <Route path="/admin/users/student" element={
+                    <Route path="/admin/users/students" element={
                         <PrivateRoute requiredRoles={["admin"]}>
-                            <CrudLayout><StudentList/></CrudLayout>
+                            <CrudLayout><UserManagement defaultType="Student"/></CrudLayout>
                         </PrivateRoute>
                     }/>
                     <Route path="/admin/users/student/new" element={

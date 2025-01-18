@@ -10,10 +10,12 @@ import java.util.Optional;
 public interface UserService {
     User createUserAuth(UserDTO user);
     User createUser(User user);
+    User createUser(UserDTO user);
     User getUserById(Long id);
     List<User> getAllUsers();
     User findByUsername(String username);
     User updateUser(Long id, User updatedUser);
+    User updateUser(Long id, UserDTO updatedUser);
     void deleteUser(Long id);
     List<User> getUsersByRole(String role);
     User updateUser(UserUpdateRequest userUpdateRequest);

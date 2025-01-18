@@ -23,7 +23,7 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<User> createUser(@RequestBody User user) {
+    public ResponseEntity<User> createUser(@RequestBody UserDTO user) {
         try {
             User createdUser = userService.createUser(user);
             return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
@@ -33,10 +33,10 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User updatedUser) {
+    public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody UserDTO userDTO) {
         try {
-            User user = userService.updateUser(id, updatedUser);
-            return ResponseEntity.status(HttpStatus.OK).body(user);
+            User updatedUser = userService.updateUser(id, userDTO);
+            return ResponseEntity.status(HttpStatus.OK).body(updatedUser);
         } catch (DuplicateFieldException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
         }

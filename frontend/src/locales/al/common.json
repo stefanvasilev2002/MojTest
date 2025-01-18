@@ -557,7 +557,25 @@
     "studentAnswer": "Përgjigje të Studentëve",
     "studentTest": "Teste të Studentëve",
     "testQuestion": "Pyetje të Testeve",
-    "user": "Përdorues"
+    "user": "Përdorues",
+    "system": {
+      "dropdown": "Sistemi",
+      "metadata": "Metadatat",
+      "settings": "Cilësimet"
+    },
+    "tests": {
+      "dropdown": "Testet",
+      "all": "Të Gjitha Testet",
+      "questions": "Pyetjet",
+      "responses": "Përgjigjet"
+    },
+    "users": {
+      "dropdown": "Përdoruesit",
+      "all": "Të Gjithë Përdoruesit",
+      "teachers": "Mësuesit",
+      "students": "Nxënësit",
+      "admins": "Administratorët"
+    }
   },
   "debugPageTitle": "Faqja e Debug",
   "debugPageMessage": "Kjo faqe ju ndihmon të testoni përkthimet.",
@@ -716,5 +734,30 @@
     "backToDashboard": "Kthehu në Panel",
     "success": "Pyetja u krijua me sukses",
     "error": "Dështoi krijimi i pyetjes"
+  },
+  "adminDashboard": {
+    "title": "Paneli i Administratorit",
+    "searchPlaceholder": "Kërko për module...",
+    "noResults": "Nuk u gjetën module që përputhen.",
+    "modules": {
+      "users": "Përdoruesit",
+      "teachers": "Mësuesit",
+      "students": "Nxënësit",
+      "tests": "Testet",
+      "metadata": "Metadata",
+      "questions": "Pyetjet",
+      "analytics": "Analitika",
+      "settings": "Cilësimet"
+    },
+    "descriptions": {
+      "users": "Menaxhoni llogaritë dhe lejet e përdoruesve",
+      "teachers": "Menaxhoni profilet dhe detyrat e mësuesve",
+      "students": "Menaxhoni profilet dhe regjistrimet e nxënësve",
+      "tests": "Krijoni dhe menaxhoni testet e vlerësimit",
+      "metadata": "Konfiguroni metadatat dhe kategoritë e sistemit",
+      "questions": "Menaxhoni bankën e pyetjeve dhe artikujt e vlerësimit",
+      "analytics": "Shikoni statistikat dhe raportet e sistemit",
+      "settings": "Konfiguroni cilësimet dhe preferencat e sistemit"
+    }
   }
 }

@@ -542,7 +542,25 @@
     "studentTest": "Student Tests",
     "testQuestion": "Test Questions",
     "user": "Users",
-    "hello": "Hello"
+    "hello": "Hello",
+    "system": {
+      "dropdown": "System",
+      "metadata": "Metadata",
+      "settings": "Settings"
+    },
+    "tests": {
+      "dropdown": "Tests",
+      "all": "All Tests",
+      "questions": "Questions",
+      "responses": "Responses"
+    },
+    "users": {
+      "dropdown": "Users",
+      "all": "All Users",
+      "teachers": "Teachers",
+      "students": "Students",
+      "admins": "Admins"
+    }
   },
   "settings": {
     "teacherTitle": "Teacher Settings",
@@ -783,5 +801,30 @@
     "FILL_IN_THE_BLANK": "Fill in the Blank",
     "ESSAY": "Essay",
     "NUMERIC": "Numeric"
+  },
+  "adminDashboard": {
+    "title": "Admin Dashboard",
+    "searchPlaceholder": "Search for modules...",
+    "noResults": "No matching modules found.",
+    "modules": {
+      "users": "Users",
+      "teachers": "Teachers",
+      "students": "Students",
+      "tests": "Tests",
+      "metadata": "Metadata",
+      "questions": "Questions",
+      "analytics": "Analytics",
+      "settings": "Settings"
+    },
+    "descriptions": {
+      "users": "Manage user accounts and permissions",
+      "teachers": "Manage teacher profiles and assignments",
+      "students": "Manage student profiles and enrollments",
+      "tests": "Create and manage assessment tests",
+      "metadata": "Configure system metadata and categories",
+      "questions": "Manage question bank and assessment items",
+      "analytics": "View system statistics and reports",
+      "settings": "Configure system settings and preferences"
+    }
   }
 }

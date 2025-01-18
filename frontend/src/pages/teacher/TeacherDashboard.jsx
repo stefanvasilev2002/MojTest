@@ -9,7 +9,13 @@ import TestFilters from '../../components/TestFilters.jsx';
 import { ChevronDown, Edit, Plus, Trash2, HelpCircle } from 'lucide-react';
 import TestExport from "./TestExport.jsx";
 
-const TeacherDashboard = () => {
+const TeacherDashboard = ({
+                              showAllTests = false, // If true, shows all tests regardless of creator
+                              showTabs = true,      // If false, hides the My Tests/All Tests tabs
+                              allowCreate = true,   // Controls if users can create tests
+                              creatorId = null,      // Optional: filter by specific creator
+                              overrideOwnerCheck = false // New prop
+                          }) => {
     const { items: tests, loading: testsLoading, error: testsError, deleteItem: deleteTest } = useTest();
     const { user } = useAuth();
     const navigate = useNavigate();
@@ -36,9 +42,12 @@ const TeacherDashboard = () => {
     };
 
     const filteredTests = useMemo(() => {
-        const initialTests = activeTab === 'myTests'
-            ? tests.filter(test => test.creatorId === user.id)
-            : tests;
+        let initialTests = tests;
+
+        if (!showAllTests && activeTab === 'myTests') {
+            initialTests = tests.filter(test => overrideOwnerCheck || test.creatorId === (creatorId || user.id)
+            );
+        }
 
         return initialTests.filter(test => {
             return Object.entries(filters).every(([key, value]) => {
@@ -48,7 +57,7 @@ const TeacherDashboard = () => {
                 );
             });
         });
-    }, [tests, filters, activeTab, user.id]);
+    }, [tests, filters, activeTab, user.id, showAllTests, creatorId]);
 
     const handleDeleteClick = (test) => {
         setTestToDelete(test);
@@ -110,47 +119,52 @@ const TeacherDashboard = () => {
         navigate(`/teacher-dashboard/test/${testId}/questions/create`);
     };
 
-    const TestActions = ({ test, isOwner }) => (
-        <div className="flex flex-col sm:flex-row gap-2 mt-4 sm:mt-0">
-            <button
-                onClick={() => handleQuestionsClick(test.id)}
-                className="w-full sm:w-auto bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors flex items-center justify-center"
-            >
-                <HelpCircle className="w-4 h-4 mr-2" />
-                <span className="whitespace-nowrap">{t('dashboard.testDetails.actions.viewQuestions')}</span>
-            </button>
-            {isOwner && (
-                <>
-                    <button
-                        onClick={() => handleCreateQuestion(test.id)}
-                        className="w-full sm:w-auto bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition-colors flex items-center justify-center"
-                    >
-                        <Plus className="w-4 h-4 mr-2" />
-                        <span className="whitespace-nowrap">{t('dashboard.testDetails.actions.addQuestion')}</span>
-                    </button>
-                    <button
-                        onClick={() => handleEditTest(test.id)}
-                        className="w-full sm:w-auto bg-yellow-600 text-white px-4 py-2 rounded hover:bg-yellow-700 transition-colors flex items-center justify-center"
-                    >
-                        <Edit className="w-4 h-4 mr-2" />
-                        <span className="whitespace-nowrap">{t('dashboard.testDetails.actions.editTest')}</span>
-                    </button>
-                    <TestExport
-                        testId={test.id}
-                        testTitle={test.title}
-                        className="w-full sm:w-auto"
-                    />
-                    <button
-                        onClick={() => handleDeleteClick(test)}
-                        className="w-full sm:w-auto bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition-colors flex items-center justify-center"
-                    >
-                        <Trash2 className="w-4 h-4 mr-2" />
-                        <span className="whitespace-nowrap">{t('dashboard.testDetails.actions.delete')}</span>
-                    </button>
-                </>
-            )}
-        </div>
-    );
+    const TestActions = ({ test, isOwner, allowEdit = true }) => {
+        const canEdit = overrideOwnerCheck || isOwner;
+
+        return (
+            <div className="flex flex-col sm:flex-row gap-2 mt-4 sm:mt-0">
+                <button
+                    onClick={() => handleQuestionsClick(test.id)}
+                    className="w-full sm:w-auto bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors flex items-center justify-center"
+                >
+                    <HelpCircle className="w-4 h-4 mr-2" />
+                    <span className="whitespace-nowrap">{t('dashboard.testDetails.actions.viewQuestions')}</span>
+                </button>
+                {canEdit && allowEdit && (
+                    <>
+                        <button
+                            onClick={() => handleCreateQuestion(test.id)}
+                            className="w-full sm:w-auto bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition-colors flex items-center justify-center"
+                        >
+                            <Plus className="w-4 h-4 mr-2" />
+                            <span className="whitespace-nowrap">{t('dashboard.testDetails.actions.addQuestion')}</span>
+                        </button>
+                        <button
+                            onClick={() => handleEditTest(test.id)}
+                            className="w-full sm:w-auto bg-yellow-600 text-white px-4 py-2 rounded hover:bg-yellow-700 transition-colors flex items-center justify-center"
+                        >
+                            <Edit className="w-4 h-4 mr-2" />
+                            <span className="whitespace-nowrap">{t('dashboard.testDetails.actions.editTest')}</span>
+                        </button>
+                        <TestExport
+                            testId={test.id}
+                            testTitle={test.title}
+                            className="w-full sm:w-auto"
+                        />
+                        <button
+                            onClick={() => handleDeleteClick(test)}
+                            className="w-full sm:w-auto bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition-colors flex items-center justify-center"
+                        >
+                            <Trash2 className="w-4 h-4 mr-2" />
+                            <span className="whitespace-nowrap">{t('dashboard.testDetails.actions.delete')}</span>
+                        </button>
+                    </>
+                )}
+            </div>
+        );
+    };
+
 
     const renderTest = (test, isOwner) => (
         <div key={test.id} className="bg-white rounded-lg shadow p-4 sm:p-6">
@@ -240,22 +254,24 @@ const TeacherDashboard = () => {
                     </div>
 
                     {/* Action Buttons */}
-                    <div className="flex flex-wrap gap-2 w-full sm:w-auto">
-                        <button
-                            onClick={handleCreateTest}
-                            className="flex-1 sm:flex-none bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center"
-                        >
-                            <Plus className="w-4 h-4 mr-2" />
-                            {t('dashboard.createNewTest')}
-                        </button>
-                        <button
-                            onClick={handleQuestionsPage}
-                            className="flex-1 sm:flex-none bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center"
-                        >
-                            <HelpCircle className="w-4 h-4 mr-2" />
-                            {t('dashboard.questions')}
-                        </button>
-                    </div>
+                    {allowCreate && (
+                        <div className="flex flex-wrap gap-2 w-full sm:w-auto">
+                            <button
+                                onClick={handleCreateTest}
+                                className="flex-1 sm:flex-none bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center"
+                            >
+                                <Plus className="w-4 h-4 mr-2" />
+                                {t('dashboard.createNewTest')}
+                            </button>
+                            <button
+                                onClick={handleQuestionsPage}
+                                className="flex-1 sm:flex-none bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center"
+                            >
+                                <HelpCircle className="w-4 h-4 mr-2" />
+                                {t('dashboard.questions')}
+                            </button>
+                        </div>
+                    )}
                 </div>
 
                 {/* Filters Section */}
@@ -276,7 +292,8 @@ const TeacherDashboard = () => {
                         </div>
                     ) : (
                         getCurrentTests().map(test =>
-                            renderTest(test, test.creatorId === user.id)
+                            renderTest(test, overrideOwnerCheck || test.creatorId === (creatorId || user.id)
+                            )
                         )
                     )}
                 </div>

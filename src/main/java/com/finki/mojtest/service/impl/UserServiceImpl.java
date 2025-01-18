@@ -15,12 +15,15 @@ import com.finki.mojtest.service.UserService;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.Transient;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.apache.commons.beanutils.PropertyUtils;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -67,6 +70,53 @@ public class UserServiceImpl implements UserService {
                 user.getEmail(), user.getFullName(), user.getRegistrationDate(), user.getGrade());
         return studentRepository.save(newUser);
     }
+    @Override
+    public User createUser(UserDTO userDTO) {
+        if (userRepository.findByUsername(userDTO.getUsername()).isPresent()) {
+            throw new DuplicateFieldException("Username already exists: " + userDTO.getUsername());
+        }
+
+        if (!userRepository.findByEmailList(userDTO.getEmail()).isEmpty()) {
+            throw new DuplicateFieldException("Email already exists: " + userDTO.getEmail());
+        }
+
+        // Map DTO to entity
+        User newUser = mapDtoToUser(userDTO);
+        return userRepository.save(newUser);
+    }
+
+    private User mapDtoToUser(UserDTO userDTO) {
+        String dtype = userDTO.getDtype();
+        switch (dtype) {
+            case "Student":
+                return new Student(
+                        userDTO.getUsername(),
+                        passwordEncoder.encode(userDTO.getPassword()),
+                        userDTO.getEmail(),
+                        userDTO.getFullName(),
+                        userDTO.getRegistrationDate(),
+                        userDTO.getGrade()
+                );
+            case "Teacher":
+                Teacher teacher = new Teacher();
+                teacher.setUsername(userDTO.getUsername());
+                teacher.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+                teacher.setEmail(userDTO.getEmail());
+                teacher.setFullName(userDTO.getFullName());
+                teacher.setRegistrationDate(userDTO.getRegistrationDate());
+                return teacher;
+            case "Admin":
+                Admin admin = new Admin();
+                admin.setUsername(userDTO.getUsername());
+                admin.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+                admin.setEmail(userDTO.getEmail());
+                admin.setFullName(userDTO.getFullName());
+                admin.setRegistrationDate(userDTO.getRegistrationDate());
+                return admin;
+            default:
+                throw new IllegalArgumentException("Invalid user type: " + dtype);
+        }
+    }
 
     @Override
     public User createUser(User user) {
@@ -78,17 +128,51 @@ public class UserServiceImpl implements UserService {
             throw new DuplicateFieldException("Email already exists: " + user.getEmail());
         }
 
-        if (user instanceof Teacher) {
-            user.setDtype("Teacher");
-        }
-        if (user instanceof Student) {
-            user.setDtype("Student");
-        }
-        if (user instanceof Admin) {
-            user.setDtype("Admin");
+        // Create the appropriate user type based on dtype
+        User newUser;
+        String dtype = user.getDtype();
+
+        switch (dtype) {
+            case "Student" -> {
+                // Extract grade from the user object's properties
+                String grade = null;
+                try {
+                    // Since we can't cast directly, we need to get the grade from the original object's properties
+                    grade = (String) PropertyUtils.getProperty(user, "grade");
+                } catch (Exception e) {
+                    // Handle the case where grade isn't present
+                    grade = "";
+                }
+
+                newUser = new Student(
+                        user.getUsername(),
+                        passwordEncoder.encode(user.getPassword()),
+                        user.getEmail(),
+                        user.getFullName(),
+                        user.getRegistrationDate(),
+                        grade
+                );
+            }
+            case "Teacher" -> {
+                newUser = new Teacher();
+                newUser.setUsername(user.getUsername());
+                newUser.setPassword(passwordEncoder.encode(user.getPassword()));
+                newUser.setEmail(user.getEmail());
+                newUser.setFullName(user.getFullName());
+                newUser.setRegistrationDate(user.getRegistrationDate());
+            }
+            case "Admin" -> {
+                newUser = new Admin();
+                newUser.setUsername(user.getUsername());
+                newUser.setPassword(passwordEncoder.encode(user.getPassword()));
+                newUser.setEmail(user.getEmail());
+                newUser.setFullName(user.getFullName());
+                newUser.setRegistrationDate(user.getRegistrationDate());
+            }
+            default -> throw new IllegalArgumentException("Invalid user type: " + dtype);
         }
 
-        return userRepository.save(user);
+        return userRepository.save(newUser);
     }
 
     @Override
@@ -109,37 +193,190 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User updateUser(Long id, User updatedUser) {
-        User user = getUserById(id);
+        User existingUser = getUserById(id);
 
+        // Validate username uniqueness
         if (updatedUser.getUsername() != null &&
-                !updatedUser.getUsername().equals(user.getUsername())
-                && userRepository.findByUsername(updatedUser.getUsername()).isPresent()) {
+                !updatedUser.getUsername().equals(existingUser.getUsername()) &&
+                userRepository.findByUsername(updatedUser.getUsername()).isPresent()) {
             throw new DuplicateFieldException("Username already exists: " + updatedUser.getUsername());
         }
 
+        // Validate email uniqueness
         if (updatedUser.getEmail() != null &&
-                !updatedUser.getEmail().equals(user.getEmail()) &&
+                !updatedUser.getEmail().equals(existingUser.getEmail()) &&
                 !userRepository.findByEmailList(updatedUser.getEmail()).isEmpty()) {
             throw new DuplicateFieldException("Email already exists: " + updatedUser.getEmail());
         }
 
-        if (updatedUser.getEmail() != null) {
-            user.setEmail(updatedUser.getEmail());
-        }
-        if (updatedUser.getUsername() != null) {
-            user.setUsername(updatedUser.getUsername());
-        }
-        if (updatedUser.getFullName() != null) {
-            user.setFullName(updatedUser.getFullName());
+        // Check if the user type (dtype) is being changed
+        String newDtype = updatedUser.getDtype();
+        if (newDtype != null && !newDtype.equals(existingUser.getDtype())) {
+            // Create a new user instance of the specified type
+            User newUser;
+
+            switch (newDtype) {
+                case "Student" -> {
+                    String grade = null;
+                    try {
+                        grade = (String) PropertyUtils.getProperty(updatedUser, "grade");
+                    } catch (Exception e) {
+                        grade = ""; // Handle missing grade gracefully
+                    }
+
+                    newUser = new Student(
+                            existingUser.getUsername(),
+                            existingUser.getPassword(),
+                            updatedUser.getEmail() != null ? updatedUser.getEmail() : existingUser.getEmail(),
+                            updatedUser.getFullName() != null ? updatedUser.getFullName() : existingUser.getFullName(),
+                            existingUser.getRegistrationDate(),
+                            grade
+                    );
+                }
+                case "Teacher" -> {
+                    newUser = new Teacher();
+                    newUser.setUsername(existingUser.getUsername());
+                    newUser.setPassword(existingUser.getPassword());
+                    newUser.setEmail(updatedUser.getEmail() != null ? updatedUser.getEmail() : existingUser.getEmail());
+                    newUser.setFullName(updatedUser.getFullName() != null ? updatedUser.getFullName() : existingUser.getFullName());
+                    newUser.setRegistrationDate(existingUser.getRegistrationDate());
+                }
+                case "Admin" -> {
+                    newUser = new Admin();
+                    newUser.setUsername(existingUser.getUsername());
+                    newUser.setPassword(existingUser.getPassword());
+                    newUser.setEmail(updatedUser.getEmail() != null ? updatedUser.getEmail() : existingUser.getEmail());
+                    newUser.setFullName(updatedUser.getFullName() != null ? updatedUser.getFullName() : existingUser.getFullName());
+                    newUser.setRegistrationDate(existingUser.getRegistrationDate());
+                }
+                default -> throw new IllegalArgumentException("Invalid user type: " + newDtype);
+            }
+
+            // Delete the old user and save the new user
+            userRepository.delete(existingUser);
+            return userRepository.save(newUser);
         }
 
-        return userRepository.save(user);
+        // Update fields for the same user type
+        if (updatedUser.getEmail() != null) {
+            existingUser.setEmail(updatedUser.getEmail());
+        }
+        if (updatedUser.getUsername() != null) {
+            existingUser.setUsername(updatedUser.getUsername());
+        }
+        if (updatedUser.getFullName() != null) {
+            existingUser.setFullName(updatedUser.getFullName());
+        }
+        if (updatedUser.getPassword() != null) {
+            existingUser.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
+        }
+
+        return userRepository.save(existingUser);
     }
 
     @Override
+    public User updateUser(Long id, UserDTO updatedUser) {
+        User existingUser = getUserById(id);
+
+        // Validate username uniqueness (if changed)
+        if (updatedUser.getUsername() != null &&
+                !updatedUser.getUsername().equals(existingUser.getUsername()) &&
+                userRepository.findByUsername(updatedUser.getUsername()).isPresent()) {
+            throw new DuplicateFieldException("Username already exists: " + updatedUser.getUsername());
+        }
+
+        // Validate email uniqueness (if changed)
+        if (updatedUser.getEmail() != null &&
+                !updatedUser.getEmail().equals(existingUser.getEmail()) &&
+                !userRepository.findByEmailList(updatedUser.getEmail()).isEmpty()) {
+            throw new DuplicateFieldException("Email already exists: " + updatedUser.getEmail());
+        }
+
+        // Check if the user type (dtype) is being changed
+        String newDtype = updatedUser.getDtype();
+        if (newDtype != null && !newDtype.equals(existingUser.getDtype())) {
+            // Create a new user instance of the specified type
+            User newUser;
+            // Only use updated data for username and password if present
+            String newUsername = updatedUser.getUsername() != null ? updatedUser.getUsername() : existingUser.getUsername();
+            String newPassword = updatedUser.getPassword() != null && !updatedUser.getPassword().isEmpty()
+                    ? passwordEncoder.encode(updatedUser.getPassword())
+                    : existingUser.getPassword();
+            switch (newDtype) {
+                case "Student" -> {
+                    String grade = null;
+                    try {
+                        grade = (String) PropertyUtils.getProperty(updatedUser, "grade");
+                    } catch (Exception e) {
+                        grade = ""; // Handle missing grade gracefully
+                    }
+
+                    newUser = new Student(
+                            newUsername,  // Update username if provided
+                            newPassword,  // Update password if provided
+                            updatedUser.getEmail() != null ? updatedUser.getEmail() : existingUser.getEmail(),
+                            updatedUser.getFullName() != null ? updatedUser.getFullName() : existingUser.getFullName(),
+                            existingUser.getRegistrationDate(),
+                            grade
+                    );
+                }
+                case "Teacher" -> {
+                    newUser = new Teacher();
+                    newUser.setUsername(newUsername);  // Use updated username
+                    newUser.setPassword(newPassword);  // Use updated password
+                    newUser.setEmail(updatedUser.getEmail() != null ? updatedUser.getEmail() : existingUser.getEmail());
+                    newUser.setFullName(updatedUser.getFullName() != null ? updatedUser.getFullName() : existingUser.getFullName());
+                    newUser.setRegistrationDate(existingUser.getRegistrationDate());
+                }
+                case "Admin" -> {
+                    newUser = new Admin();
+                    newUser.setUsername(newUsername);
+                    newUser.setPassword(newPassword);
+                    newUser.setEmail(updatedUser.getEmail() != null ? updatedUser.getEmail() : existingUser.getEmail());
+                    newUser.setFullName(updatedUser.getFullName() != null ? updatedUser.getFullName() : existingUser.getFullName());
+                    newUser.setRegistrationDate(existingUser.getRegistrationDate());
+                }
+                default -> throw new IllegalArgumentException("Invalid user type: " + newDtype);
+            }
+
+            // Delete the old user and save the new user
+            userRepository.delete(existingUser);
+            return userRepository.save(newUser);
+        }
+
+        // Update fields for the same user type, including optional updates
+        if (updatedUser.getEmail() != null) {
+            existingUser.setEmail(updatedUser.getEmail());
+        }
+
+        // Only update the username if it's provided (non-null)
+        if (updatedUser.getUsername() != null && !updatedUser.getUsername().isEmpty()) {
+            existingUser.setUsername(updatedUser.getUsername());
+        }
+
+        // Only update the full name if it's provided
+        if (updatedUser.getFullName() != null && !updatedUser.getFullName().isEmpty()) {
+            existingUser.setFullName(updatedUser.getFullName());
+        }
+
+        // Only update the password if it's provided and not empty
+        if (updatedUser.getPassword() != null && !updatedUser.getPassword().isEmpty()) {
+            existingUser.setPassword(passwordEncoder.encode(updatedUser.getPassword())); // Encrypt password if provided
+        }
+
+        return userRepository.save(existingUser);
+    }
+
+
+
+
+
+
+    @Override
     public void deleteUser(Long id) {
-        userRepository.findById(id)
+        User toBeDeletedUser = userRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("User not found with id " + id));
+
         userRepository.deleteById(id);
     }
 

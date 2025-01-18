@@ -33,7 +33,7 @@ const AdminDashboard = () => {
             title: t('adminDashboard.modules.teachers'),
             description: t('adminDashboard.descriptions.teachers'),
             icon: GraduationCap,
-            route: '/admin/teachers',
+            route: '/admin/users/teachers',
             color: 'bg-green-500'
         },
         {
@@ -41,7 +41,7 @@ const AdminDashboard = () => {
             title: t('adminDashboard.modules.students'),
             description: t('adminDashboard.descriptions.students'),
             icon: UserCog,
-            route: '/admin/students',
+            route: '/admin/users/students',
             color: 'bg-purple-500'
         },
         {
@@ -92,7 +92,7 @@ const AdminDashboard = () => {
     );
 
     return (
-        <div className="min-h-screen bg-gray-50 p-6">
+        <div className="min-h-screen bg-gray-50 p-6 mt-20">
             <div className="max-w-7xl mx-auto">
                 <div className="flex flex-col md:flex-row justify-between items-center mb-8">
                     <h1 className="text-3xl font-bold text-gray-900 mb-4 md:mb-0">
@@ -116,7 +116,10 @@ const AdminDashboard = () => {
                         return (
                             <div
                                 key={module.id}
-                                onClick={() => navigate(module.route)}
+                                onClick={() => {
+                                    console.log(`Navigating to: ${module.route}`);
+                                    navigate(module.route);
+                                }}
                                 className="bg-white rounded-lg shadow hover:shadow-lg transition-shadow cursor-pointer overflow-hidden"
                             >
                                 <div className="p-6">
