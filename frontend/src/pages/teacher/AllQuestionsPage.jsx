@@ -8,7 +8,7 @@ import { ArrowLeft, Edit, Trash2, ChevronDown, Plus } from 'lucide-react';
 
 const AllQuestionsPage = () => {
     const { items: questions, loading: questionsLoading, error: questionsError, deleteItem: deleteQuestion } = useQuestion();
-    const { user } = useAuth();
+    const { user, role } = useAuth();
     const navigate = useNavigate();
     const [activeTab, setActiveTab] = useState('myQuestions');
     const [currentPage, setCurrentPage] = useState(1);
@@ -120,9 +120,9 @@ const AllQuestionsPage = () => {
         );
     };
 
-    const QuestionActions = ({ question, isCreator }) => (
+    const QuestionActions = ({ question, isCreator, isAdmin }) => (
         <div className="flex flex-col sm:flex-row gap-2 mt-4 sm:mt-0">
-            {isCreator && (
+            {(isCreator || isAdmin) && (
                 <>
                     <button
                         onClick={() => handleEditQuestion(question.id)}
@@ -146,7 +146,8 @@ const AllQuestionsPage = () => {
     const renderQuestion = (question) => {
         const isCreator = question.creatorId === user.id;
         const isExpanded = expandedQuestion === question.id;
-
+        const isAdmin = role === 'admin';
+        console.log("Is Admin Check:" + isAdmin);
         return (
             <div key={question.id} className="bg-white rounded-lg shadow p-4 sm:p-6">
                 <div className="flex flex-col sm:flex-row justify-between">
@@ -202,7 +203,7 @@ const AllQuestionsPage = () => {
                         </div>
                     </div>
 
-                    {isCreator && (
+                    {(isCreator || isAdmin) && (
                         <>
                             <button
                                 onClick={() => setExpandedQuestion(isExpanded ? null : question.id)}
@@ -213,7 +214,7 @@ const AllQuestionsPage = () => {
                                 />
                             </button>
                             <div className={`sm:block ${isExpanded ? 'block' : 'hidden'}`}>
-                                <QuestionActions question={question} isCreator={isCreator} />
+                                <QuestionActions question={question} isCreator={isCreator} isAdmin={isAdmin}/>
                             </div>
                         </>
                     )}

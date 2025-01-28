@@ -173,8 +173,8 @@ public class TestServiceImpl implements TestService {
         test.setDescription(testDTO.getDescription());
         test.setNumQuestions(testDTO.getNumQuestions());
         test.setTimeLimit(testDTO.getTimeLimit());
-        test.setCreator(teacherRepository.findById(testDTO.getCreatorId())
-                .orElseThrow(() -> new EntityNotFoundException("Teacher not found")));
+        test.setCreator(userRepository.findById(testDTO.getCreatorId())
+                .orElseThrow(() -> new EntityNotFoundException("User not found")));
 
         if (testDTO.getMetadata() != null) {
             List<Metadata> metadataList = testDTO.getMetadata().stream()

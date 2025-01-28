@@ -271,6 +271,12 @@ const AppRoutes = () => {
                         </PrivateRoute>
                     }/>
 
+                    <Route path="/admin/questions" element={
+                        <PrivateRoute requiredRoles={["admin"]}>
+                            <CrudLayout><AllQuestionsPage/></CrudLayout>
+                        </PrivateRoute>
+                    }/>
+
                     {/* Teacher User Routes */}
                     <Route path="/admin/users/teachers" element={
                         <PrivateRoute requiredRoles={["admin"]}>

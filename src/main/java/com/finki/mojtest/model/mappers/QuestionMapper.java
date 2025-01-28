@@ -8,6 +8,7 @@ import com.finki.mojtest.model.dtos.QuestionDTO;
 import com.finki.mojtest.model.enumerations.QuestionType;
 import com.finki.mojtest.model.users.Teacher;
 import com.finki.mojtest.model.dtos.AnswerDTO;
+import com.finki.mojtest.model.users.User;
 
 import java.util.Collections;
 import java.util.Date;
@@ -65,7 +66,7 @@ public class QuestionMapper {
 
         return question;
     }
-    public static Question updateFromDTO(Question existingQuestion, QuestionDTO dto, Teacher creator, List<Test> tests, List<Metadata> metadata, Date uploadedAt, File file) {
+    public static Question updateFromDTO(Question existingQuestion, QuestionDTO dto, User creator, List<Test> tests, List<Metadata> metadata, Date uploadedAt, File file) {
         if (existingQuestion == null || dto == null) return null;
 
         existingQuestion.setQuestionType(dto.getType() != null ? QuestionType.valueOf(dto.getType().toUpperCase()) : null); // Convert string to enum

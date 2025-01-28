@@ -7,6 +7,7 @@ import com.finki.mojtest.model.dtos.QuestionFromTeacherDTO;
 import com.finki.mojtest.model.enumerations.QuestionType;
 import com.finki.mojtest.model.mappers.QuestionMapper;
 import com.finki.mojtest.model.users.Teacher;
+import com.finki.mojtest.model.users.User;
 import com.finki.mojtest.repository.*;
 import com.finki.mojtest.repository.users.TeacherRepository;
 import com.finki.mojtest.repository.users.UserRepository;
@@ -103,8 +104,8 @@ public class QuestionServiceImpl implements QuestionService {
             Question existingQuestion = getQuestionById(id);
 
             // Resolve related entities
-            Teacher creator = teacherRepository.findById(questionDTO.getCreatorId())
-                    .orElseThrow(() -> new EntityNotFoundException("Teacher not found"));
+            User creator = userRepository.findById(questionDTO.getCreatorId())
+                    .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
             List<Test> tests = (questionDTO.getTestIds() != null && !questionDTO.getTestIds().isEmpty()) ?
                     testRepository.findAllById(questionDTO.getTestIds()) :
@@ -226,8 +227,8 @@ public class QuestionServiceImpl implements QuestionService {
         Test test = testRepository.findById(testId)
                 .orElseThrow(() -> new EntityNotFoundException("Test not found with ID: " + testId));
 
-        Teacher creator = (Teacher) userRepository.findById(questionCreateDTO.getCreatorId())
-                .orElseThrow(() -> new EntityNotFoundException("Teacher not found with ID: " + questionCreateDTO.getCreatorId()));
+        User creator = userRepository.findById(questionCreateDTO.getCreatorId())
+                .orElseThrow(() -> new EntityNotFoundException("User not found with ID: " + questionCreateDTO.getCreatorId()));
 
         Question question = new Question();
         question.setQuestionType(questionCreateDTO.getType() != null ?
@@ -321,7 +322,7 @@ public class QuestionServiceImpl implements QuestionService {
             throw new IllegalArgumentException("Creator ID must not be null");
         }
 
-        Teacher creator = (Teacher) userRepository.findById(questionCreateDTO.getCreatorId())
+        User creator = userRepository.findById(questionCreateDTO.getCreatorId())
                 .orElseThrow(() -> new EntityNotFoundException("Teacher not found with ID: " + questionCreateDTO.getCreatorId()));
 
         Question question = new Question();

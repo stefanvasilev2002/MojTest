@@ -26,7 +26,7 @@ const AdminNavBar = () => {
             label: 'nav.system.dropdown',
             dropdown: true,
             items: [
-                { label: 'nav.system.metadata', path: '/admin/metadata' },
+                // { label: 'nav.system.metadata', path: '/admin/metadata' },
                 { label: 'nav.system.settings', path: '/admin/settings' },
             ]
         },

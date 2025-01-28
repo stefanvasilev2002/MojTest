@@ -52,14 +52,14 @@ const AdminDashboard = () => {
             route: '/admin/tests',
             color: 'bg-yellow-500'
         },
-        {
-            id: 'metadata',
-            title: t('adminDashboard.modules.metadata'),
-            description: t('adminDashboard.descriptions.metadata'),
-            icon: Database,
-            route: '/admin/metadata',
-            color: 'bg-red-500'
-        },
+        // {
+        //     id: 'metadata',
+        //     title: t('adminDashboard.modules.metadata'),
+        //     description: t('adminDashboard.descriptions.metadata'),
+        //     icon: Database,
+        //     route: '/admin/metadata',
+        //     color: 'bg-red-500'
+        // },
         {
             id: 'questions',
             title: t('adminDashboard.modules.questions'),
