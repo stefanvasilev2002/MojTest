@@ -269,7 +269,7 @@ public class TestServiceImpl implements TestService {
             throw new IllegalStateException("Only students can take tests. User role: " + user.getDtype());
         }
 
-        Student student = (Student) user;  // Cast to Student after verifying the type
+        Student student = (Student) user;
 
         List<Question> allQuestions = new ArrayList<>(test.getQuestionBank());
 
@@ -278,8 +278,12 @@ public class TestServiceImpl implements TestService {
                 0,
                 Math.min(test.getNumQuestions(), allQuestions.size())
         );
-
         StudentTest studentTest = new StudentTest();
+
+        if (selectedQuestions.isEmpty()) {
+            return studentTest;
+        }
+
         studentTest.setTest(test);
         studentTest.setStudent(student);
         studentTest.setScore(0);
