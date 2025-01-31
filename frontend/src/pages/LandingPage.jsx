@@ -25,7 +25,7 @@ const LandingPage = () => {
 
     return (
         <div className="min-h-screen bg-gradient-to-b from-white to-blue-50">
-            <h1>Test for auto deploy!!!!!!!!!!!</h1>
+            <h1>Test for auto deploy!!!!!!!!!!!!!!</h1>
             {/* Hero Section */}
             <div className="relative overflow-hidden">
                 <div className="max-w-7xl mx-auto">
