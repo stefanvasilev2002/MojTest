@@ -34,7 +34,7 @@ jobs:
             cd frontend
             npm install
             npm run build
-            echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S cp -r dist/* /var/www/mojtest/  # Changed path
+            echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S cp -r dist/* /var/www/mojtest/
             echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S chown -R www-data:www-data /var/www/mojtest
             echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S chmod -R 755 /var/www/mojtest
             echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S nginx -t
