@@ -25,13 +25,13 @@ const LandingPage = () => {
 
     return (
         <div className="min-h-screen bg-gradient-to-b from-white to-blue-50">
-            <h1>Test for auto deploy!!!!!!!!!!!!!!</h1>
             {/* Hero Section */}
             <div className="relative overflow-hidden">
                 <div className="max-w-7xl mx-auto">
                     <div className="relative z-10 pb-8 pt-8 sm:pb-16 sm:pt-16 md:pb-20 md:pt-20 lg:pb-28 lg:pt-28">
                         <main className="mt-10 mx-auto max-w-7xl px-4 sm:mt-12 sm:px-6 md:mt-16 lg:mt-20">
                             <div className="text-center">
+                                <h1 className="text-4xl font-extrabold text-gray-900 sm:text-5xl md:text-6xl">TEST FORM GITHUB</h1>
                                 <motion.h1
                                     initial={{ opacity: 0, y: 20 }}
                                     animate={{ opacity: 1, y: 0 }}

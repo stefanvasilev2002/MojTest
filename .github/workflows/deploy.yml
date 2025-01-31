@@ -36,7 +36,7 @@ jobs:
             npm run build
             echo "${{ secrets.SUDO_PASSWORD }}" | sudo find dist/ -type f -exec chmod 644 {} \;
             echo "${{ secrets.SUDO_PASSWORD }}" | sudo find dist/ -type d -exec chmod 755 {} \;
-            echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S cp -r dist/* /var/www/mojtest/
+            echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S cp -r dist/* ../src/main/resources/static/
             echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S nginx -t
             echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S systemctl reload nginx
             cd ..
