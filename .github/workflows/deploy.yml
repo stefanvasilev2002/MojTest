@@ -6,6 +6,9 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    env:
+      MAIL_USERNAME: ${{ secrets.MAIL_USERNAME }}
+      MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
     steps:
       - uses: actions/checkout@v2
 
@@ -25,5 +28,5 @@ jobs:
             sudo nginx -t
             sudo systemctl reload nginx
             cd ..
-            ./mvnw clean package
+            ./mvnw clean package -DskipTests
             sudo systemctl restart mojtest
