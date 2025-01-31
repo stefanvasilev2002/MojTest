@@ -580,7 +580,7 @@ public class UserServiceImpl implements UserService {
             String htmlContent = getEmailTemplate(language);
 
             // Replace placeholders
-            String resetUrl = "https://mojtest-mk.onrender.com/reset-password/" + token;
+            String resetUrl = "https://mojtest.finki.edu.mk/reset-password/" + token;
             htmlContent = htmlContent
                     .replace("{{resetUrl}}", resetUrl)
                     .replace("{{expiryHours}}", "24");
