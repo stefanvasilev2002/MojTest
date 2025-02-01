@@ -31,6 +31,11 @@ jobs:
           script: |
             cd ~/MojTest
             git pull origin main
+            
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            nvm use 20
+            
             cd frontend
             npm install
             npm run build
