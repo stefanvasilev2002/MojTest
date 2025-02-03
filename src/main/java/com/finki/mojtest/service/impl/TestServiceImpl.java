@@ -279,9 +279,9 @@ public class TestServiceImpl implements TestService {
                 Math.min(test.getNumQuestions(), allQuestions.size())
         );
         StudentTest studentTest = new StudentTest();
-
+        System.out.println(selectedQuestions);
         if (selectedQuestions.isEmpty()) {
-            return studentTest;
+            throw new IllegalStateException("Test does not have any questions");
         }
 
         studentTest.setTest(test);

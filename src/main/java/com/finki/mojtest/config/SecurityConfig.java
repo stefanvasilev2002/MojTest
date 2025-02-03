@@ -41,7 +41,8 @@ public class SecurityConfig {
 CorsConfigurationSource corsConfigurationSource() {
     CorsConfiguration configuration = new CorsConfiguration();
     configuration.setAllowedOrigins(Arrays.asList(
-            "https://mojtest.finki.edu.mk"    // Keep only the production URL for now
+            "https://mojtest.finki.edu.mk",
+            "http://localhost:5173"
     ));
     configuration.setAllowedMethods(Arrays.asList(
             "GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH", "HEAD"

@@ -7,7 +7,7 @@ import TestFilters from '../../components/TestFilters.jsx';
 import TestAttempts from "../../components/student/TestAttempts.jsx";
 import { getTranslatedMetadata } from "../../config/translatedMetadata.js";
 import { endpoints } from "../../config/api.config.jsx";
-
+import NoQuestionsErrorModal from '../../components/student/NoQuestionsErrorModal.jsx';
 const StudentDashboard = () => {
     const { t, i18n } = useTranslation("common");
     const [selectedTestId, setSelectedTestId] = useState(null);
@@ -20,7 +20,7 @@ const StudentDashboard = () => {
         'Part of Year': '',
         'Test Type': ''
     });
-
+    const [errorModal, setErrorModal] = useState({ isOpen: false, message: '' });
     useEffect(() => {
         const checkActiveTest = async () => {
             const lastTestId = localStorage.getItem('last_test_id');
@@ -95,13 +95,20 @@ const StudentDashboard = () => {
             });
 
             if (!response.ok) {
-                throw new Error(t('studentDashboard.activeTest.errors.startFailed'));
+                setErrorModal({
+                    isOpen: true,
+                    message: t('studentDashboard.activeTest.errors.noQuestions')
+                });
+                return;
+
             }
 
             const data = await response.json();
-
             if (!data.questions || data.questions.length === 0) {
-                alert(t('studentDashboard.activeTest.errors.noQuestions'));
+                setErrorModal({
+                    isOpen: true,
+                    message: t('studentDashboard.activeTest.errors.noQuestions')
+                });
                 return;
             }
 
@@ -270,6 +277,11 @@ const StudentDashboard = () => {
                             onClose={() => setSelectedTestId(null)}
                         />
                     )}
+                    <NoQuestionsErrorModal
+                        isOpen={errorModal.isOpen}
+                        message={errorModal.message}
+                        onClose={() => setErrorModal({ isOpen: false, message: '' })}
+                    />
                 </div>
             </div>
         </div>

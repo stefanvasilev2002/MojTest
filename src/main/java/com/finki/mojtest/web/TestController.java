@@ -23,9 +23,14 @@ public class TestController {
     }
     @PostMapping("/start/{testId}")
     public ResponseEntity<TestTakingViewDTO> startTest(@PathVariable Long testId, @RequestParam Long studentId) {
-        StudentTest startedTest = testService.startTest(testId, studentId);
-        TestTakingViewDTO dto = testService.convertToTestTakingView(startedTest);
-        return new ResponseEntity<>(dto, HttpStatus.CREATED);
+        try{
+            StudentTest startedTest = testService.startTest(testId, studentId);
+            TestTakingViewDTO dto = testService.convertToTestTakingView(startedTest);
+            return new ResponseEntity<>(dto, HttpStatus.CREATED);
+        }
+        catch (Exception e){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
     }
 
     @PostMapping
