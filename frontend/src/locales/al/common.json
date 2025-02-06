@@ -338,10 +338,13 @@
     "pageTitle": "Menaxho Pyetjet",
     "tabs": {
       "createNew": "Krijo Pyetje të Re",
-      "addExisting": "Shto Pyetje Ekzistuese"
+      "addExisting": "Shto Pyetje Ekzistuese",
+      "addMultiple": "Shto Pyetje të Shumëfishta"
     }
   },
   "addExistingQuestion": {
+    "selectedCount": "{{count}} pyetje të zgjedhura",
+    "addSelected": "Shto të zgjedhurat",
     "title": "Shto Pyetje Ekzistuese",
     "error": {
       "fetchQuestions": "Gabim gjatë marrjes së pyetjeve:"
@@ -367,7 +370,8 @@
     "next": "E ardhshme",
     "page": "Faqe",
     "of": "nga",
-    "back": "Mbrapa"
+    "back": "Mbrapa",
+    "confirm": "Konfirmo"
   },
   "timer": {
     "remaining": "Koha e mbetur",

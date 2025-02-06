@@ -110,7 +110,8 @@
     "cancel": "Cancel",
     "delete": "Delete",
     "back": "Back",
-    "edit": "Edit"
+    "edit": "Edit",
+    "confirm": "Confirm"
   },
   "metadata": {
     "Subject": "Subject",
@@ -217,7 +218,18 @@
       }
     }
   },
+  "addMultipleQuestions": {
+    "title": "Add Multiple Questions",
+    "selectedCount": "{{count}} questions selected",
+    "addSelected": "Add Selected Questions",
+    "adding": "Adding Questions...",
+    "confirmTitle": "Confirm Adding Questions",
+    "confirmMessage": "Are you sure you want to add {{count}} questions to this test?"
+  },
+
   "addExistingQuestion": {
+    "selectedCount": "{{count}} questions selected",
+    "addSelected": "Add Selected Questions",
     "title": "Add Existing Question",
     "error": {
       "fetchQuestions": "Error fetching questions:"
@@ -377,7 +389,8 @@
     "pageTitle": "Manage Questions",
     "tabs": {
       "createNew": "Create New Question",
-      "addExisting": "Add Existing Question"
+      "addExisting": "Add Existing Question",
+      "addMultiple": "Add Multiple Questions"
     }
   },
   "createQuestion": {

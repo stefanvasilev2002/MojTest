@@ -3,7 +3,8 @@ import { useParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import CreateQuestionPage from './CreateQuestionsPage.jsx';
 import AddExistingQuestionPage from './AddExistingQuestionPage.jsx';
-import {ArrowLeft} from "lucide-react";
+import AddMultipleQuestionsPage from './AddMultipleQuestionsPage.jsx';
+import { ArrowLeft } from "lucide-react";
 
 const QuestionManagerPage = () => {
     const { t } = useTranslation("common");
@@ -35,10 +36,9 @@ const QuestionManagerPage = () => {
                     {t('questionManager.pageTitle')}
                 </h1>
 
-                {/* Tabs */}
                 <div className="flex border-b mb-6">
                     <button
-                        className={`p-4 w-1/2 text-center ${
+                        className={`p-4 w-1/3 text-center ${
                             activeTab === 'create' ? 'border-b-2 border-blue-600 font-bold' : ''
                         }`}
                         onClick={() => setActiveTab('create')}
@@ -46,26 +46,37 @@ const QuestionManagerPage = () => {
                         {t('questionManager.tabs.createNew')}
                     </button>
                     <button
-                        className={`p-4 w-1/2 text-center ${
+                        className={`p-4 w-1/3 text-center ${
                             activeTab === 'existing' ? 'border-b-2 border-blue-600 font-bold' : ''
                         }`}
                         onClick={() => setActiveTab('existing')}
                     >
                         {t('questionManager.tabs.addExisting')}
                     </button>
+                    <button
+                        className={`p-4 w-1/3 text-center ${
+                            activeTab === 'multiple' ? 'border-b-2 border-blue-600 font-bold' : ''
+                        }`}
+                        onClick={() => setActiveTab('multiple')}
+                    >
+                        {t('questionManager.tabs.addMultiple')}
+                    </button>
                 </div>
 
-                {/* Tab Content */}
                 <div>
-                    {activeTab === 'create' ? (
+                    {activeTab === 'create' && (
                         <CreateQuestionPage
                             selectedQuestion={selectedQuestion}
                             mode={mode}
                         />
-                    ) : (
+                    )}
+                    {activeTab === 'existing' && (
                         <AddExistingQuestionPage
                             onSelectQuestion={handleSelectExistingQuestion}
                         />
+                    )}
+                    {activeTab === 'multiple' && (
+                        <AddMultipleQuestionsPage />
                     )}
                 </div>
             </div>
