@@ -330,7 +330,8 @@
     "allSubjects": "Të gjitha lëndët",
     "allDifficulties": "Të gjitha vështirësitë",
     "allPeriods": "Të gjitha periudhat",
-    "allTypes": "Të gjitha llojet"
+    "allTypes": "Të gjitha llojet",
+    "allGrades": "Të gjitha klasat"
   },
   "questionManager": {
     "backToQuestions": "Kthehu tek Pyetjet",

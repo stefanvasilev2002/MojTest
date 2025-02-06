@@ -166,7 +166,8 @@
     "allSubjects": "Сите предмети",
     "allDifficulties": "Сите тежини",
     "allPeriods": "Сите периоди",
-    "allTypes": "Сите типови"
+    "allTypes": "Сите типови",
+    "allGrades": "Сите одделенија"
   },
   "questionForm": {
     "labels": {

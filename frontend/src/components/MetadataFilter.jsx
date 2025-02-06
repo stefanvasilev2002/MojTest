@@ -29,7 +29,7 @@ const MetadataFilter = ({ filterOptions, setFilterOptions }) => {
             {showFilters && (
                 <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200">
                     <h2 className="text-xl font-semibold text-gray-800 mb-6">{t('filters.title')}</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">
                                 {t('metadata.Subject')}
@@ -43,6 +43,24 @@ const MetadataFilter = ({ filterOptions, setFilterOptions }) => {
                                 {predefinedKeyValues.Subject?.map(subject => (
                                     <option key={subject} value={subject}>
                                         {getTranslatedMetadata('Subject', subject, i18n.language)}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                {t('metadata.Grade')}
+                            </label>
+                            <select
+                                className="w-full border border-gray-300 rounded-lg shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500 hover:border-blue-400"
+                                value={filterOptions['Grade']?.[0]?.value || ''}
+                                onChange={(e) => handleFilterChange('Grade', e.target.value)}
+                            >
+                                <option value="">{t('filters.allGrades')}</option>
+                                {predefinedKeyValues.Grade?.map(grade => (
+                                    <option key={grade} value={grade}>
+                                        {getTranslatedMetadata('Grade', grade, i18n.language)}
                                     </option>
                                 ))}
                             </select>

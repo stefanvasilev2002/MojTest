@@ -431,7 +431,8 @@
     "allSubjects": "All Subjects",
     "allDifficulties": "All Difficulties",
     "allPeriods": "All Periods",
-    "allTypes": "All Types"
+    "allTypes": "All Types",
+    "allGrades": "All Grades"
   },
   "studentPage": {
     "hero": {
